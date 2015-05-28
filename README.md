@@ -11,6 +11,12 @@
 An experimental library for matrix manipulation implemented in Golang.
 
 
+## Motivations
+
+1. Portability - Implement in pure Golang to achieve cgo-free.
+1. Efficiency - Pursue performance as possible without highly optimized back-ends like blas.
+
+
 ## License
 
 The MIT License (MIT)
