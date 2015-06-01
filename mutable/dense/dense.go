@@ -42,3 +42,15 @@ func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 
 	return constructor
 }
+
+func (m *matrixImpl) Shape() (rows, columns int) {
+	return m.rows, m.columns
+}
+
+func (m *matrixImpl) Rows() (rows int) {
+	return m.rows
+}
+
+func (m *matrixImpl) Columns() (columns int) {
+	return m.columns
+}
