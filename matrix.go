@@ -12,4 +12,16 @@ type Matrix interface {
 
 	// Return the "columns" of matrix.
 	Columns() (columns int)
+
+	// Return a row of matrix speficied with index "row".
+	Row(row int) Row
+
+	// Return a column of matrix speficied with index "column".
+	Column(column int) Column
+}
+
+type Row interface {
+}
+
+type Column interface {
 }
