@@ -10,6 +10,20 @@ type constructTest struct {
 	elements []float64
 }
 
+func createErroneousConstructTestSeq() []*constructTest {
+	testSeq := []*constructTest{
+		&constructTest{rows: 2, columns: 2, elements: []float64{0, 1, 2}},
+		&constructTest{rows: 1, columns: 2, elements: []float64{0, 1, 2}},
+		&constructTest{rows: 2, columns: 1, elements: []float64{0}},
+		&constructTest{rows: 3, columns: 1, elements: []float64{0, 1, 2, 3}},
+		&constructTest{rows: 1, columns: 3, elements: []float64{0}},
+		&constructTest{rows: 3, columns: 2, elements: []float64{0, 1, 2}},
+		&constructTest{rows: 2, columns: 3, elements: []float64{0, 1, 2, 3}},
+	}
+
+	return testSeq
+}
+
 func createShapeTestSeq() []*constructTest {
 	testSeq := []*constructTest{
 		&constructTest{rows: 2, columns: 2, elements: []float64{0, 1, 2, 3}},
@@ -22,6 +36,18 @@ func createShapeTestSeq() []*constructTest {
 	}
 
 	return testSeq
+}
+
+func TestNewFailedWithTheWrongNumberOfElements(t *testing.T) {
+	testSeq := createErroneousConstructTestSeq()
+
+	for _, test := range testSeq {
+		_, err := New(test.rows, test.columns)(test.elements...)
+		if err == nil {
+			template := "The number of %q doesn't equal to %q * %q, but an error caused."
+			t.Fatalf(template, "elements", "rows", "columns")
+		}
+	}
 }
 
 func TestRowsSucceedsAlways(t *testing.T) {
