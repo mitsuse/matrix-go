@@ -13,3 +13,9 @@ type Matrix interface {
 	// Return the "columns" of matrix.
 	Columns() (columns int)
 }
+
+type Row interface {
+}
+
+type Column interface {
+}
