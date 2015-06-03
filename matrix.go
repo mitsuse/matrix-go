@@ -18,6 +18,9 @@ type Matrix interface {
 
 	// Return a column of matrix speficied with index "column".
 	Column(column int) Column
+
+	// Get an element of matrix speficied with "row" and "column".
+	Get(row, column int) (element float64)
 }
 
 type Row interface {
