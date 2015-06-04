@@ -17,6 +17,6 @@ func shouldBePositiveNumber(x int, name string) {
 		return
 	}
 
-	message := fmt.Sprintf("%q should be a positive number.")
+	message := fmt.Sprintf("%q should be a positive number.", name)
 	panic(message)
 }
