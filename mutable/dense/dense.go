@@ -66,6 +66,10 @@ func (m *matrixImpl) Column(column int) matrix.Column {
 }
 
 func (m *matrixImpl) Get(row, column int) (element float64) {
-	// TODO: Implement.
-	return 0
+	rows, columns := m.Shape()
+
+	rowShouldBeInRows(row, rows)
+	columnShouldBeInColumns(column, columns)
+
+	return m.elements[row*columns+column]
 }
