@@ -64,3 +64,12 @@ func (m *matrixImpl) Column(column int) matrix.Column {
 	// TODO: Implement.
 	return nil
 }
+
+func (m *matrixImpl) Get(row, column int) (element float64) {
+	rows, columns := m.Shape()
+
+	rowShouldBeInRows(row, rows)
+	columnShouldBeInColumns(column, columns)
+
+	return m.elements[row*columns+column]
+}
