@@ -43,6 +43,11 @@ func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 	return constructor
 }
 
+func Zeros(rows, columns int) matrix.Matrix {
+	m, _ := New(rows, columns)(make([]float64, rows*columns)...)
+	return m
+}
+
 func (m *matrixImpl) Shape() (rows, columns int) {
 	return m.Rows(), m.Columns()
 }
