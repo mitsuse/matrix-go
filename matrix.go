@@ -31,3 +31,8 @@ type Row interface {
 
 type Column interface {
 }
+
+// Check whether a matrix "m" is square or not.
+func IsSquare(m Matrix) bool {
+	return m.Rows() == m.Columns()
+}
