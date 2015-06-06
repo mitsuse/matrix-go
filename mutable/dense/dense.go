@@ -43,6 +43,11 @@ func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 	return constructor
 }
 
+func Zeros(rows, columns int) matrix.Matrix {
+	m, _ := New(rows, columns)(make([]float64, rows*columns)...)
+	return m
+}
+
 func (m *matrixImpl) Shape() (rows, columns int) {
 	return m.Rows(), m.Columns()
 }
@@ -72,4 +77,15 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 	columnShouldBeInColumns(column, columns)
 
 	return m.elements[row*columns+column]
+}
+
+func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
+	rows, columns := m.Shape()
+
+	rowShouldBeInRows(row, rows)
+	columnShouldBeInColumns(column, columns)
+
+	m.elements[row*columns+column] = element
+
+	return m
 }
