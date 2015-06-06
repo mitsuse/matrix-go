@@ -73,3 +73,14 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 
 	return m.elements[row*columns+column]
 }
+
+func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
+	rows, columns := m.Shape()
+
+	rowShouldBeInRows(row, rows)
+	columnShouldBeInColumns(column, columns)
+
+	m.elements[row*columns+column] = element
+
+	return m
+}
