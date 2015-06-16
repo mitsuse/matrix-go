@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/mutable"
 )
 
@@ -59,16 +58,6 @@ func (m *matrixImpl) Rows() (rows int) {
 
 func (m *matrixImpl) Columns() (columns int) {
 	return m.columns
-}
-
-func (m *matrixImpl) Row(row int) matrix.Row {
-	// TODO: Implement.
-	return nil
-}
-
-func (m *matrixImpl) Column(column int) matrix.Column {
-	// TODO: Implement.
-	return nil
 }
 
 func (m *matrixImpl) Get(row, column int) (element float64) {
