@@ -21,9 +21,6 @@ type Matrix interface {
 
 	// Get an element of matrix speficied with "row" and "column".
 	Get(row, column int) (element float64)
-
-	// Update the element of matrix speficied with "row" and "column".
-	Update(row, column int, element float64) Matrix
 }
 
 type Row interface {
