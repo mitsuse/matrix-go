@@ -21,3 +21,9 @@ type Matrix interface {
 func IsSquare(m Matrix) bool {
 	return m.Rows() == m.Columns()
 }
+
+// Check whether a matrix "m" is zero-matrix or not.
+func IsZeros(m Matrix) bool {
+	// TODO: Implement.
+	return false
+}
