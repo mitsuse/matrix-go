@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mitsuse/matrix-go"
+	"github.com/mitsuse/matrix-go/mutable"
 )
 
 type matrixImpl struct {
@@ -16,11 +16,11 @@ type matrixImpl struct {
 	elements []float64
 }
 
-func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
+func New(rows, columns int) func(elements ...float64) (mutable.Matrix, error) {
 	rowsShouldBePositiveNumber(rows)
 	columnShouldBePositiveNumber(rows)
 
-	constructor := func(elements ...float64) (matrix.Matrix, error) {
+	constructor := func(elements ...float64) (mutable.Matrix, error) {
 		size := rows * columns
 
 		if len(elements) != size {
@@ -43,7 +43,7 @@ func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 	return constructor
 }
 
-func Zeros(rows, columns int) matrix.Matrix {
+func Zeros(rows, columns int) mutable.Matrix {
 	m, _ := New(rows, columns)(make([]float64, rows*columns)...)
 	return m
 }
@@ -60,16 +60,6 @@ func (m *matrixImpl) Columns() (columns int) {
 	return m.columns
 }
 
-func (m *matrixImpl) Row(row int) matrix.Row {
-	// TODO: Implement.
-	return nil
-}
-
-func (m *matrixImpl) Column(column int) matrix.Column {
-	// TODO: Implement.
-	return nil
-}
-
 func (m *matrixImpl) Get(row, column int) (element float64) {
 	rows, columns := m.Shape()
 
@@ -79,7 +69,7 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 	return m.elements[row*columns+column]
 }
 
-func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
+func (m *matrixImpl) Update(row, column int, element float64) mutable.Matrix {
 	rows, columns := m.Shape()
 
 	rowShouldBeInRows(row, rows)
