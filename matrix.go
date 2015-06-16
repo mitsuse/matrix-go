@@ -30,6 +30,5 @@ func IsSquare(m Matrix) bool {
 
 // Check whether a matrix "m" is zero-matrix or not.
 func IsZeros(m Matrix) bool {
-	// TODO: Implement.
-	return false
+	return !m.NonZeros().HasNext()
 }
