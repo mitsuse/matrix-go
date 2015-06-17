@@ -23,12 +23,12 @@ type Matrix interface {
 	Get(row, column int) (element float64)
 }
 
-// Check whether a matrix "m" is square or not.
-func IsSquare(m Matrix) bool {
-	return m.Rows() == m.Columns()
-}
-
 // Check whether a matrix "m" is zero-matrix or not.
 func IsZeros(m Matrix) bool {
 	return !m.NonZeros().HasNext()
+}
+
+// Check whether a matrix "m" is square or not.
+func IsSquare(m Matrix) bool {
+	return m.Rows() == m.Columns()
 }
