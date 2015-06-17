@@ -41,7 +41,7 @@ func IsSquare(m Matrix) bool {
 }
 
 // Check whether "m" is special diagonal matrix satisfying arbitary condition.
-func IsSpecialDiagonal(m Matrix, match elements.Matcher) bool {
+func IsSpecialDiagonal(m Matrix, match elements.Match) bool {
 	if !IsSquare(m) {
 		return false
 	}

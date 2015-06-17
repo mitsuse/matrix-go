@@ -15,6 +15,6 @@ type Curor interface {
 }
 
 /*
-"Matcher" is a type of functions to be used check an element satisfies arbitary condition.
+"Match" is a type of functions to be used check an element satisfies arbitary condition.
 */
-type Matcher func(element float64, row, column int) bool
+type Match func(element float64, row, column int) bool
