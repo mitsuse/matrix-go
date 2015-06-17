@@ -26,12 +26,12 @@ type Matrix interface {
 	Get(row, column int) (element float64)
 }
 
-// Check whether a matrix "m" is zero-matrix or not.
+// Check whether "m" is zero matrix or not.
 func IsZeros(m Matrix) bool {
 	return !m.NonZeros().HasNext()
 }
 
-// Check whether a matrix "m" is square or not.
+// Check whether "m" is square matrix or not.
 func IsSquare(m Matrix) bool {
 	return m.Rows() == m.Columns()
 }
@@ -54,7 +54,7 @@ func IsSpecialDiagonal(m Matrix, match ElementMatcher) bool {
 	return true
 }
 
-// Check whether a matrix "m" is diagonal or not.
+// Check whether "m" is diagonal matrix or not.
 func IsDiagonal(m Matrix) bool {
 	match := func(element float64, row, column int) bool {
 		return row != column && element != 0
