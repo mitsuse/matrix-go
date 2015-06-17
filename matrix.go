@@ -19,6 +19,9 @@ type Matrix interface {
 	// Create and return an iterator for non-zero elements.
 	NonZeros() Elements
 
+	// Create and return an iterator for diagonal elements.
+	Diagonal() Elements
+
 	// Get an element of matrix speficied with "row" and "column".
 	Get(row, column int) (element float64)
 }
