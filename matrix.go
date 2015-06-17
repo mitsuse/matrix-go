@@ -65,12 +65,32 @@ func IsDiagonal(m Matrix) bool {
 
 // Check whether "m" is identity matrix or not.
 func IsIdentity(m Matrix) bool {
-	// TODO: Implement.
-	return false
+	match := func(element float64, row, column int) bool {
+		if row == column {
+			return element == 1
+		} else {
+			return element == 0
+		}
+	}
+
+	return IsSpecialDiagonal(m, match)
 }
 
 // Check whether "m" is scalr matrix or not.
 func IsScalar(m Matrix) bool {
-	// TODO: Implement.
-	return false
+	if rows, columns := m.Shape(); rows == 0 && columns == 0 {
+		return true
+	}
+
+	scalar := m.Get(0, 0)
+
+	match := func(element float64, row, column int) bool {
+		if row == column {
+			return element == scalar
+		} else {
+			return element == 0
+		}
+	}
+
+	return IsSpecialDiagonal(m, match)
 }
