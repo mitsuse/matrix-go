@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mitsuse/matrix-go"
+	"github.com/mitsuse/matrix-go/elements"
 	"github.com/mitsuse/matrix-go/mutable"
 )
 
@@ -61,17 +61,17 @@ func (m *matrixImpl) Columns() (columns int) {
 	return m.columns
 }
 
-func (m *matrixImpl) All() matrix.Elements {
+func (m *matrixImpl) All() elements.Curor {
 	// TODO: Implement this.
 	return nil
 }
 
-func (m *matrixImpl) NonZeros() matrix.Elements {
+func (m *matrixImpl) NonZeros() elements.Curor {
 	// TODO: Implement this.
 	return nil
 }
 
-func (m *matrixImpl) Diagonal() matrix.Elements {
+func (m *matrixImpl) Diagonal() elements.Curor {
 	// TODO: Implement this.
 	return nil
 }
