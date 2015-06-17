@@ -32,3 +32,9 @@ func IsZeros(m Matrix) bool {
 func IsSquare(m Matrix) bool {
 	return m.Rows() == m.Columns()
 }
+
+// Check whether a matrix "m" is diagonal or not.
+func IsDiagonal(m Matrix) bool {
+	// TODO: Implement.
+	return false
+}
