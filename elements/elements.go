@@ -17,4 +17,4 @@ type Curor interface {
 /*
 "ElementMatcher" is a type of functions to be used check an element satisfies arbitary condition.
 */
-type ElementMatcher func(element float64, row, column int) bool
+type Matcher func(element float64, row, column int) bool
