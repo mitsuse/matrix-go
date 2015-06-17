@@ -1,7 +1,7 @@
 package matrix
 
 /*
-Elements" interface is an iterator for elements of matrix.
+"Elements" interface is an iterator for elements of matrix.
 Some implementations of "Elements" iterate all elements,
 and others iterates elements satisfying conditions.
 */

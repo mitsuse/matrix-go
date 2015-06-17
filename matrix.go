@@ -76,7 +76,7 @@ func IsIdentity(m Matrix) bool {
 	return IsSpecialDiagonal(m, match)
 }
 
-// Check whether "m" is scalr matrix or not.
+// Check whether "m" is scalar matrix or not.
 func IsScalar(m Matrix) bool {
 	if rows, columns := m.Shape(); rows == 0 && columns == 0 {
 		return true
