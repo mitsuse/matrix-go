@@ -71,6 +71,11 @@ func (m *matrixImpl) NonZeros() matrix.Elements {
 	return nil
 }
 
+func (m *matrixImpl) Diagonal() matrix.Elements {
+	// TODO: Implement this.
+	return nil
+}
+
 func (m *matrixImpl) Get(row, column int) (element float64) {
 	rows, columns := m.Shape()
 
