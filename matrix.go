@@ -36,8 +36,8 @@ func IsSquare(m Matrix) bool {
 	return m.Rows() == m.Columns()
 }
 
-// Check whether a matrix "m" is diagonal or not.
-func IsDiagonal(m Matrix) bool {
+// Check whether "m" is special diagonal matrix satisfying arbitary condition.
+func IsSpecialDiagonal(m Matrix, match ElementMatcher) bool {
 	if !IsSquare(m) {
 		return false
 	}
@@ -46,12 +46,21 @@ func IsDiagonal(m Matrix) bool {
 
 	for elements.HasNext() {
 		element, row, column := elements.Get()
-		if row != column && element != 0 {
+		if !match(element, row, column) {
 			return false
 		}
 	}
 
 	return true
+}
+
+// Check whether a matrix "m" is diagonal or not.
+func IsDiagonal(m Matrix) bool {
+	match := func(element float64, row, column int) bool {
+		return row != column && element != 0
+	}
+
+	return IsSpecialDiagonal(m, match)
 }
 
 // Check whether "m" is identity matrix or not.
