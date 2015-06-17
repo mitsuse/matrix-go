@@ -53,3 +53,15 @@ func IsDiagonal(m Matrix) bool {
 
 	return true
 }
+
+// Check whether "m" is identity matrix or not.
+func IsIdentity(m Matrix) bool {
+	// TODO: Implement.
+	return false
+}
+
+// Check whether "m" is scalr matrix or not.
+func IsScalar(m Matrix) bool {
+	// TODO: Implement.
+	return false
+}
