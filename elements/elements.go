@@ -1,11 +1,11 @@
 package elements
 
 /*
-"Elements" interface is an iterator for elements of matrix.
-Some implementations of "Elements" iterate all elements,
+"Curor" interface is an iterator for elements of matrix.
+Some implementations of "Curor" iterate all elements,
 and others iterates elements satisfying conditions.
 */
-type Elements interface {
+type Curor interface {
 	// Read the next element and return "true".
 	// If the next element doesn't exist, return "false".
 	HasNext() bool

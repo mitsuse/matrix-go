@@ -61,17 +61,17 @@ func (m *matrixImpl) Columns() (columns int) {
 	return m.columns
 }
 
-func (m *matrixImpl) All() elements.Elements {
+func (m *matrixImpl) All() elements.Curor {
 	// TODO: Implement this.
 	return nil
 }
 
-func (m *matrixImpl) NonZeros() elements.Elements {
+func (m *matrixImpl) NonZeros() elements.Curor {
 	// TODO: Implement this.
 	return nil
 }
 
-func (m *matrixImpl) Diagonal() elements.Elements {
+func (m *matrixImpl) Diagonal() elements.Curor {
 	// TODO: Implement this.
 	return nil
 }
