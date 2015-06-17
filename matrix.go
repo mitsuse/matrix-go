@@ -3,6 +3,10 @@ Package "matrix" provides types and operations for matrix manipulation.
 */
 package matrix
 
+import (
+	"github.com/mitsuse/matrix-go/elements"
+)
+
 type Matrix interface {
 	// Return the shape of matrix, which consists of the "rows" and the "columns".
 	Shape() (rows, columns int)
@@ -14,13 +18,13 @@ type Matrix interface {
 	Columns() (columns int)
 
 	// Create and return an iterator for all elements.
-	All() Elements
+	All() elements.Elements
 
 	// Create and return an iterator for non-zero elements.
-	NonZeros() Elements
+	NonZeros() elements.Elements
 
 	// Create and return an iterator for diagonal elements.
-	Diagonal() Elements
+	Diagonal() elements.Elements
 
 	// Get an element of matrix speficied with "row" and "column".
 	Get(row, column int) (element float64)
@@ -37,7 +41,7 @@ func IsSquare(m Matrix) bool {
 }
 
 // Check whether "m" is special diagonal matrix satisfying arbitary condition.
-func IsSpecialDiagonal(m Matrix, match ElementMatcher) bool {
+func IsSpecialDiagonal(m Matrix, match elements.ElementMatcher) bool {
 	if !IsSquare(m) {
 		return false
 	}

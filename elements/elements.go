@@ -1,4 +1,4 @@
-package matrix
+package elements
 
 /*
 "Elements" interface is an iterator for elements of matrix.
