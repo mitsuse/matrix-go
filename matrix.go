@@ -28,6 +28,9 @@ type Matrix interface {
 
 	// Get an element of matrix speficied with "row" and "column".
 	Get(row, column int) (element float64)
+
+	// Update the element of matrix speficied with "row" and "column".
+	Update(row, column int, element float64) Matrix
 }
 
 // Check whether "m" is zero matrix or not.
