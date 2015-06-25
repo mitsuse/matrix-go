@@ -1,23 +1,23 @@
-package dense
+package validates
 
 import (
 	"fmt"
 )
 
-func rowsShouldBePositiveNumber(rows int) {
+func RowsShouldBePositiveNumber(rows int) {
 	shouldBePositiveNumber(rows, "rows")
 }
 
-func columnShouldBePositiveNumber(columns int) {
+func ColumnShouldBePositiveNumber(columns int) {
 	shouldBePositiveNumber(columns, "columns")
 }
 
-func rowShouldBeInRows(row, rows int) {
+func RowShouldBeInRows(row, rows int) {
 	shouldBeNaturalNumber(row, "row")
 	shouldBeSmallerThan(row, rows, "rows")
 }
 
-func columnShouldBeInColumns(column, columns int) {
+func ColumnShouldBeInColumns(column, columns int) {
 	shouldBeNaturalNumber(column, "column")
 	shouldBeSmallerThan(column, columns, "columns")
 }
