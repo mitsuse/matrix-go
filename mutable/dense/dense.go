@@ -9,6 +9,7 @@ import (
 
 	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/elements"
+	"github.com/mitsuse/matrix-go/validates"
 )
 
 type matrixImpl struct {
@@ -18,8 +19,8 @@ type matrixImpl struct {
 }
 
 func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
-	rowsShouldBePositiveNumber(rows)
-	columnShouldBePositiveNumber(rows)
+	validates.RowsShouldBePositiveNumber(rows)
+	validates.ColumnShouldBePositiveNumber(rows)
 
 	constructor := func(elements ...float64) (matrix.Matrix, error) {
 		size := rows * columns
@@ -79,8 +80,8 @@ func (m *matrixImpl) Diagonal() elements.Curor {
 func (m *matrixImpl) Get(row, column int) (element float64) {
 	rows, columns := m.Shape()
 
-	rowShouldBeInRows(row, rows)
-	columnShouldBeInColumns(column, columns)
+	validates.RowShouldBeInRows(row, rows)
+	validates.ColumnShouldBeInColumns(column, columns)
 
 	return m.elements[row*columns+column]
 }
@@ -88,8 +89,8 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 	rows, columns := m.Shape()
 
-	rowShouldBeInRows(row, rows)
-	columnShouldBeInColumns(column, columns)
+	validates.RowShouldBeInRows(row, rows)
+	validates.ColumnShouldBeInColumns(column, columns)
 
 	m.elements[row*columns+column] = element
 

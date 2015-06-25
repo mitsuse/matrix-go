@@ -2,6 +2,7 @@ package matrix
 
 import (
 	"github.com/mitsuse/matrix-go/elements"
+	"github.com/mitsuse/matrix-go/validates"
 )
 
 type transposeMatrix struct {
@@ -49,10 +50,20 @@ func (t *transposeMatrix) Diagonal() elements.Curor {
 }
 
 func (t *transposeMatrix) Get(row, column int) (element float64) {
+	rows, columns := t.Shape()
+
+	validates.RowShouldBeInRows(row, rows)
+	validates.ColumnShouldBeInColumns(column, columns)
+
 	return t.m.Get(column, row)
 }
 
 func (t *transposeMatrix) Update(row, column int, element float64) Matrix {
+	rows, columns := t.Shape()
+
+	validates.RowShouldBeInRows(row, rows)
+	validates.ColumnShouldBeInColumns(column, columns)
+
 	return t.m.Update(column, row, element)
 }
 
