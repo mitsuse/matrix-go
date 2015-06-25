@@ -31,6 +31,9 @@ type Matrix interface {
 
 	// Update the element of matrix speficied with "row" and "column".
 	Update(row, column int, element float64) Matrix
+
+	// Get the transpose matrix.
+	Transpose() Matrix
 }
 
 // Check whether "m" is zero matrix or not.
