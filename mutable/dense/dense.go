@@ -97,6 +97,5 @@ func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 }
 
 func (m *matrixImpl) Transpose() matrix.Matrix {
-	// TODO: Implement.
-	return nil
+	return matrix.Transpose(m)
 }
