@@ -3,26 +3,14 @@ package dense
 import (
 	"fmt"
 	"testing"
+
+	"github.com/mitsuse/matrix-go/validates"
 )
 
 type constructTest struct {
 	rows     int
 	columns  int
 	elements []float64
-}
-
-func createErroneousConstructTestSeq() []*constructTest {
-	testSeq := []*constructTest{
-		&constructTest{rows: 2, columns: 2, elements: []float64{0, 1, 2}},
-		&constructTest{rows: 1, columns: 2, elements: []float64{0, 1, 2}},
-		&constructTest{rows: 2, columns: 1, elements: []float64{0}},
-		&constructTest{rows: 3, columns: 1, elements: []float64{0, 1, 2, 3}},
-		&constructTest{rows: 1, columns: 3, elements: []float64{0}},
-		&constructTest{rows: 3, columns: 2, elements: []float64{0, 1, 2}},
-		&constructTest{rows: 2, columns: 3, elements: []float64{0, 1, 2, 3}},
-	}
-
-	return testSeq
 }
 
 func createShapeTestSeq() []*constructTest {
@@ -39,15 +27,95 @@ func createShapeTestSeq() []*constructTest {
 	return testSeq
 }
 
-func TestNewFailedWithTheWrongNumberOfElements(t *testing.T) {
-	testSeq := createErroneousConstructTestSeq()
+func TestNewCreatesDenseMatrix(t *testing.T) {
+	test := &constructTest{
+		rows:     3,
+		columns:  2,
+		elements: []float64{0, 1, 2, 3, 4, 5},
+	}
+
+	_, err := New(test.rows, test.columns)(test.elements...)
+	if err != nil {
+		t.Error(
+			"The number of \"elements\" equals to \"rows\" * \"columns\",",
+			"but matrix creation failed.",
+		)
+		t.Errorf(
+			"# elements = %v, rows = %v, columns = %v",
+			test.elements,
+			test.rows,
+			test.columns,
+		)
+		t.FailNow()
+	}
+}
+
+func TestNewFailsForWrongNumberOfElements(t *testing.T) {
+	testSeq := []*constructTest{
+		&constructTest{
+			rows:     3,
+			columns:  1,
+			elements: []float64{0, 1, 2, 3},
+		},
+		&constructTest{
+			rows:     1,
+			columns:  3,
+			elements: []float64{0},
+		},
+	}
 
 	for _, test := range testSeq {
 		_, err := New(test.rows, test.columns)(test.elements...)
 		if err == nil {
-			template := "The number of %q doesn't equal to %q * %q, but an error caused."
-			t.Fatalf(template, "elements", "rows", "columns")
+			t.Error("The number of \"elements\" should equal to \"rows\" * \"columns\".")
+			t.Errorf(
+				"# elements = %v, rows = %v, columns = %v",
+				test.elements,
+				test.rows,
+				test.columns,
+			)
+			t.FailNow()
 		}
+	}
+}
+
+func TestNewFailsNonPositiveRowsOrColumns(t *testing.T) {
+	testSeq := []*constructTest{
+		&constructTest{
+			rows:     -3,
+			columns:  2,
+			elements: []float64{0, 1, 2, 3, 4, 5},
+		},
+		&constructTest{
+			rows:     3,
+			columns:  -2,
+			elements: []float64{0, 1, 2, 3, 4, 5},
+		},
+		&constructTest{
+			rows:     -3,
+			columns:  -2,
+			elements: []float64{0, 1, 2, 3, 4, 5},
+		},
+	}
+
+	for _, test := range testSeq {
+		func() {
+			defer func(test *constructTest) {
+				if p := recover(); p == nil || p != validates.NON_POSITIVE_SIZE_PANIC {
+					t.Error(
+						"Non-positive rows or columns should make the goroutine panic.",
+					)
+					t.Errorf(
+						"# elements = %v, rows = %v, columns = %v",
+						test.elements,
+						test.rows,
+						test.columns,
+					)
+					t.FailNow()
+				}
+			}(test)
+			New(test.rows, test.columns)(test.elements...)
+		}()
 	}
 }
 

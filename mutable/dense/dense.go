@@ -20,7 +20,7 @@ type matrixImpl struct {
 
 func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 	validates.RowsShouldBePositiveNumber(rows)
-	validates.ColumnShouldBePositiveNumber(rows)
+	validates.ColumnShouldBePositiveNumber(columns)
 
 	constructor := func(elements ...float64) (matrix.Matrix, error) {
 		size := rows * columns
