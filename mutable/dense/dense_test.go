@@ -119,37 +119,29 @@ func TestNewFailsNonPositiveRowsOrColumns(t *testing.T) {
 	}
 }
 
-func TestRowsSucceedsAlways(t *testing.T) {
-	testSeq := createShapeTestSeq()
+func TestRowsReturnsTheNumberOfRows(t *testing.T) {
+	test := &constructTest{
+		rows:     3,
+		columns:  2,
+		elements: []float64{0, 1, 2, 3, 4, 5},
+	}
 
-	for _, test := range testSeq {
-		m, err := New(test.rows, test.columns)(test.elements...)
-		if err != nil {
-			template := "The number of %q equals to %q * %q, but an error caused."
-			t.Fatalf(template, "elements", "rows", "columns")
-		}
-
-		if rows := m.Rows(); rows != test.rows {
-			template := "The \"rows\" should be %d, but is %d."
-			t.Fatalf(template, test.rows, rows)
-		}
+	m, _ := New(test.rows, test.columns)(test.elements...)
+	if rows := m.Rows(); rows != test.rows {
+		t.Fatalf("The \"rows\" should be %d, but is %d.", test.rows, rows)
 	}
 }
 
-func TestColumnsSucceedsAlways(t *testing.T) {
-	testSeq := createShapeTestSeq()
+func TestColumnsReturnsTheNumberOfColumns(t *testing.T) {
+	test := &constructTest{
+		rows:     3,
+		columns:  2,
+		elements: []float64{0, 1, 2, 3, 4, 5},
+	}
 
-	for _, test := range testSeq {
-		m, err := New(test.rows, test.columns)(test.elements...)
-		if err != nil {
-			template := "The number of %q equals to %q * %q, but an error caused."
-			t.Fatalf(template, "elements", "rows", "columns")
-		}
-
-		if columns := m.Columns(); columns != test.columns {
-			template := "The \"columns\" should be %d, but is %d."
-			t.Fatalf(template, test.columns, columns)
-		}
+	m, _ := New(test.rows, test.columns)(test.elements...)
+	if columns := m.Columns(); columns != test.columns {
+		t.Fatalf("The \"columns\" should be %d, but is %d.", test.columns, columns)
 	}
 }
 
