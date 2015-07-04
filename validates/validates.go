@@ -5,16 +5,8 @@ const (
 	OUT_OF_RANGE_PANIC
 )
 
-func RowsShouldBePositiveNumber(rows int) {
-	if isPositiveNumber(rows) {
-		return
-	}
-
-	panic(NON_POSITIVE_SIZE_PANIC)
-}
-
-func ColumnShouldBePositiveNumber(columns int) {
-	if isPositiveNumber(columns) {
+func ShapeShouldBePositive(row, column int) {
+	if isPositiveNumber(row) && isPositiveNumber(column) {
 		return
 	}
 

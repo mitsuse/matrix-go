@@ -19,8 +19,7 @@ type matrixImpl struct {
 }
 
 func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
-	validates.RowsShouldBePositiveNumber(rows)
-	validates.ColumnShouldBePositiveNumber(columns)
+	validates.ShapeShouldBePositive(rows, columns)
 
 	constructor := func(elements ...float64) (matrix.Matrix, error) {
 		size := rows * columns
