@@ -151,7 +151,7 @@ type elementTest struct {
 	element float64
 }
 
-func TestUpdateAndGetSucceed(t *testing.T) {
+func TesUpdateReplacesElement(t *testing.T) {
 	testSeq := []*elementTest{
 		&elementTest{row: 0, column: 0, element: 1},
 		&elementTest{row: 1, column: 0, element: 2},
@@ -167,15 +167,24 @@ func TestUpdateAndGetSucceed(t *testing.T) {
 
 	for _, test := range testSeq {
 		if element := m.Get(test.row, test.column); element != 0 {
-			template := "\"m.Get(%d, %d)\" should return 0, but returns %v."
-			t.Fatalf(template, test.row, test.column, element)
+			t.Fatalf(
+				"The element at (%d, %d) should be 0 before updating, but is %v.",
+				test.row,
+				test.column,
+				test.element,
+			)
 		}
 
 		m.Update(test.row, test.column, test.element)
 
 		if element := m.Get(test.row, test.column); element != test.element {
-			template := "\"m.Get(%d, %d)\" should return %v, but returns %v."
-			t.Fatalf(template, test.row, test.column, test.element, element)
+			t.Fatalf(
+				"The element at (%d, %d) should be %v after updating, but is %v.",
+				test.row,
+				test.column,
+				test.element,
+				element,
+			)
 		}
 	}
 }
