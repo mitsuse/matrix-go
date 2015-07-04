@@ -79,7 +79,7 @@ func TestNewFailsForWrongNumberOfElements(t *testing.T) {
 	}
 }
 
-func TestNewFailsNonPositiveRowsOrColumns(t *testing.T) {
+func TestNewFailsForNonPositiveRowsOrColumns(t *testing.T) {
 	testSeq := []*constructTest{
 		&constructTest{
 			rows:     -3,
