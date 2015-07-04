@@ -52,8 +52,7 @@ func (t *transposeMatrix) Diagonal() elements.Curor {
 func (t *transposeMatrix) Get(row, column int) (element float64) {
 	rows, columns := t.Shape()
 
-	validates.RowShouldBeInRows(row, rows)
-	validates.ColumnShouldBeInColumns(column, columns)
+	validates.IndexShouldBeInRange(rows, columns, row, column)
 
 	return t.m.Get(column, row)
 }
@@ -61,8 +60,7 @@ func (t *transposeMatrix) Get(row, column int) (element float64) {
 func (t *transposeMatrix) Update(row, column int, element float64) Matrix {
 	rows, columns := t.Shape()
 
-	validates.RowShouldBeInRows(row, rows)
-	validates.ColumnShouldBeInColumns(column, columns)
+	validates.IndexShouldBeInRange(rows, columns, row, column)
 
 	return t.m.Update(column, row, element)
 }

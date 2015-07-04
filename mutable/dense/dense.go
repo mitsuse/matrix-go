@@ -79,8 +79,7 @@ func (m *matrixImpl) Diagonal() elements.Curor {
 func (m *matrixImpl) Get(row, column int) (element float64) {
 	rows, columns := m.Shape()
 
-	validates.RowShouldBeInRows(row, rows)
-	validates.ColumnShouldBeInColumns(column, columns)
+	validates.IndexShouldBeInRange(rows, columns, row, column)
 
 	return m.elements[row*columns+column]
 }
@@ -88,8 +87,7 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 	rows, columns := m.Shape()
 
-	validates.RowShouldBeInRows(row, rows)
-	validates.ColumnShouldBeInColumns(column, columns)
+	validates.IndexShouldBeInRange(rows, columns, row, column)
 
 	m.elements[row*columns+column] = element
 

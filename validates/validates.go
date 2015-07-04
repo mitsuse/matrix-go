@@ -13,26 +13,10 @@ func ShapeShouldBePositive(row, column int) {
 	panic(NON_POSITIVE_SIZE_PANIC)
 }
 
-func RowShouldBeInRows(row, rows int) {
-	if isNaturalNumber(row) && isSmallerThan(row, rows) {
+func IndexShouldBeInRange(rows, columns, row, column int) {
+	if (0 <= row && row < rows) && (0 <= column && column < columns) {
 		return
 	}
 
 	panic(OUT_OF_RANGE_PANIC)
-}
-
-func ColumnShouldBeInColumns(column, columns int) {
-	if isNaturalNumber(column) && isSmallerThan(column, columns) {
-		return
-	}
-
-	panic(OUT_OF_RANGE_PANIC)
-}
-
-func isNaturalNumber(x int) bool {
-	return x >= 0
-}
-
-func isSmallerThan(x, limit int) bool {
-	return x < limit
 }
