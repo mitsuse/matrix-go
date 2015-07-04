@@ -1,7 +1,6 @@
 package dense
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/mitsuse/matrix-go/validates"
@@ -194,10 +193,7 @@ func TestGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", rows, "rows", rows)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -209,10 +205,7 @@ func TestGetFailsByAccessingWithNegativeRow(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "row")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" is negative, but no panic causes.")
 		}
 	}()
@@ -224,10 +217,7 @@ func TestGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", columns, "columns", columns)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -239,10 +229,7 @@ func TestGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "column")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" is negative, but no panic causes.")
 		}
 	}()
@@ -254,10 +241,7 @@ func TestUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", rows, "rows", rows)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -269,10 +253,7 @@ func TestUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "row")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" is negative, but no panic causes.")
 		}
 	}()
@@ -284,10 +265,7 @@ func TestUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", columns, "columns", columns)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -299,10 +277,7 @@ func TestUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 	m := Zeros(rows, columns)
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "column")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" is negative, but no panic causes.")
 		}
 	}()
@@ -423,10 +398,7 @@ func TestTransposeGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", columns, "rows", columns)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -439,10 +411,7 @@ func TestTransposeGetFailsByAccessingWithNegativeRow(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "row")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" is negative, but no panic causes.")
 		}
 	}()
@@ -455,10 +424,7 @@ func TestTransposeGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", rows, "columns", rows)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -471,10 +437,7 @@ func TestTransposeGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "column")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" is negative, but no panic causes.")
 		}
 	}()
@@ -487,10 +450,7 @@ func TestTransposeUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", columns, "rows", columns)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -503,10 +463,7 @@ func TestTransposeUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "row")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" is negative, but no panic causes.")
 		}
 	}()
@@ -519,10 +476,7 @@ func TestTransposeUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%d should be smaller than %q %d.", rows, "columns", rows)
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" exceeds the limit, but no panic causes.")
 		}
 	}()
@@ -535,10 +489,7 @@ func TestTransposeUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 	tr := m.Transpose()
 
 	defer func() {
-		message := fmt.Sprintf("%q should be a natural number.", "column")
-		r := recover()
-
-		if r != nil && r != message {
+		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" is negative, but no panic causes.")
 		}
 	}()

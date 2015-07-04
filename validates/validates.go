@@ -1,11 +1,8 @@
 package validates
 
-import (
-	"fmt"
-)
-
 const (
 	NON_POSITIVE_SIZE_PANIC = iota
+	OUT_OF_RANGE_PANIC
 )
 
 func RowsShouldBePositiveNumber(rows int) {
@@ -25,33 +22,29 @@ func ColumnShouldBePositiveNumber(columns int) {
 }
 
 func RowShouldBeInRows(row, rows int) {
-	shouldBeNaturalNumber(row, "row")
-	shouldBeSmallerThan(row, rows, "rows")
+	if isNaturalNumber(row) && isSmallerThan(row, rows) {
+		return
+	}
+
+	panic(OUT_OF_RANGE_PANIC)
 }
 
 func ColumnShouldBeInColumns(column, columns int) {
-	shouldBeNaturalNumber(column, "column")
-	shouldBeSmallerThan(column, columns, "columns")
+	if isNaturalNumber(column) && isSmallerThan(column, columns) {
+		return
+	}
+
+	panic(OUT_OF_RANGE_PANIC)
 }
 
 func isPositiveNumber(x int) bool {
 	return x > 0
 }
 
-func shouldBeNaturalNumber(x int, name string) {
-	if x >= 0 {
-		return
-	}
-
-	message := fmt.Sprintf("%q should be a natural number.", name)
-	panic(message)
+func isNaturalNumber(x int) bool {
+	return x >= 0
 }
 
-func shouldBeSmallerThan(x, limit int, name string) {
-	if x < limit {
-		return
-	}
-
-	message := fmt.Sprintf("%d should be smaller than %q %d.", x, name, limit)
-	panic(message)
+func isSmallerThan(x, limit int) bool {
+	return x < limit
 }
