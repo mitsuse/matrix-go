@@ -6,7 +6,7 @@ const (
 )
 
 func ShapeShouldBePositive(row, column int) {
-	if isPositiveNumber(row) && isPositiveNumber(column) {
+	if row > 0 && column > 0 {
 		return
 	}
 
@@ -27,10 +27,6 @@ func ColumnShouldBeInColumns(column, columns int) {
 	}
 
 	panic(OUT_OF_RANGE_PANIC)
-}
-
-func isPositiveNumber(x int) bool {
-	return x > 0
 }
 
 func isNaturalNumber(x int) bool {
