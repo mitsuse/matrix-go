@@ -1,107 +1,52 @@
-package dense
+package transpose
 
 import (
 	"testing"
 
+	"github.com/mitsuse/matrix-go/mutable/dense"
 	"github.com/mitsuse/matrix-go/validates"
 )
+
+func TestNewTwiceReturnsTheOriginalMatrix(t *testing.T) {
+	rows, columns := 4, 3
+
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
+	n := New(tr)
+
+	mRow, mColumn := m.Shape()
+	trRow, trColumn := tr.Shape()
+	nRow, nColumn := n.Shape()
+
+	if mRow == trRow || mColumn == trColumn {
+		t.Fatalf(
+			"The shape of transpose matrix should be (%d, %d), but is (%d, %d).",
+			mColumn, mRow,
+			trRow, trColumn,
+		)
+	}
+
+	if _, isTransposed := tr.(*transposeMatrix); !isTransposed {
+		t.Fatal("The type of transpose matrix should be transposed.")
+	}
+
+	if mRow != nRow || mColumn != nColumn {
+		t.Fatalf(
+			"The shape of re-transposed matrix should be (%d, %d), but (%d, %d).",
+			mRow, mColumn,
+			nRow, nColumn,
+		)
+	}
+
+	if _, isTransposed := n.(*transposeMatrix); isTransposed {
+		t.Fatal("The type of re-transpose matrix should not be dense.")
+	}
+}
 
 type constructTest struct {
 	rows     int
 	columns  int
 	elements []float64
-}
-
-func TestNewCreatesDenseMatrix(t *testing.T) {
-	test := &constructTest{
-		rows:     3,
-		columns:  2,
-		elements: []float64{0, 1, 2, 3, 4, 5},
-	}
-
-	_, err := New(test.rows, test.columns)(test.elements...)
-	if err != nil {
-		t.Error(
-			"The number of \"elements\" equals to \"rows\" * \"columns\",",
-			"but matrix creation failed.",
-		)
-		t.Errorf(
-			"# elements = %v, rows = %v, columns = %v",
-			test.elements,
-			test.rows,
-			test.columns,
-		)
-		t.FailNow()
-	}
-}
-
-func TestNewFailsForWrongNumberOfElements(t *testing.T) {
-	testSeq := []*constructTest{
-		&constructTest{
-			rows:     3,
-			columns:  1,
-			elements: []float64{0, 1, 2, 3},
-		},
-		&constructTest{
-			rows:     1,
-			columns:  3,
-			elements: []float64{0},
-		},
-	}
-
-	for _, test := range testSeq {
-		_, err := New(test.rows, test.columns)(test.elements...)
-		if err == nil {
-			t.Error("The number of \"elements\" should equal to \"rows\" * \"columns\".")
-			t.Errorf(
-				"# elements = %v, rows = %v, columns = %v",
-				test.elements,
-				test.rows,
-				test.columns,
-			)
-			t.FailNow()
-		}
-	}
-}
-
-func TestNewFailsForNonPositiveRowsOrColumns(t *testing.T) {
-	testSeq := []*constructTest{
-		&constructTest{
-			rows:     -3,
-			columns:  2,
-			elements: []float64{0, 1, 2, 3, 4, 5},
-		},
-		&constructTest{
-			rows:     3,
-			columns:  -2,
-			elements: []float64{0, 1, 2, 3, 4, 5},
-		},
-		&constructTest{
-			rows:     -3,
-			columns:  -2,
-			elements: []float64{0, 1, 2, 3, 4, 5},
-		},
-	}
-
-	for _, test := range testSeq {
-		func() {
-			defer func(test *constructTest) {
-				if p := recover(); p == nil || p != validates.NON_POSITIVE_SIZE_PANIC {
-					t.Error(
-						"Non-positive rows or columns should make the goroutine panic.",
-					)
-					t.Errorf(
-						"# elements = %v, rows = %v, columns = %v",
-						test.elements,
-						test.rows,
-						test.columns,
-					)
-					t.FailNow()
-				}
-			}(test)
-			New(test.rows, test.columns)(test.elements...)
-		}()
-	}
 }
 
 func TestRowsReturnsTheNumberOfRows(t *testing.T) {
@@ -111,9 +56,11 @@ func TestRowsReturnsTheNumberOfRows(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	m, _ := New(test.rows, test.columns)(test.elements...)
-	if rows := m.Rows(); rows != test.rows {
-		t.Fatalf("The \"rows\" should be %d, but is %d.", test.rows, rows)
+	m, _ := dense.New(test.rows, test.columns)(test.elements...)
+	tr := New(m)
+
+	if rows := tr.Rows(); rows != test.columns {
+		t.Fatalf("The \"rows\" should be %d, but is %d.", test.columns, rows)
 	}
 }
 
@@ -124,9 +71,11 @@ func TestColumnsReturnsTheNumberOfColumns(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	m, _ := New(test.rows, test.columns)(test.elements...)
-	if columns := m.Columns(); columns != test.columns {
-		t.Fatalf("The \"columns\" should be %d, but is %d.", test.columns, columns)
+	m, _ := dense.New(test.rows, test.columns)(test.elements...)
+	tr := New(m)
+
+	if columns := tr.Columns(); columns != test.rows {
+		t.Fatalf("The \"columns\" should be %d, but is %d.", test.rows, columns)
 	}
 }
 
@@ -148,10 +97,11 @@ func TestUpdateReplacesElement(t *testing.T) {
 	}
 
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	for _, test := range testSeq {
-		if element := m.Get(test.row, test.column); element != 0 {
+		if element := tr.Get(test.row, test.column); element != 0 {
 			t.Fatalf(
 				"The element at (%d, %d) should be 0 before updating, but is %v.",
 				test.row,
@@ -160,9 +110,9 @@ func TestUpdateReplacesElement(t *testing.T) {
 			)
 		}
 
-		m.Update(test.row, test.column, test.element)
+		tr.Update(test.row, test.column, test.element)
 
-		if element := m.Get(test.row, test.column); element != test.element {
+		if element := tr.Get(test.row, test.column); element != test.element {
 			t.Fatalf(
 				"The element at (%d, %d) should be %v after updating, but is %v.",
 				test.row,
@@ -176,96 +126,104 @@ func TestUpdateReplacesElement(t *testing.T) {
 
 func TestGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" exceeds the limit, but no panic causes.")
 		}
 	}()
-	m.Get(rows, 0)
+	tr.Get(columns, 0)
 }
 
 func TestGetFailsByAccessingWithNegativeRow(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" is negative, but no panic causes.")
 		}
 	}()
-	m.Get(-1, 0)
+	tr.Get(-1, 0)
 }
 
 func TestGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" exceeds the limit, but no panic causes.")
 		}
 	}()
-	m.Get(0, columns)
+	tr.Get(0, rows)
 }
 
 func TestGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" is negative, but no panic causes.")
 		}
 	}()
-	m.Get(0, -1)
+	tr.Get(0, -1)
 }
 
 func TestUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" exceeds the limit, but no panic causes.")
 		}
 	}()
-	m.Update(rows, 0, 0)
+	tr.Update(columns, 0, 0)
 }
 
 func TestUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"row\" is negative, but no panic causes.")
 		}
 	}()
-	m.Update(-1, 0, 0)
+	tr.Update(-1, 0, 0)
 }
 
 func TestUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" exceeds the limit, but no panic causes.")
 		}
 	}()
-	m.Update(0, columns, 0)
+	tr.Update(0, rows, 0)
 }
 
 func TestUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
 
 	defer func() {
 		if r := recover(); r != nil && r != validates.OUT_OF_RANGE_PANIC {
 			t.Fatalf("The \"column\" is negative, but no panic causes.")
 		}
 	}()
-	m.Update(0, -1, 0)
+	tr.Update(0, -1, 0)
 }

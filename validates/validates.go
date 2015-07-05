@@ -1,50 +1,22 @@
 package validates
 
-import (
-	"fmt"
+const (
+	NON_POSITIVE_SIZE_PANIC = iota
+	OUT_OF_RANGE_PANIC
 )
 
-func RowsShouldBePositiveNumber(rows int) {
-	shouldBePositiveNumber(rows, "rows")
-}
-
-func ColumnShouldBePositiveNumber(columns int) {
-	shouldBePositiveNumber(columns, "columns")
-}
-
-func RowShouldBeInRows(row, rows int) {
-	shouldBeNaturalNumber(row, "row")
-	shouldBeSmallerThan(row, rows, "rows")
-}
-
-func ColumnShouldBeInColumns(column, columns int) {
-	shouldBeNaturalNumber(column, "column")
-	shouldBeSmallerThan(column, columns, "columns")
-}
-
-func shouldBePositiveNumber(x int, name string) {
-	if x > 0 {
+func ShapeShouldBePositive(row, column int) {
+	if row > 0 && column > 0 {
 		return
 	}
 
-	message := fmt.Sprintf("%q should be a positive number.", name)
-	panic(message)
+	panic(NON_POSITIVE_SIZE_PANIC)
 }
 
-func shouldBeNaturalNumber(x int, name string) {
-	if x >= 0 {
+func IndexShouldBeInRange(rows, columns, row, column int) {
+	if (0 <= row && row < rows) && (0 <= column && column < columns) {
 		return
 	}
 
-	message := fmt.Sprintf("%q should be a natural number.", name)
-	panic(message)
-}
-
-func shouldBeSmallerThan(x, limit int, name string) {
-	if x < limit {
-		return
-	}
-
-	message := fmt.Sprintf("%d should be smaller than %q %d.", x, name, limit)
-	panic(message)
+	panic(OUT_OF_RANGE_PANIC)
 }

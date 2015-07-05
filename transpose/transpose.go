@@ -1,21 +1,24 @@
-package matrix
+/*
+Package "transpose" provides a function to create the transpose view of a matrix.
+*/
+package transpose
 
 import (
+	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/elements"
 	"github.com/mitsuse/matrix-go/validates"
 )
 
 type transposeMatrix struct {
-	m Matrix
+	m matrix.Matrix
 }
 
-func Transpose(m Matrix) Matrix {
-	t, transposed := m.(*transposeMatrix)
-	if transposed {
+func New(m matrix.Matrix) matrix.Matrix {
+	if t, transposed := m.(*transposeMatrix); transposed {
 		return t.m
 	}
 
-	t = &transposeMatrix{
+	t := &transposeMatrix{
 		m: m,
 	}
 
@@ -52,21 +55,15 @@ func (t *transposeMatrix) Diagonal() elements.Curor {
 func (t *transposeMatrix) Get(row, column int) (element float64) {
 	rows, columns := t.Shape()
 
-	validates.RowShouldBeInRows(row, rows)
-	validates.ColumnShouldBeInColumns(column, columns)
+	validates.IndexShouldBeInRange(rows, columns, row, column)
 
 	return t.m.Get(column, row)
 }
 
-func (t *transposeMatrix) Update(row, column int, element float64) Matrix {
+func (t *transposeMatrix) Update(row, column int, element float64) matrix.Matrix {
 	rows, columns := t.Shape()
 
-	validates.RowShouldBeInRows(row, rows)
-	validates.ColumnShouldBeInColumns(column, columns)
+	validates.IndexShouldBeInRange(rows, columns, row, column)
 
 	return t.m.Update(column, row, element)
-}
-
-func (t *transposeMatrix) Transpose() Matrix {
-	return Transpose(t)
 }
