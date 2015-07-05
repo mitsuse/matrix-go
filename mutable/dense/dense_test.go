@@ -136,7 +136,7 @@ type elementTest struct {
 	element float64
 }
 
-func TesUpdateReplacesElement(t *testing.T) {
+func TestUpdateReplacesElement(t *testing.T) {
 	testSeq := []*elementTest{
 		&elementTest{row: 0, column: 0, element: 1},
 		&elementTest{row: 1, column: 0, element: 2},
