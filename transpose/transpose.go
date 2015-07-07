@@ -37,17 +37,17 @@ func (t *transposeMatrix) Columns() (columns int) {
 	return t.m.Rows()
 }
 
-func (t *transposeMatrix) All() elements.Curor {
+func (t *transposeMatrix) All() elements.Cursor {
 	// TODO: Implement this.
 	return nil
 }
 
-func (t *transposeMatrix) NonZeros() elements.Curor {
+func (t *transposeMatrix) NonZeros() elements.Cursor {
 	// TODO: Implement this.
 	return nil
 }
 
-func (t *transposeMatrix) Diagonal() elements.Curor {
+func (t *transposeMatrix) Diagonal() elements.Cursor {
 	// TODO: Implement this.
 	return nil
 }
