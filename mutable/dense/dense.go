@@ -66,8 +66,7 @@ func (m *matrixImpl) All() elements.Cursor {
 }
 
 func (m *matrixImpl) NonZeros() elements.Cursor {
-	// TODO: Implement this.
-	return nil
+	return newNonZerosCursor(m)
 }
 
 func (m *matrixImpl) Diagonal() elements.Cursor {
