@@ -383,6 +383,34 @@ func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
 	}
 }
 
+func TestMatrixIsZeros(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+	)
+
+	if isZeros := matrix.IsZeros(m); !isZeros {
+		t.Error("This matrix should be zeros.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsNotZeros(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		4, 5, 0,
+		2, 3, 4,
+		0, 1, 2,
+	)
+
+	if isZeros := matrix.IsZeros(m); isZeros {
+		t.Error("This matrix should not be zeros.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
 func TestMatrixIsSquare(t *testing.T) {
 	m, _ := New(4, 4)(
 		0, 1, 2, 3,
