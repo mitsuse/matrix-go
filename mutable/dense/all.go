@@ -1,31 +1,41 @@
 package dense
 
 type allCursor struct {
-	matrix *matrixImpl
-	index  int
+	matrix  *matrixImpl
+	element float64
+	row     int
+	column  int
+	index   int
 }
 
 func newAllCursor(matrix *matrixImpl) *allCursor {
 	c := &allCursor{
-		matrix: matrix,
-		index:  0,
+		matrix:  matrix,
+		element: 0,
+		row:     0,
+		column:  0,
+		index:   0,
 	}
 
 	return c
 }
 
 func (c *allCursor) HasNext() bool {
-	return c.index < len(c.matrix.elements)
-}
+	if c.index >= len(c.matrix.elements) {
+		return false
+	}
 
-func (c *allCursor) Get() (element float64, row, column int) {
 	columns := c.matrix.Columns()
 
-	element = c.matrix.elements[c.index]
-	row = c.index / columns
-	column = c.index % columns
+	c.element = c.matrix.elements[c.index]
+	c.row = c.index / columns
+	c.column = c.index % columns
 
 	c.index++
 
-	return element, row, column
+	return true
+}
+
+func (c *allCursor) Get() (element float64, row, column int) {
+	return c.element, c.row, c.column
 }
