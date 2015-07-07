@@ -3,6 +3,7 @@ package dense
 import (
 	"testing"
 
+	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/validates"
 )
 
@@ -268,4 +269,170 @@ func TestUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 		}
 	}()
 	m.Update(0, -1, 0)
+}
+
+func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
+	m, _ := New(2, 3)(
+		0, 1, 2,
+		3, 4, 5,
+	)
+
+	checkTable := [][]bool{
+		[]bool{false, false, false},
+		[]bool{false, false, false},
+	}
+
+	cursor := m.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if e := m.Get(row, column); element != e {
+			t.Fatalf(
+				"The element at (%d, %d) should be %v, but the cursor say it is %v.",
+				row,
+				column,
+				e,
+				element,
+			)
+		}
+
+		if checked := checkTable[row][column]; checked {
+			t.Error("Cursor should visit each element only once, but visits some twice.")
+			t.Fatalf(
+				"# element = %d, row = %d, column = %d",
+				element,
+				row,
+				column,
+			)
+		}
+		checkTable[row][column] = true
+	}
+
+	for row, checkRow := range checkTable {
+		for column, checked := range checkRow {
+			if !checked {
+				t.Error(
+					"Cursor should visit each element only once, but never visits some.",
+				)
+				t.Fatalf(
+					"# row = %d, column = %d",
+					row,
+					column,
+				)
+			}
+		}
+	}
+}
+
+func TestMatrixIsSquare(t *testing.T) {
+	m, _ := New(4, 4)(
+		0, 1, 2, 3,
+		4, 5, 0, 1,
+		2, 3, 4, 5,
+		0, 1, 2, 3,
+	)
+
+	if isSquare := matrix.IsSquare(m); !isSquare {
+		t.Error("This matrix should be square.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsNotSquare(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		4, 5, 0,
+		2, 3, 4,
+		0, 1, 2,
+	)
+
+	if isSquare := matrix.IsSquare(m); isSquare {
+		t.Error("This matrix should not be square.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsDiagonal(t *testing.T) {
+	m, _ := New(4, 4)(
+		2, 0, 0, 0,
+		0, 4, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 0,
+	)
+
+	if isDiagonal := matrix.IsDiagonal(m); !isDiagonal {
+		t.Error("This matrix should be diagonal.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsNotDiagonal(t *testing.T) {
+	m, _ := New(4, 4)(
+		0, 1, 1, 1,
+		1, 0, 1, 1,
+		1, 1, 0, 1,
+		1, 1, 1, 0,
+	)
+
+	if isDiagonal := matrix.IsDiagonal(m); isDiagonal {
+		t.Error("This matrix should not be diagonal.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsIdentity(t *testing.T) {
+	m, _ := New(4, 4)(
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	)
+
+	if isIdentity := matrix.IsIdentity(m); !isIdentity {
+		t.Error("This matrix should be identity.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsNotIdentity(t *testing.T) {
+	m, _ := New(4, 4)(
+		2, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	)
+
+	if isIdentity := matrix.IsIdentity(m); isIdentity {
+		t.Error("This matrix should not be identity.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsScalar(t *testing.T) {
+	m, _ := New(4, 4)(
+		7, 0, 0, 0,
+		0, 7, 0, 0,
+		0, 0, 7, 0,
+		0, 0, 0, 7,
+	)
+
+	if isScalar := matrix.IsScalar(m); !isScalar {
+		t.Error("This matrix should be scalar.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestMatrixIsNotScalar(t *testing.T) {
+	m, _ := New(4, 4)(
+		7, 0, 0, 0,
+		0, 7, 0, 0,
+		0, 0, 7, 0,
+		0, 0, 0, 6,
+	)
+
+	if isScalar := matrix.IsScalar(m); isScalar {
+		t.Error("This matrix should not be scalar.")
+		t.Fatalf("# matrix = %+v", m)
+	}
 }

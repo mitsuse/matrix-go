@@ -64,7 +64,7 @@ func IsSpecialDiagonal(m Matrix, match elements.Match) bool {
 // Check whether "m" is diagonal matrix or not.
 func IsDiagonal(m Matrix) bool {
 	match := func(element float64, row, column int) bool {
-		return row != column && element != 0
+		return row == column || element == 0
 	}
 
 	return IsSpecialDiagonal(m, match)
