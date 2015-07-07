@@ -325,6 +325,64 @@ func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
 	}
 }
 
+func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
+	m, _ := New(2, 3)(
+		0, 1, 2,
+		0, 0, 3,
+	)
+
+	checkTable := [][]bool{
+		[]bool{true, false, false},
+		[]bool{true, true, false},
+	}
+
+	cursor := m.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if e := m.Get(row, column); element != e {
+			t.Fatalf(
+				"The element at (%d, %d) should be %v, but the cursor say it is %v.",
+				row,
+				column,
+				e,
+				element,
+			)
+		}
+
+		if checked := checkTable[row][column]; checked {
+			t.Error(
+				"Cursor should visit each non-zero element only once,",
+				"but visits some twice or zero-element.",
+			)
+			t.Fatalf(
+				"# element = %v, row = %d, column = %d",
+				element,
+				row,
+				column,
+			)
+		}
+		checkTable[row][column] = true
+	}
+
+	for row, checkRow := range checkTable {
+		for column, checked := range checkRow {
+			if !checked {
+				t.Error(
+					"Cursor should visit each non-zero element only once,",
+					"but never visits some.",
+				)
+				t.Fatalf(
+					"# row = %d, column = %d",
+					row,
+					column,
+				)
+			}
+		}
+	}
+}
+
 func TestMatrixIsSquare(t *testing.T) {
 	m, _ := New(4, 4)(
 		0, 1, 2, 3,
