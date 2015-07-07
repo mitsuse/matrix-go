@@ -383,6 +383,66 @@ func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
 	}
 }
 
+func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
+	m, _ := New(3, 3)(
+		1, 0, 0,
+		0, 2, 0,
+		0, 0, 3,
+	)
+
+	checkTable := [][]bool{
+		[]bool{false, true, true},
+		[]bool{true, false, true},
+		[]bool{true, true, false},
+	}
+
+	cursor := m.Diagonal()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if e := m.Get(row, column); element != e {
+			t.Fatalf(
+				"The element at (%d, %d) should be %v, but the cursor say it is %v.",
+				row,
+				column,
+				e,
+				element,
+			)
+		}
+
+		if checked := checkTable[row][column]; checked {
+			t.Error(
+				"Cursor should visit each diagonal element only once,",
+				"but visits some twice or non-diagonal element.",
+			)
+			t.Fatalf(
+				"# element = %v, row = %d, column = %d",
+				element,
+				row,
+				column,
+			)
+		}
+		checkTable[row][column] = true
+	}
+
+	for row, checkRow := range checkTable {
+		for column, checked := range checkRow {
+			if !checked {
+				t.Error(
+					"Cursor should visit each diagonal element only once,",
+					"but never visits some.",
+				)
+				t.Fatalf(
+					"# row = %d, column = %d",
+					row,
+					column,
+				)
+			}
+		}
+	}
+}
+
 func TestMatrixIsZeros(t *testing.T) {
 	m, _ := New(4, 3)(
 		0, 0, 0,
