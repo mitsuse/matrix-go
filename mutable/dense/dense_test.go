@@ -269,3 +269,57 @@ func TestUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 	}()
 	m.Update(0, -1, 0)
 }
+
+func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
+	m, _ := New(2, 3)(
+		0, 1, 2,
+		3, 4, 5,
+	)
+
+	checkTable := [][]bool{
+		[]bool{false, false, false},
+		[]bool{false, false, false},
+	}
+
+	cursor := m.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if e := m.Get(row, column); element != e {
+			t.Fatalf(
+				"The element at (%d, %d) should be %v, but the cursor say it is %v.",
+				row,
+				column,
+				e,
+				element,
+			)
+		}
+
+		if checked := checkTable[row][column]; checked {
+			t.Error("Cursor should visit each element only once, but visits some twice.")
+			t.Fatalf(
+				"# element = %d, row = %d, column = %d",
+				element,
+				row,
+				column,
+			)
+		}
+		checkTable[row][column] = true
+	}
+
+	for row, checkRow := range checkTable {
+		for column, checked := range checkRow {
+			if !checked {
+				t.Error(
+					"Cursor should visit each element only once, but never visits some.",
+				)
+				t.Fatalf(
+					"# row = %d, column = %d",
+					row,
+					column,
+				)
+			}
+		}
+	}
+}
