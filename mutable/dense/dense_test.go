@@ -300,7 +300,7 @@ func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
 		if checked := checkTable[row][column]; checked {
 			t.Error("Cursor should visit each element only once, but visits some twice.")
 			t.Fatalf(
-				"# element = %d, row = %d, column = %d",
+				"# element = %v, row = %d, column = %d",
 				element,
 				row,
 				column,
