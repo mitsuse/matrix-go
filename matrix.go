@@ -18,13 +18,13 @@ type Matrix interface {
 	Columns() (columns int)
 
 	// Create and return an iterator for all elements.
-	All() elements.Curor
+	All() elements.Cursor
 
 	// Create and return an iterator for non-zero elements.
-	NonZeros() elements.Curor
+	NonZeros() elements.Cursor
 
 	// Create and return an iterator for diagonal elements.
-	Diagonal() elements.Curor
+	Diagonal() elements.Cursor
 
 	// Get an element of matrix speficied with "row" and "column".
 	Get(row, column int) (element float64)
