@@ -70,8 +70,7 @@ func (m *matrixImpl) NonZeros() elements.Cursor {
 }
 
 func (m *matrixImpl) Diagonal() elements.Cursor {
-	// TODO: Implement this.
-	return nil
+	return newDiagonalCursor(m)
 }
 
 func (m *matrixImpl) Get(row, column int) (element float64) {
