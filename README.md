@@ -3,12 +3,12 @@
 [![License](https://img.shields.io/badge/license-MIT-yellowgreen.svg?style=flat-square)][license]
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)][godoc]
 [![Wercker](http://img.shields.io/wercker/ci/55672222ee357fac39001a2a.svg?style=flat-square)][wercker]
-[![Coverage](https://img.shields.io/coveralls/mitsuse/matrix-go/develop.svg?style=flat-square)][coverage]
+[![Coverage](https://img.shields.io/codecov/c/github/mitsuse/matrix-go/develop.svg?style=flat-square)][coverage]
 
 [license]: http://opensource.org/licenses/MIT
 [godoc]: http://godoc.org/github.com/mitsuse/matrix-go
 [wercker]: https://app.wercker.com/project/bykey/093a5cff0964f0f4ba5fcf9117e940e4
-[coverage]: https://coveralls.io/r/mitsuse/matrix-go
+[coverage]: https://codecov.io/github/mitsuse/matrix-go
 
 An experimental library for matrix manipulation implemented in Golang.
 

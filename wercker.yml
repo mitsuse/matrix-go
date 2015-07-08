@@ -15,7 +15,7 @@ build:
             code: |
                 bash scripts/coverage/install_tools.bash
                 bash scripts/coverage/calculate.bash
-                bash scripts/coverage/send.bash
+                bash <(curl -s https://codecov.io/bash)
     after-steps:
         - wantedly/pretty-slack-notify:
             webhook_url: $SLACK_WEBHOOK_URL
