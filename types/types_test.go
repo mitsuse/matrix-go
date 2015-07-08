@@ -90,6 +90,20 @@ func TestIsNotDiagonalMutableDense(t *testing.T) {
 	}
 }
 
+func TestIsNotDiagonalNonSquareMutableDense(t *testing.T) {
+	m, _ := dense.New(4, 3)(
+		2, 0, 0,
+		0, 4, 0,
+		0, 0, 1,
+		0, 0, 0,
+	)
+
+	if isDiagonal := IsDiagonal(m); isDiagonal {
+		t.Error("This matrix should not be diagonal.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
 func TestIsIdentityMutableDense(t *testing.T) {
 	m, _ := dense.New(4, 4)(
 		1, 0, 0, 0,
@@ -118,6 +132,20 @@ func TestIsNotIdentityMutableDense(t *testing.T) {
 	}
 }
 
+func TestIsNotIdentityNonSquareMutableDense(t *testing.T) {
+	m, _ := dense.New(4, 3)(
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1,
+		0, 0, 0,
+	)
+
+	if isIdentity := IsIdentity(m); isIdentity {
+		t.Error("This matrix should not be identity.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
 func TestIsScalarMutableDense(t *testing.T) {
 	m, _ := dense.New(4, 4)(
 		7, 0, 0, 0,
@@ -138,6 +166,20 @@ func TestIsNotScalarMutableDense(t *testing.T) {
 		0, 7, 0, 0,
 		0, 0, 7, 0,
 		0, 0, 0, 6,
+	)
+
+	if isScalar := IsScalar(m); isScalar {
+		t.Error("This matrix should not be scalar.")
+		t.Fatalf("# matrix = %+v", m)
+	}
+}
+
+func TestIsNotScalarNonSquareMutableDense(t *testing.T) {
+	m, _ := dense.New(4, 3)(
+		7, 0, 0,
+		0, 7, 0,
+		0, 0, 7,
+		0, 0, 0,
 	)
 
 	if isScalar := IsScalar(m); isScalar {
