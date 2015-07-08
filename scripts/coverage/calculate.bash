@@ -17,5 +17,4 @@ do
     go test -covermode=count -coverprofile=${cover_path} ${package}
 done
 
-cd ${base_path}/coverprofile && gover
-mv ${base_path}/coverprofile/gover.coverprofile ${base_path}/coverage.txt
+gover ${base_path}/coverprofile coverage.txt
