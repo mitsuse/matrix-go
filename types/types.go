@@ -60,10 +60,6 @@ func IsIdentity(m matrix.Matrix) bool {
 
 // Check whether "m" is scalar matrix or not.
 func IsScalar(m matrix.Matrix) bool {
-	if rows, columns := m.Shape(); rows == 0 && columns == 0 {
-		return true
-	}
-
 	scalar := m.Get(0, 0)
 
 	match := func(element float64, row, column int) bool {
