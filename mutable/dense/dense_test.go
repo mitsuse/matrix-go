@@ -64,44 +64,75 @@ func TestNewFailsForWrongNumberOfElements(t *testing.T) {
 	}
 }
 
-func TestNewFailsForNonPositiveRowsOrColumns(t *testing.T) {
-	testSeq := []*constructTest{
-		&constructTest{
-			rows:     -3,
-			columns:  2,
-			elements: []float64{0, 1, 2, 3, 4, 5},
-		},
-		&constructTest{
-			rows:     3,
-			columns:  -2,
-			elements: []float64{0, 1, 2, 3, 4, 5},
-		},
-		&constructTest{
-			rows:     -3,
-			columns:  -2,
-			elements: []float64{0, 1, 2, 3, 4, 5},
-		},
+func TestNewFailsForNonPositiveRows(t *testing.T) {
+	test := &constructTest{
+		rows:     -3,
+		columns:  2,
+		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	for _, test := range testSeq {
-		func() {
-			defer func(test *constructTest) {
-				if p := recover(); p == nil || p != validates.NON_POSITIVE_SIZE_PANIC {
-					t.Error(
-						"Non-positive rows or columns should make the goroutine panic.",
-					)
-					t.Errorf(
-						"# elements = %v, rows = %v, columns = %v",
-						test.elements,
-						test.rows,
-						test.columns,
-					)
-					t.FailNow()
-				}
-			}(test)
-			New(test.rows, test.columns)(test.elements...)
-		}()
+	defer func() {
+		if p := recover(); p == nil || p != validates.NON_POSITIVE_SIZE_PANIC {
+			t.Error(
+				"Non-positive rows or columns should make the goroutine panic.",
+			)
+			t.Errorf(
+				"# elements = %v, rows = %v, columns = %v",
+				test.elements,
+				test.rows,
+				test.columns,
+			)
+			t.FailNow()
+		}
+	}()
+	New(test.rows, test.columns)(test.elements...)
+}
+
+func TestNewFailsForNonPositiveColumns(t *testing.T) {
+	test := &constructTest{
+		rows:     3,
+		columns:  -2,
+		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
+
+	defer func() {
+		if p := recover(); p == nil || p != validates.NON_POSITIVE_SIZE_PANIC {
+			t.Error(
+				"Non-positive rows or columns should make the goroutine panic.",
+			)
+			t.Errorf(
+				"# elements = %v, rows = %v, columns = %v",
+				test.elements,
+				test.rows,
+				test.columns,
+			)
+			t.FailNow()
+		}
+	}()
+	New(test.rows, test.columns)(test.elements...)
+}
+func TestNewFailsForNonPositive(t *testing.T) {
+	test := &constructTest{
+		rows:     -3,
+		columns:  -2,
+		elements: []float64{0, 1, 2, 3, 4, 5},
+	}
+
+	defer func() {
+		if p := recover(); p == nil || p != validates.NON_POSITIVE_SIZE_PANIC {
+			t.Error(
+				"Non-positive rows or columns should make the goroutine panic.",
+			)
+			t.Errorf(
+				"# elements = %v, rows = %v, columns = %v",
+				test.elements,
+				test.rows,
+				test.columns,
+			)
+			t.FailNow()
+		}
+	}()
+	New(test.rows, test.columns)(test.elements...)
 }
 
 func TestRowsReturnsTheNumberOfRows(t *testing.T) {
