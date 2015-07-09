@@ -38,18 +38,15 @@ func (t *transposeMatrix) Columns() (columns int) {
 }
 
 func (t *transposeMatrix) All() elements.Cursor {
-	// TODO: Implement this.
-	return nil
+	return newTransposeCursor(t.m.All())
 }
 
 func (t *transposeMatrix) NonZeros() elements.Cursor {
-	// TODO: Implement this.
-	return nil
+	return newTransposeCursor(t.m.NonZeros())
 }
 
 func (t *transposeMatrix) Diagonal() elements.Cursor {
-	// TODO: Implement this.
-	return nil
+	return newTransposeCursor(t.m.Diagonal())
 }
 
 func (t *transposeMatrix) Get(row, column int) (element float64) {
