@@ -66,16 +66,31 @@ func (t *transposeMatrix) Update(row, column int, element float64) matrix.Matrix
 }
 
 func (m *transposeMatrix) Equal(n matrix.Matrix) bool {
-	// TODO: Implement.
-	return false
+	return m.m.Equal(New(n))
 }
 
 func (m *transposeMatrix) Add(n matrix.Matrix) matrix.Matrix {
-	// TODO: Implement.
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		m.Update(row, column, m.Get(row, column)+element)
+	}
+
 	return m
 }
 
 func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
-	// TODO: Implement.
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		m.Update(row, column, m.Get(row, column)-element)
+	}
+
 	return m
 }
