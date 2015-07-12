@@ -90,3 +90,18 @@ func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 
 	return m
 }
+
+func (m *matrixImpl) Equal(n matrix.Matrix) bool {
+	// TODO: Implement.
+	return false
+}
+
+func (m *matrixImpl) Add(n matrix.Matrix) matrix.Matrix {
+	// TODO: Implement.
+	return m
+}
+
+func (m *matrixImpl) Sub(n matrix.Matrix) matrix.Matrix {
+	// TODO: Implement.
+	return m
+}

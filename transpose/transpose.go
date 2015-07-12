@@ -64,3 +64,18 @@ func (t *transposeMatrix) Update(row, column int, element float64) matrix.Matrix
 
 	return t.m.Update(column, row, element)
 }
+
+func (m *transposeMatrix) Equal(n matrix.Matrix) bool {
+	// TODO: Implement.
+	return false
+}
+
+func (m *transposeMatrix) Add(n matrix.Matrix) matrix.Matrix {
+	// TODO: Implement.
+	return m
+}
+
+func (m *transposeMatrix) Sub(n matrix.Matrix) matrix.Matrix {
+	// TODO: Implement.
+	return m
+}
