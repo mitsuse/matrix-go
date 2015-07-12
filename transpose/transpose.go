@@ -75,7 +75,7 @@ func (m *transposeMatrix) Add(n matrix.Matrix) matrix.Matrix {
 	return m
 }
 
-func (m *transposeMatrix) Sub(n matrix.Matrix) matrix.Matrix {
+func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
 	// TODO: Implement.
 	return m
 }

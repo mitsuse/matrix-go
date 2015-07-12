@@ -119,7 +119,7 @@ func (m *matrixImpl) Add(n matrix.Matrix) matrix.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Sub(n matrix.Matrix) matrix.Matrix {
+func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()

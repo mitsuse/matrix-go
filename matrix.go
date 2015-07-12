@@ -39,5 +39,5 @@ type Matrix interface {
 	Add(n Matrix) Matrix
 
 	// Subtract the given matrix from the receiver matrix.
-	Sub(n Matrix) Matrix
+	Subtract(n Matrix) Matrix
 }
