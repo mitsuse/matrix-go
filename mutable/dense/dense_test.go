@@ -472,3 +472,75 @@ func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 		}
 	}
 }
+
+func TestEqualIsTrue(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	if equality := m.Equal(n); !equality {
+		t.Fatal("Two matrices should equal, but the result is false.")
+	}
+}
+
+func TestEqualIsFalse(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(4, 3)(
+		0, 1, 2,
+		3, 1, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	if equality := m.Equal(n); equality {
+		t.Fatal("Two matrices should not equal, but the result is true.")
+	}
+}
+
+func TestEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Checking equality of matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# m.rows = %d, m.columns = %d, n.rows = %d, n.columns = %d",
+				m.Rows(),
+				m.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	m.Equal(n)
+}
