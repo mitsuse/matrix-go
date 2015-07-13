@@ -98,3 +98,7 @@ func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
 
 	return tr
 }
+
+func (m *transposeMatrix) Scalar(s float64) matrix.Matrix {
+	return New(m.m.Scalar(s))
+}
