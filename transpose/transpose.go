@@ -62,7 +62,7 @@ func (t *transposeMatrix) Update(row, column int, element float64) matrix.Matrix
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	return t.m.Update(column, row, element)
+	return New(t.m.Update(column, row, element))
 }
 
 func (m *transposeMatrix) Equal(n matrix.Matrix) bool {
@@ -74,12 +74,14 @@ func (m *transposeMatrix) Add(n matrix.Matrix) matrix.Matrix {
 
 	cursor := n.NonZeros()
 
+	var tr matrix.Matrix = m
+
 	for cursor.HasNext() {
 		element, row, column := cursor.Get()
-		m.Update(row, column, m.Get(row, column)+element)
+		tr = tr.Update(row, column, tr.Get(row, column)+element)
 	}
 
-	return m
+	return tr
 }
 
 func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
@@ -87,10 +89,12 @@ func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
 
 	cursor := n.NonZeros()
 
+	var tr matrix.Matrix = m
+
 	for cursor.HasNext() {
 		element, row, column := cursor.Get()
-		m.Update(row, column, m.Get(row, column)-element)
+		tr = tr.Update(row, column, tr.Get(row, column)-element)
 	}
 
-	return m
+	return tr
 }
