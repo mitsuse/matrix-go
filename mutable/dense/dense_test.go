@@ -706,3 +706,40 @@ func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 	}()
 	m.Subtract(n)
 }
+
+func TestScalarReturnsTheOriginal(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	s := 3.0
+
+	if m.Scalar(s) != m {
+		t.Fatal("Mutable matrix should return itself by scalar-multiplication.")
+	}
+}
+
+func TestScalarTheResultOfMultiplication(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	s := 3.0
+
+	r, _ := New(4, 3)(
+		0, 3, 6,
+		9, 6, 3,
+		0, 3, 6,
+		9, 6, 3,
+	)
+
+	if !m.Scalar(s).Equal(r) {
+		t.Fatal("Mutable matrix should multiply each element of itselt by scalar.")
+	}
+}

@@ -668,3 +668,50 @@ func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 	}()
 	tr.Subtract(n)
 }
+
+func TestScalarDoesNotReturnTheOriginal(t *testing.T) {
+	m, _ := dense.New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	tr := New(m)
+
+	s := 3.0
+
+	if tr.Scalar(s) == tr {
+		t.Fatal("Transpose matrix should not return itself by scalar-multiplication.")
+	}
+}
+
+func TestScalarTheResultOfMultiplication(t *testing.T) {
+	m, _ := dense.New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	tr := New(m)
+
+	s := 3.0
+
+	r, _ := dense.New(3, 4)(
+		0, 9, 0, 9,
+		3, 6, 3, 6,
+		6, 3, 6, 3,
+	)
+
+	base, _ := dense.New(4, 3)(
+		0, 3, 6,
+		9, 6, 3,
+		0, 3, 6,
+		9, 6, 3,
+	)
+
+	if !tr.Scalar(s).Equal(r) || !m.Equal(base) {
+		t.Fatal("Transpose matrix should multiply each element of itselt by scalar.")
+	}
+}

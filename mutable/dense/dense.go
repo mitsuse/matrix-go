@@ -131,3 +131,11 @@ func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
 
 	return m
 }
+
+func (m *matrixImpl) Scalar(s float64) matrix.Matrix {
+	for index, element := range m.elements {
+		m.elements[index] = element * s
+	}
+
+	return m
+}
