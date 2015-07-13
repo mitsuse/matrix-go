@@ -472,3 +472,237 @@ func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 		}
 	}
 }
+
+func TestEqualIsTrue(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	if equality := m.Equal(n); !equality {
+		t.Fatal("Two matrices should equal, but the result is false.")
+	}
+}
+
+func TestEqualIsFalse(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(4, 3)(
+		0, 1, 2,
+		3, 1, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	if equality := m.Equal(n); equality {
+		t.Fatal("Two matrices should not equal, but the result is true.")
+	}
+}
+
+func TestEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Checking equality of matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# m.rows = %d, m.columns = %d, n.rows = %d, n.columns = %d",
+				m.Rows(),
+				m.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	m.Equal(n)
+}
+
+func TestAddReturnsTheOriginal(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	if r := m.Add(n); m != r {
+		t.Fatal("Mutable matrix should return itself by addition.")
+	}
+}
+
+func TestAddReturnsTheResultOfAddition(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	r, _ := New(4, 3)(
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+	)
+
+	m.Add(n)
+
+	if !m.Equal(r) {
+		t.Fatal("Mutable matrix should add other matrix to itself.")
+	}
+}
+
+func TestAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Addition of two matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# m.rows = %d, m.columns = %d, n.rows = %d, n.columns = %d",
+				m.Rows(),
+				m.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	m.Add(n)
+}
+
+func TestSubtractReturnsTheOriginal(t *testing.T) {
+	m, _ := New(4, 3)(
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+	)
+
+	n, _ := New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	if r := m.Subtract(n); m != r {
+		t.Fatal("Mutable matrix should return itself by subtraction.")
+	}
+}
+
+func TestSubtractReturnsTheResultOfSubtractition(t *testing.T) {
+	m, _ := New(4, 3)(
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+	)
+
+	n, _ := New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	r, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	m.Subtract(n)
+
+	if !m.Equal(r) {
+		t.Fatal("Mutable matrix should subtract other matrix from itself.")
+	}
+}
+
+func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	n, _ := New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Subtraction of two matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# m.rows = %d, m.columns = %d, n.rows = %d, n.columns = %d",
+				m.Rows(),
+				m.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	m.Subtract(n)
+}

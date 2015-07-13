@@ -90,3 +90,44 @@ func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 
 	return m
 }
+
+func (m *matrixImpl) Equal(n matrix.Matrix) bool {
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		if m.Get(row, column) != element {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (m *matrixImpl) Add(n matrix.Matrix) matrix.Matrix {
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		m.Update(row, column, m.Get(row, column)+element)
+	}
+
+	return m
+}
+
+func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		m.Update(row, column, m.Get(row, column)-element)
+	}
+
+	return m
+}

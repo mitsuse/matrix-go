@@ -176,6 +176,16 @@ func TestGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	tr.Get(0, -1)
 }
 
+func TestUpdateReturnsNewTransposeMatrix(t *testing.T) {
+	rows, columns := 8, 8
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
+
+	if tr.Update(0, 0, 0) == tr {
+		t.Fatal("Transpose matrix should not return itself by updating.")
+	}
+}
+
 func TestUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 8
 	m := dense.Zeros(rows, columns)
@@ -406,4 +416,255 @@ func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestEqualIsTrue(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	if equality := tr.Equal(n); !equality {
+		t.Fatal("Two matrices should equal, but the result is false.")
+	}
+}
+
+func TestEqualIsFalse(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(4, 3)(
+		0, 1, 2,
+		3, 1, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	if equality := tr.Equal(n); equality {
+		t.Fatal("Two matrices should not equal, but the result is true.")
+	}
+}
+
+func TestEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Checking equality of matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# tr.rows = %d, tr.columns = %d, tr.rows = %d, tr.columns = %d",
+				tr.Rows(),
+				tr.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	m.Equal(n)
+}
+
+func TestAddDoesNotReturnTheOriginal(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	if r := tr.Add(n); tr == r {
+		t.Fatal("Transpose matrix should not return itself by addition.")
+	}
+}
+
+func TestAddReturnsTheResultOfAddition(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	r, _ := dense.New(4, 3)(
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+		9, 9, 9,
+	)
+
+	base, _ := dense.New(3, 4)(
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+	)
+
+	if !tr.Add(n).Equal(r) || !m.Equal(base) {
+		t.Fatal("Transpose matrix should add other matrix to its base matrix.")
+	}
+}
+
+func TestAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Addition of two matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# tr.rows = %d, tr.columns = %d, n.rows = %d, n.columns = %d",
+				tr.Rows(),
+				tr.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	tr.Add(n)
+}
+
+func TestSubtractDoesNotReturnTheOriginal(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	if r := tr.Subtract(n); tr == r {
+		t.Fatal("Transpose matrix should not return itself by subtraction.")
+	}
+}
+
+func TestSubtractReturnsTheResultOfSubtractition(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(4, 3)(
+		9, 8, 7,
+		6, 5, 4,
+		3, 2, 1,
+		0, 9, 8,
+	)
+
+	r, _ := dense.New(4, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+		9, 0, 1,
+	)
+
+	base, _ := dense.New(3, 4)(
+		0, 3, 6, 9,
+		1, 4, 7, 0,
+		2, 5, 8, 1,
+	)
+
+	if !tr.Subtract(n).Equal(r) || !base.Equal(m) {
+		t.Fatal("Transpose matrix should subtract other matrix from itself.")
+	}
+}
+
+func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
+	m, _ := dense.New(3, 4)(
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+		9, 9, 9, 9,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	defer func() {
+		if r := recover(); r != nil && r != validates.DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Subtraction of two matrices which have different shape",
+				"should cause panic, but cause nothing.",
+			)
+			t.Fatalf(
+				"# tr.rows = %d, tr.columns = %d, n.rows = %d, n.columns = %d",
+				tr.Rows(),
+				tr.Columns(),
+				n.Rows(),
+				n.Columns(),
+			)
+		}
+	}()
+	tr.Subtract(n)
 }

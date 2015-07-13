@@ -9,6 +9,10 @@ type shapeTest struct {
 	Columns int
 }
 
+func (t *shapeTest) Shape() (rows, columns int) {
+	return t.Rows, t.Columns
+}
+
 func TestShapeShouldBePositiveCausesNothing(t *testing.T) {
 	test := &shapeTest{Rows: 1, Columns: 1}
 
@@ -131,6 +135,90 @@ func TestShapeShouldBePositiveCausePanicWithNegative(t *testing.T) {
 		}
 	}()
 	ShapeShouldBePositive(test.Rows, test.Columns)
+}
+
+func TestShapeShouldBeSameCauseNathing(t *testing.T) {
+	m := &shapeTest{Rows: 4, Columns: 3}
+	n := &shapeTest{Rows: 4, Columns: 3}
+
+	defer func() {
+		if p := recover(); p != nil {
+			t.Error(
+				"Two matrices have same size, but cause panic.",
+			)
+			t.Fatalf(
+				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
+				m.Rows,
+				m.Columns,
+				n.Rows,
+				n.Columns,
+			)
+		}
+	}()
+	ShapeShouldBeSame(m, n)
+}
+
+func TestShapeShouldBeSameCausePanicWithDifferenceShape(t *testing.T) {
+	m := &shapeTest{Rows: 4, Columns: 3}
+	n := &shapeTest{Rows: 6, Columns: 2}
+
+	defer func() {
+		if p := recover(); p != DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Two matrices with different size should cause panic.",
+			)
+			t.Fatalf(
+				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
+				m.Rows,
+				m.Columns,
+				n.Rows,
+				n.Columns,
+			)
+		}
+	}()
+	ShapeShouldBeSame(m, n)
+}
+
+func TestShapeShouldBeSameCausePanicWithDifferenceRows(t *testing.T) {
+	m := &shapeTest{Rows: 4, Columns: 3}
+	n := &shapeTest{Rows: 6, Columns: 3}
+
+	defer func() {
+		if p := recover(); p != DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Two matrices with different size should cause panic.",
+			)
+			t.Fatalf(
+				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
+				m.Rows,
+				m.Columns,
+				n.Rows,
+				n.Columns,
+			)
+		}
+	}()
+	ShapeShouldBeSame(m, n)
+}
+
+func TestShapeShouldBeSameCausePanicWithDifferenceColumns(t *testing.T) {
+	m := &shapeTest{Rows: 4, Columns: 3}
+	n := &shapeTest{Rows: 4, Columns: 2}
+
+	defer func() {
+		if p := recover(); p != DIFFERENT_SIZE_PANIC {
+			t.Error(
+				"Two matrices with different size should cause panic.",
+			)
+			t.Fatalf(
+				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
+				m.Rows,
+				m.Columns,
+				n.Rows,
+				n.Columns,
+			)
+		}
+	}()
+	ShapeShouldBeSame(m, n)
 }
 
 type indexTest struct {

@@ -31,4 +31,13 @@ type Matrix interface {
 
 	// Update the element of matrix speficied with "row" and "column".
 	Update(row, column int, element float64) Matrix
+
+	// Check element-wise equality of the receiver matrix and the given matrix.
+	Equal(n Matrix) bool
+
+	// Add the given matrix to the receiver matrix.
+	Add(n Matrix) Matrix
+
+	// Subtract the given matrix from the receiver matrix.
+	Subtract(n Matrix) Matrix
 }
