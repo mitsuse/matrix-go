@@ -176,6 +176,16 @@ func TestGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	tr.Get(0, -1)
 }
 
+func TestUpdateReturnsNewTransposeMatrix(t *testing.T) {
+	rows, columns := 8, 8
+	m := dense.Zeros(rows, columns)
+	tr := New(m)
+
+	if tr.Update(0, 0, 0) == tr {
+		t.Fatal("Transpose matrix should not return itself by updating.")
+	}
+}
+
 func TestUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 8
 	m := dense.Zeros(rows, columns)
