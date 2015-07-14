@@ -132,6 +132,27 @@ func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
 	return m
 }
 
+func (m *matrixImpl) Multiply(n matrix.Matrix) matrix.Matrix {
+	validates.ShapeShouldBeMultipliable(m, n)
+
+	rows := m.Rows()
+	columns := n.Columns()
+
+	r := Zeros(rows, columns)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, j, k := cursor.Get()
+
+		for i := 0; i < rows; i++ {
+			r.Update(i, k, r.Get(i, k)+m.Get(i, j)*element)
+		}
+	}
+
+	return r
+}
+
 func (m *matrixImpl) Scalar(s float64) matrix.Matrix {
 	for index, element := range m.elements {
 		m.elements[index] = element * s
