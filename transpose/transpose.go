@@ -6,6 +6,7 @@ package transpose
 import (
 	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/elements"
+	"github.com/mitsuse/matrix-go/mutable/dense"
 	"github.com/mitsuse/matrix-go/validates"
 )
 
@@ -97,6 +98,28 @@ func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
 	}
 
 	return tr
+}
+
+func (m *transposeMatrix) Multiply(n matrix.Matrix) matrix.Matrix {
+	// TODO: Avoid to use "dense.Zeros" or implement transpose view for each matrix.
+	validates.ShapeShouldBeMultipliable(m, n)
+
+	rows := m.Rows()
+	columns := n.Columns()
+
+	r := dense.Zeros(rows, columns)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, j, k := cursor.Get()
+
+		for i := 0; i < rows; i++ {
+			r.Update(i, k, r.Get(i, k)+m.Get(i, j)*element)
+		}
+	}
+
+	return r
 }
 
 func (m *transposeMatrix) Scalar(s float64) matrix.Matrix {

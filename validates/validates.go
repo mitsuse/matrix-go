@@ -3,6 +3,7 @@ package validates
 const (
 	NON_POSITIVE_SIZE_PANIC = iota
 	DIFFERENT_SIZE_PANIC
+	NOT_MULTIPLIABLE_PANIC
 	OUT_OF_RANGE_PANIC
 )
 
@@ -16,6 +17,8 @@ func ShapeShouldBePositive(row, column int) {
 
 type HasShape interface {
 	Shape() (rows, columns int)
+	Rows() int
+	Columns() int
 }
 
 func ShapeShouldBeSame(m, n HasShape) {
@@ -27,6 +30,14 @@ func ShapeShouldBeSame(m, n HasShape) {
 	}
 
 	panic(DIFFERENT_SIZE_PANIC)
+}
+
+func ShapeShouldBeMultipliable(m, n HasShape) {
+	if m.Columns() == n.Rows() {
+		return
+	}
+
+	panic(NOT_MULTIPLIABLE_PANIC)
 }
 
 func IndexShouldBeInRange(rows, columns, row, column int) {

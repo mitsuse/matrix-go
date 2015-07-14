@@ -41,6 +41,9 @@ type Matrix interface {
 	// Subtract the given matrix from the receiver matrix.
 	Subtract(n Matrix) Matrix
 
+	// Multiply the receiver matrix bythe given matrix.
+	Multiply(n Matrix) Matrix
+
 	// Multiply by scalar.
 	Scalar(s float64) Matrix
 }

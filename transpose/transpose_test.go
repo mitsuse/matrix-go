@@ -715,3 +715,50 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 		t.Fatal("Transpose matrix should multiply each element of itselt by scalar.")
 	}
 }
+
+func TestMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
+	m, _ := dense.New(3, 2)(
+		2, 1,
+		1, -5,
+		-3, 2,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(3, 3)(
+		3, 1, 0,
+		2, 0, -1,
+		-1, 4, 1,
+	)
+
+	if r := tr.Multiply(n); tr == r || m == r || n == r {
+		t.Fatal("Transpose matrix should return a new instance by multiplication.")
+	}
+}
+
+func TestMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
+	m, _ := dense.New(3, 2)(
+		2, 1,
+		1, -5,
+		-3, 2,
+	)
+
+	tr := New(m)
+
+	n, _ := dense.New(3, 3)(
+		3, 1, 0,
+		2, 0, -1,
+		-1, 4, 1,
+	)
+
+	r, _ := dense.New(2, 3)(
+		11, -10, -4,
+		-9, 9, 7,
+	)
+
+	if !tr.Multiply(n).Equal(r) {
+		t.Fatal(
+			"Transpose matrix should multiply the receiver matrix by the given matrix.",
+		)
+	}
+}
