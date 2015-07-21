@@ -1,6 +1,3 @@
-/*
-Package "transpose" provides a function to create the transpose view of a matrix.
-*/
 package views
 
 import (
