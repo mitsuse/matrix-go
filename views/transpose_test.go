@@ -26,7 +26,7 @@ func TestNewTwiceReturnsTheOriginalMatrix(t *testing.T) {
 		)
 	}
 
-	if _, isTransposed := tr.(*transposeMatrix); !isTransposed {
+	if _, isTransposed := tr.(*transposeView); !isTransposed {
 		t.Fatal("The type of transpose matrix should be transposed.")
 	}
 
@@ -38,7 +38,7 @@ func TestNewTwiceReturnsTheOriginalMatrix(t *testing.T) {
 		)
 	}
 
-	if _, isTransposed := n.(*transposeMatrix); isTransposed {
+	if _, isTransposed := n.(*transposeView); isTransposed {
 		t.Fatal("The type of re-transpose matrix should not be dense.")
 	}
 }

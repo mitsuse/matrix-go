@@ -10,47 +10,47 @@ import (
 	"github.com/mitsuse/matrix-go/validates"
 )
 
-type transposeMatrix struct {
+type transposeView struct {
 	m matrix.Matrix
 }
 
 func New(m matrix.Matrix) matrix.Matrix {
-	if t, transposed := m.(*transposeMatrix); transposed {
+	if t, transposed := m.(*transposeView); transposed {
 		return t.m
 	}
 
-	t := &transposeMatrix{
+	t := &transposeView{
 		m: m,
 	}
 
 	return t
 }
 
-func (t *transposeMatrix) Shape() (rows, columns int) {
+func (t *transposeView) Shape() (rows, columns int) {
 	return t.Rows(), t.Columns()
 }
 
-func (t *transposeMatrix) Rows() (rows int) {
+func (t *transposeView) Rows() (rows int) {
 	return t.m.Columns()
 }
 
-func (t *transposeMatrix) Columns() (columns int) {
+func (t *transposeView) Columns() (columns int) {
 	return t.m.Rows()
 }
 
-func (t *transposeMatrix) All() elements.Cursor {
+func (t *transposeView) All() elements.Cursor {
 	return newTransposeCursor(t.m.All())
 }
 
-func (t *transposeMatrix) NonZeros() elements.Cursor {
+func (t *transposeView) NonZeros() elements.Cursor {
 	return newTransposeCursor(t.m.NonZeros())
 }
 
-func (t *transposeMatrix) Diagonal() elements.Cursor {
+func (t *transposeView) Diagonal() elements.Cursor {
 	return newTransposeCursor(t.m.Diagonal())
 }
 
-func (t *transposeMatrix) Get(row, column int) (element float64) {
+func (t *transposeView) Get(row, column int) (element float64) {
 	rows, columns := t.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
@@ -58,7 +58,7 @@ func (t *transposeMatrix) Get(row, column int) (element float64) {
 	return t.m.Get(column, row)
 }
 
-func (t *transposeMatrix) Update(row, column int, element float64) matrix.Matrix {
+func (t *transposeView) Update(row, column int, element float64) matrix.Matrix {
 	rows, columns := t.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
@@ -66,11 +66,11 @@ func (t *transposeMatrix) Update(row, column int, element float64) matrix.Matrix
 	return New(t.m.Update(column, row, element))
 }
 
-func (m *transposeMatrix) Equal(n matrix.Matrix) bool {
+func (m *transposeView) Equal(n matrix.Matrix) bool {
 	return m.m.Equal(New(n))
 }
 
-func (m *transposeMatrix) Add(n matrix.Matrix) matrix.Matrix {
+func (m *transposeView) Add(n matrix.Matrix) matrix.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -85,7 +85,7 @@ func (m *transposeMatrix) Add(n matrix.Matrix) matrix.Matrix {
 	return tr
 }
 
-func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
+func (m *transposeView) Subtract(n matrix.Matrix) matrix.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -100,7 +100,7 @@ func (m *transposeMatrix) Subtract(n matrix.Matrix) matrix.Matrix {
 	return tr
 }
 
-func (m *transposeMatrix) Multiply(n matrix.Matrix) matrix.Matrix {
+func (m *transposeView) Multiply(n matrix.Matrix) matrix.Matrix {
 	// TODO: Avoid to use "dense.Zeros" or implement transpose view for each matrix.
 	validates.ShapeShouldBeMultipliable(m, n)
 
@@ -122,6 +122,6 @@ func (m *transposeMatrix) Multiply(n matrix.Matrix) matrix.Matrix {
 	return r
 }
 
-func (m *transposeMatrix) Scalar(s float64) matrix.Matrix {
+func (m *transposeView) Scalar(s float64) matrix.Matrix {
 	return New(m.m.Scalar(s))
 }
