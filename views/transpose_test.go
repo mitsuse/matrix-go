@@ -1,4 +1,4 @@
-package transpose
+package views
 
 import (
 	"testing"

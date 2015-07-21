@@ -1,4 +1,4 @@
-package transpose
+package views
 
 import (
 	"github.com/mitsuse/matrix-go/elements"
