@@ -15,67 +15,67 @@ type transposeView struct {
 }
 
 func New(m matrix.Matrix) matrix.Matrix {
-	if t, transposed := m.(*transposeView); transposed {
-		return t.m
+	if v, transposed := m.(*transposeView); transposed {
+		return v.m
 	}
 
-	t := &transposeView{
+	v := &transposeView{
 		m: m,
 	}
 
-	return t
+	return v
 }
 
-func (t *transposeView) Shape() (rows, columns int) {
-	return t.Rows(), t.Columns()
+func (v *transposeView) Shape() (rows, columns int) {
+	return v.Rows(), v.Columns()
 }
 
-func (t *transposeView) Rows() (rows int) {
-	return t.m.Columns()
+func (v *transposeView) Rows() (rows int) {
+	return v.m.Columns()
 }
 
-func (t *transposeView) Columns() (columns int) {
-	return t.m.Rows()
+func (v *transposeView) Columns() (columns int) {
+	return v.m.Rows()
 }
 
-func (t *transposeView) All() elements.Cursor {
-	return newTransposeCursor(t.m.All())
+func (v *transposeView) All() elements.Cursor {
+	return newTransposeCursor(v.m.All())
 }
 
-func (t *transposeView) NonZeros() elements.Cursor {
-	return newTransposeCursor(t.m.NonZeros())
+func (v *transposeView) NonZeros() elements.Cursor {
+	return newTransposeCursor(v.m.NonZeros())
 }
 
-func (t *transposeView) Diagonal() elements.Cursor {
-	return newTransposeCursor(t.m.Diagonal())
+func (v *transposeView) Diagonal() elements.Cursor {
+	return newTransposeCursor(v.m.Diagonal())
 }
 
-func (t *transposeView) Get(row, column int) (element float64) {
-	rows, columns := t.Shape()
+func (v *transposeView) Get(row, column int) (element float64) {
+	rows, columns := v.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	return t.m.Get(column, row)
+	return v.m.Get(column, row)
 }
 
-func (t *transposeView) Update(row, column int, element float64) matrix.Matrix {
-	rows, columns := t.Shape()
+func (v *transposeView) Update(row, column int, element float64) matrix.Matrix {
+	rows, columns := v.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	return New(t.m.Update(column, row, element))
+	return New(v.m.Update(column, row, element))
 }
 
-func (m *transposeView) Equal(n matrix.Matrix) bool {
-	return m.m.Equal(New(n))
+func (v *transposeView) Equal(n matrix.Matrix) bool {
+	return v.m.Equal(New(n))
 }
 
-func (m *transposeView) Add(n matrix.Matrix) matrix.Matrix {
-	validates.ShapeShouldBeSame(m, n)
+func (v *transposeView) Add(m matrix.Matrix) matrix.Matrix {
+	validates.ShapeShouldBeSame(v, m)
 
-	cursor := n.NonZeros()
+	cursor := m.NonZeros()
 
-	var tr matrix.Matrix = m
+	var tr matrix.Matrix = v
 
 	for cursor.HasNext() {
 		element, row, column := cursor.Get()
@@ -85,12 +85,12 @@ func (m *transposeView) Add(n matrix.Matrix) matrix.Matrix {
 	return tr
 }
 
-func (m *transposeView) Subtract(n matrix.Matrix) matrix.Matrix {
-	validates.ShapeShouldBeSame(m, n)
+func (v *transposeView) Subtract(m matrix.Matrix) matrix.Matrix {
+	validates.ShapeShouldBeSame(v, m)
 
-	cursor := n.NonZeros()
+	cursor := m.NonZeros()
 
-	var tr matrix.Matrix = m
+	var tr matrix.Matrix = v
 
 	for cursor.HasNext() {
 		element, row, column := cursor.Get()
@@ -100,28 +100,28 @@ func (m *transposeView) Subtract(n matrix.Matrix) matrix.Matrix {
 	return tr
 }
 
-func (m *transposeView) Multiply(n matrix.Matrix) matrix.Matrix {
+func (v *transposeView) Multiply(m matrix.Matrix) matrix.Matrix {
 	// TODO: Avoid to use "dense.Zeros" or implement transpose view for each matrix.
-	validates.ShapeShouldBeMultipliable(m, n)
+	validates.ShapeShouldBeMultipliable(v, m)
 
-	rows := m.Rows()
-	columns := n.Columns()
+	rows := v.Rows()
+	columns := m.Columns()
 
 	r := dense.Zeros(rows, columns)
 
-	cursor := n.NonZeros()
+	cursor := m.NonZeros()
 
 	for cursor.HasNext() {
 		element, j, k := cursor.Get()
 
 		for i := 0; i < rows; i++ {
-			r.Update(i, k, r.Get(i, k)+m.Get(i, j)*element)
+			r.Update(i, k, r.Get(i, k)+v.Get(i, j)*element)
 		}
 	}
 
 	return r
 }
 
-func (m *transposeView) Scalar(s float64) matrix.Matrix {
-	return New(m.m.Scalar(s))
+func (v *transposeView) Scalar(s float64) matrix.Matrix {
+	return New(v.m.Scalar(s))
 }
