@@ -25,9 +25,8 @@ func (c *nonZerosCursor) HasNext() bool {
 		if element := c.matrix.elements[c.index]; element != 0 {
 			c.element = element
 
-			columns := c.matrix.Columns()
-			c.row = c.index / columns
-			c.column = c.index % columns
+			c.row = c.index / c.matrix.columns
+			c.column = c.index % c.matrix.columns
 
 			c.index++
 
@@ -41,5 +40,6 @@ func (c *nonZerosCursor) HasNext() bool {
 }
 
 func (c *nonZerosCursor) Get() (element float64, row, column int) {
-	return c.element, c.row, c.column
+	row, column = c.matrix.rewriter.Rewrite(c.row, c.column)
+	return c.element, row, column
 }

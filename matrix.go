@@ -46,4 +46,7 @@ type Matrix interface {
 
 	// Multiply by scalar.
 	Scalar(s float64) Matrix
+
+	// Create the transpose matrix.
+	Transpose() Matrix
 }

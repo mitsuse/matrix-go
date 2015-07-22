@@ -44,3 +44,15 @@ func TestReverse(t *testing.T) {
 		)
 	}
 }
+
+func TestReflectTranspose(t *testing.T) {
+	if Reflect().Transpose() != Reverse() {
+		t.Fatal("The transpose of \"Reflect\" should be \"Reverse\".")
+	}
+}
+
+func TestReverseTranspose(t *testing.T) {
+	if Reverse().Transpose() != Reflect() {
+		t.Fatal("The transpose of \"Reverse\" should be \"Reflect\".")
+	}
+}

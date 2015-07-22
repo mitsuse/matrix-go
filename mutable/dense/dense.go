@@ -9,6 +9,7 @@ import (
 
 	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/elements"
+	"github.com/mitsuse/matrix-go/rewriters"
 	"github.com/mitsuse/matrix-go/validates"
 )
 
@@ -16,6 +17,7 @@ type matrixImpl struct {
 	rows     int
 	columns  int
 	elements []float64
+	rewriter rewriters.Rewriter
 }
 
 func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
@@ -35,6 +37,7 @@ func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 			rows:     rows,
 			columns:  columns,
 			elements: make([]float64, size),
+			rewriter: rewriters.Reflect(),
 		}
 		copy(m.elements, elements)
 
@@ -50,15 +53,17 @@ func Zeros(rows, columns int) matrix.Matrix {
 }
 
 func (m *matrixImpl) Shape() (rows, columns int) {
-	return m.Rows(), m.Columns()
+	return m.rewriter.Rewrite(m.rows, m.columns)
 }
 
 func (m *matrixImpl) Rows() (rows int) {
-	return m.rows
+	rows, _ = m.Shape()
+	return rows
 }
 
 func (m *matrixImpl) Columns() (columns int) {
-	return m.columns
+	_, columns = m.Shape()
+	return columns
 }
 
 func (m *matrixImpl) All() elements.Cursor {
@@ -78,7 +83,9 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	return m.elements[row*columns+column]
+	row, column = m.rewriter.Rewrite(row, column)
+
+	return m.elements[row*m.columns+column]
 }
 
 func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
@@ -86,7 +93,9 @@ func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	m.elements[row*columns+column] = element
+	row, column = m.rewriter.Rewrite(row, column)
+
+	m.elements[row*m.columns+column] = element
 
 	return m
 }
@@ -159,4 +168,15 @@ func (m *matrixImpl) Scalar(s float64) matrix.Matrix {
 	}
 
 	return m
+}
+
+func (m *matrixImpl) Transpose() matrix.Matrix {
+	n := &matrixImpl{
+		rows:     m.rows,
+		columns:  m.columns,
+		elements: m.elements,
+		rewriter: m.rewriter.Transpose(),
+	}
+
+	return n
 }
