@@ -3,12 +3,38 @@ Package "rewriters" provideds functions to rewrite the indexes or shape of matri
 */
 package rewriters
 
-type Rewrite func(int, int) (int, int)
+var (
+	reflect *reflectImpl
+	reverse *reverseImpl
+)
 
-func Reflect(x, y int) (int, int) {
+func init() {
+	reflect = &reflectImpl{}
+	reverse = &reverseImpl{}
+}
+
+func Reflect() Rewriter {
+	return reflect
+}
+
+func Reverse() Rewriter {
+	return reverse
+}
+
+type Rewriter interface {
+	Rewrite(int, int) (int, int)
+}
+
+type reflectImpl struct {
+}
+
+func (r *reflectImpl) Rewrite(x, y int) (int, int) {
 	return x, y
 }
 
-func Reverse(x, y int) (int, int) {
+type reverseImpl struct {
+}
+
+func (r *reverseImpl) Rewrite(x, y int) (int, int) {
 	return y, x
 }
