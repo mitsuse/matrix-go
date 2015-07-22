@@ -23,6 +23,7 @@ func Reverse() Rewriter {
 
 type Rewriter interface {
 	Rewrite(int, int) (int, int)
+	Transpose() Rewriter
 }
 
 type reflectImpl struct {
@@ -32,9 +33,17 @@ func (r *reflectImpl) Rewrite(x, y int) (int, int) {
 	return x, y
 }
 
+func (r *reflectImpl) Transpose() Rewriter {
+	return Reverse()
+}
+
 type reverseImpl struct {
 }
 
 func (r *reverseImpl) Rewrite(x, y int) (int, int) {
 	return y, x
+}
+
+func (r *reverseImpl) Transpose() Rewriter {
+	return Reflect()
 }

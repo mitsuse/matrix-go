@@ -41,5 +41,6 @@ func (c *nonZerosCursor) HasNext() bool {
 }
 
 func (c *nonZerosCursor) Get() (element float64, row, column int) {
-	return c.element, c.row, c.column
+	row, column = c.matrix.rewriter.Rewrite(c.row, c.column)
+	return c.element, row, column
 }
