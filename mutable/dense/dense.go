@@ -79,13 +79,13 @@ func (m *matrixImpl) Diagonal() elements.Cursor {
 }
 
 func (m *matrixImpl) Get(row, column int) (element float64) {
-	row, column = m.rewriter.Rewrite(row, column)
-
 	rows, columns := m.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	return m.elements[row*columns+column]
+	row, column = m.rewriter.Rewrite(row, column)
+
+	return m.elements[row*m.columns+column]
 }
 
 func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
@@ -93,7 +93,9 @@ func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
 
-	m.elements[row*columns+column] = element
+	row, column = m.rewriter.Rewrite(row, column)
+
+	m.elements[row*m.columns+column] = element
 
 	return m
 }
@@ -166,4 +168,15 @@ func (m *matrixImpl) Scalar(s float64) matrix.Matrix {
 	}
 
 	return m
+}
+
+func (m *matrixImpl) Transpose() matrix.Matrix {
+	n := &matrixImpl{
+		rows:     m.rows,
+		columns:  m.columns,
+		elements: m.elements,
+		rewriter: m.rewriter.Transpose(),
+	}
+
+	return n
 }

@@ -25,9 +25,8 @@ func (c *nonZerosCursor) HasNext() bool {
 		if element := c.matrix.elements[c.index]; element != 0 {
 			c.element = element
 
-			columns := c.matrix.Columns()
-			c.row = c.index / columns
-			c.column = c.index % columns
+			c.row = c.index / c.matrix.columns
+			c.column = c.index % c.matrix.columns
 
 			c.index++
 

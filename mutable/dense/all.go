@@ -25,11 +25,9 @@ func (c *allCursor) HasNext() bool {
 		return false
 	}
 
-	columns := c.matrix.Columns()
-
 	c.element = c.matrix.elements[c.index]
-	c.row = c.index / columns
-	c.column = c.index % columns
+	c.row = c.index / c.matrix.columns
+	c.column = c.index % c.matrix.columns
 
 	c.index++
 
