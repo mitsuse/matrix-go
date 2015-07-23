@@ -19,39 +19,33 @@ func TestNewCreatesDenseMatrix(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	_, err := New(test.rows, test.columns)(test.elements...)
-	if err != nil {
-		t.Error(
-			"The number of \"elements\" equals to \"rows\" * \"columns\",",
-			"but matrix creation failed.",
-		)
-		t.Errorf(
-			"# elements = %v, rows = %v, columns = %v",
-			test.elements,
-			test.rows,
-			test.columns,
-		)
-		t.FailNow()
-	}
+	defer func() {
+		if p := recover(); p != nil {
+			t.Error(
+				"The number of \"elements\" equals to \"rows\" * \"columns\",",
+				"but matrix creation failed.",
+			)
+			t.Errorf(
+				"# elements = %v, rows = %v, columns = %v",
+				test.elements,
+				test.rows,
+				test.columns,
+			)
+			t.FailNow()
+		}
+	}()
+	New(test.rows, test.columns)(test.elements...)
 }
 
-func TestNewFailsForWrongNumberOfElements(t *testing.T) {
-	testSeq := []*constructTest{
-		&constructTest{
-			rows:     3,
-			columns:  1,
-			elements: []float64{0, 1, 2, 3},
-		},
-		&constructTest{
-			rows:     1,
-			columns:  3,
-			elements: []float64{0},
-		},
+func TestNewFailsForTooManyElements(t *testing.T) {
+	test := &constructTest{
+		rows:     3,
+		columns:  1,
+		elements: []float64{0, 1, 2, 3},
 	}
 
-	for _, test := range testSeq {
-		_, err := New(test.rows, test.columns)(test.elements...)
-		if err == nil {
+	defer func() {
+		if p := recover(); p == nil || p != validates.INVALID_ELEMENTS_PANIC {
 			t.Error("The number of \"elements\" should equal to \"rows\" * \"columns\".")
 			t.Errorf(
 				"# elements = %v, rows = %v, columns = %v",
@@ -61,7 +55,30 @@ func TestNewFailsForWrongNumberOfElements(t *testing.T) {
 			)
 			t.FailNow()
 		}
+	}()
+	New(test.rows, test.columns)(test.elements...)
+}
+
+func TestNewFailsForTooFewElements(t *testing.T) {
+	test := &constructTest{
+		rows:     1,
+		columns:  3,
+		elements: []float64{0},
 	}
+
+	defer func() {
+		if p := recover(); p == nil || p != validates.INVALID_ELEMENTS_PANIC {
+			t.Error("The number of \"elements\" should equal to \"rows\" * \"columns\".")
+			t.Errorf(
+				"# elements = %v, rows = %v, columns = %v",
+				test.elements,
+				test.rows,
+				test.columns,
+			)
+			t.FailNow()
+		}
+	}()
+	New(test.rows, test.columns)(test.elements...)
 }
 
 func TestNewFailsForNonPositiveRows(t *testing.T) {
@@ -111,6 +128,7 @@ func TestNewFailsForNonPositiveColumns(t *testing.T) {
 	}()
 	New(test.rows, test.columns)(test.elements...)
 }
+
 func TestNewFailsForNonPositive(t *testing.T) {
 	test := &constructTest{
 		rows:     -3,
@@ -142,7 +160,7 @@ func TestRowsReturnsTheNumberOfRows(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	m, _ := New(test.rows, test.columns)(test.elements...)
+	m := New(test.rows, test.columns)(test.elements...)
 	if rows := m.Rows(); rows != test.rows {
 		t.Fatalf("The \"rows\" should be %d, but is %d.", test.rows, rows)
 	}
@@ -155,7 +173,7 @@ func TestColumnsReturnsTheNumberOfColumns(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	m, _ := New(test.rows, test.columns)(test.elements...)
+	m := New(test.rows, test.columns)(test.elements...)
 	if columns := m.Columns(); columns != test.columns {
 		t.Fatalf("The \"columns\" should be %d, but is %d.", test.columns, columns)
 	}
@@ -302,7 +320,7 @@ func TestUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 }
 
 func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
-	m, _ := New(2, 3)(
+	m := New(2, 3)(
 		0, 1, 2,
 		3, 4, 5,
 	)
@@ -356,7 +374,7 @@ func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
 }
 
 func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
-	m, _ := New(2, 3)(
+	m := New(2, 3)(
 		0, 1, 2,
 		0, 0, 3,
 	)
@@ -414,7 +432,7 @@ func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
 }
 
 func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
-	m, _ := New(3, 3)(
+	m := New(3, 3)(
 		1, 0, 0,
 		0, 2, 0,
 		0, 0, 3,
@@ -474,14 +492,14 @@ func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 }
 
 func TestEqualIsTrue(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(4, 3)(
+	n := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -494,14 +512,14 @@ func TestEqualIsTrue(t *testing.T) {
 }
 
 func TestEqualIsFalse(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(4, 3)(
+	n := New(4, 3)(
 		0, 1, 2,
 		3, 1, 5,
 		6, 7, 8,
@@ -514,14 +532,14 @@ func TestEqualIsFalse(t *testing.T) {
 }
 
 func TestEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(3, 3)(
+	n := New(3, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -546,14 +564,14 @@ func TestEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestAddReturnsTheOriginal(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(4, 3)(
+	n := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
@@ -566,21 +584,21 @@ func TestAddReturnsTheOriginal(t *testing.T) {
 }
 
 func TestAddReturnsTheResultOfAddition(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(4, 3)(
+	n := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
 		0, 9, 8,
 	)
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
@@ -595,14 +613,14 @@ func TestAddReturnsTheResultOfAddition(t *testing.T) {
 }
 
 func TestAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(3, 3)(
+	n := New(3, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -627,14 +645,14 @@ func TestAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestSubtractReturnsTheOriginal(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
 	)
 
-	n, _ := New(4, 3)(
+	n := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
@@ -647,21 +665,21 @@ func TestSubtractReturnsTheOriginal(t *testing.T) {
 }
 
 func TestSubtractReturnsTheResultOfSubtractition(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
 	)
 
-	n, _ := New(4, 3)(
+	n := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
 		0, 9, 8,
 	)
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -676,14 +694,14 @@ func TestSubtractReturnsTheResultOfSubtractition(t *testing.T) {
 }
 
 func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	n, _ := New(3, 3)(
+	n := New(3, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -708,7 +726,7 @@ func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestScalarReturnsTheOriginal(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 2, 1,
 		0, 1, 2,
@@ -723,7 +741,7 @@ func TestScalarReturnsTheOriginal(t *testing.T) {
 }
 
 func TestScalarTheResultOfMultiplication(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 2, 1,
 		0, 1, 2,
@@ -732,7 +750,7 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 
 	s := 3.0
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		0, 3, 6,
 		9, 6, 3,
 		0, 3, 6,
@@ -745,12 +763,12 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 }
 
 func TestMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
-	m, _ := New(2, 3)(
+	m := New(2, 3)(
 		2, 1, -3,
 		1, -5, 2,
 	)
 
-	n, _ := New(3, 3)(
+	n := New(3, 3)(
 		3, 1, 0,
 		2, 0, -1,
 		-1, 4, 1,
@@ -762,18 +780,18 @@ func TestMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 }
 
 func TestMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
-	m, _ := New(2, 3)(
+	m := New(2, 3)(
 		2, 1, -3,
 		1, -5, 2,
 	)
 
-	n, _ := New(3, 3)(
+	n := New(3, 3)(
 		3, 1, 0,
 		2, 0, -1,
 		-1, 4, 1,
 	)
 
-	r, _ := New(2, 3)(
+	r := New(2, 3)(
 		11, -10, -4,
 		-9, 9, 7,
 	)
@@ -803,7 +821,7 @@ func TestTransposeRowsReturnsTheNumberOfRows(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	m, _ := New(test.rows, test.columns)(test.elements...)
+	m := New(test.rows, test.columns)(test.elements...)
 	n := m.Transpose()
 
 	if rows := n.Rows(); rows != test.columns {
@@ -818,7 +836,7 @@ func TestTransposeColumnsReturnsTheNumberOfColumns(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	m, _ := New(test.rows, test.columns)(test.elements...)
+	m := New(test.rows, test.columns)(test.elements...)
 	n := m.Transpose()
 
 	if columns := n.Columns(); columns != test.rows {
@@ -980,7 +998,7 @@ func TestTransposeUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 }
 
 func TestTransposeAllCreatesCursorToIterateAllElements(t *testing.T) {
-	m, _ := New(2, 3)(
+	m := New(2, 3)(
 		0, 1, 2,
 		3, 4, 5,
 	)
@@ -1037,7 +1055,7 @@ func TestTransposeAllCreatesCursorToIterateAllElements(t *testing.T) {
 }
 
 func TestTransposeNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
-	m, _ := New(2, 3)(
+	m := New(2, 3)(
 		0, 1, 2,
 		0, 0, 3,
 	)
@@ -1098,7 +1116,7 @@ func TestTransposeNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
 }
 
 func TestTransposeDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
-	m, _ := New(3, 3)(
+	m := New(3, 3)(
 		1, 0, 0,
 		0, 2, 0,
 		0, 0, 3,
@@ -1160,7 +1178,7 @@ func TestTransposeDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 }
 
 func TestTransposeEqualIsTrue(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1168,7 +1186,7 @@ func TestTransposeEqualIsTrue(t *testing.T) {
 
 	n := m.Transpose()
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -1181,7 +1199,7 @@ func TestTransposeEqualIsTrue(t *testing.T) {
 }
 
 func TestTransposeEqualIsFalse(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1189,7 +1207,7 @@ func TestTransposeEqualIsFalse(t *testing.T) {
 
 	n := m.Transpose()
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		0, 1, 2,
 		3, 1, 5,
 		6, 7, 8,
@@ -1202,7 +1220,7 @@ func TestTransposeEqualIsFalse(t *testing.T) {
 }
 
 func TestTransposeEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1229,7 +1247,7 @@ func TestTransposeEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestTransposeAddReturnsTheOriginal(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1237,7 +1255,7 @@ func TestTransposeAddReturnsTheOriginal(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(4, 3)(
+	o := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
@@ -1250,7 +1268,7 @@ func TestTransposeAddReturnsTheOriginal(t *testing.T) {
 }
 
 func TestTransposeAddReturnsTheResultOfAddition(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1258,21 +1276,21 @@ func TestTransposeAddReturnsTheResultOfAddition(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(4, 3)(
+	o := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
 		0, 9, 8,
 	)
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
 	)
 
-	b, _ := New(3, 4)(
+	b := New(3, 4)(
 		9, 9, 9, 9,
 		9, 9, 9, 9,
 		9, 9, 9, 9,
@@ -1284,7 +1302,7 @@ func TestTransposeAddReturnsTheResultOfAddition(t *testing.T) {
 }
 
 func TestTransposeAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1292,7 +1310,7 @@ func TestTransposeAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(3, 3)(
+	o := New(3, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -1317,7 +1335,7 @@ func TestTransposeAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestTransposeSubtractReturnsTheOriginal(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		9, 9, 9, 9,
 		9, 9, 9, 9,
 		9, 9, 9, 9,
@@ -1325,7 +1343,7 @@ func TestTransposeSubtractReturnsTheOriginal(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(4, 3)(
+	o := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
@@ -1338,7 +1356,7 @@ func TestTransposeSubtractReturnsTheOriginal(t *testing.T) {
 }
 
 func TestTransposeSubtractReturnsTheResultOfSubtractition(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		9, 9, 9, 9,
 		9, 9, 9, 9,
 		9, 9, 9, 9,
@@ -1346,21 +1364,21 @@ func TestTransposeSubtractReturnsTheResultOfSubtractition(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(4, 3)(
+	o := New(4, 3)(
 		9, 8, 7,
 		6, 5, 4,
 		3, 2, 1,
 		0, 9, 8,
 	)
 
-	r, _ := New(4, 3)(
+	r := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
 	)
 
-	b, _ := New(3, 4)(
+	b := New(3, 4)(
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
@@ -1372,7 +1390,7 @@ func TestTransposeSubtractReturnsTheResultOfSubtractition(t *testing.T) {
 }
 
 func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m, _ := New(3, 4)(
+	m := New(3, 4)(
 		9, 9, 9, 9,
 		9, 9, 9, 9,
 		9, 9, 9, 9,
@@ -1380,7 +1398,7 @@ func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(3, 3)(
+	o := New(3, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
@@ -1405,7 +1423,7 @@ func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 2, 1,
 		0, 1, 2,
@@ -1422,7 +1440,7 @@ func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
 }
 
 func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
-	m, _ := New(4, 3)(
+	m := New(4, 3)(
 		0, 1, 2,
 		3, 2, 1,
 		0, 1, 2,
@@ -1433,13 +1451,13 @@ func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
 
 	s := 3.0
 
-	r, _ := New(3, 4)(
+	r := New(3, 4)(
 		0, 9, 0, 9,
 		3, 6, 3, 6,
 		6, 3, 6, 3,
 	)
 
-	b, _ := New(4, 3)(
+	b := New(4, 3)(
 		0, 3, 6,
 		9, 6, 3,
 		0, 3, 6,
@@ -1452,7 +1470,7 @@ func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
 }
 
 func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
-	m, _ := New(3, 2)(
+	m := New(3, 2)(
 		2, 1,
 		1, -5,
 		-3, 2,
@@ -1460,7 +1478,7 @@ func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(3, 3)(
+	o := New(3, 3)(
 		3, 1, 0,
 		2, 0, -1,
 		-1, 4, 1,
@@ -1472,7 +1490,7 @@ func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 }
 
 func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
-	m, _ := New(3, 2)(
+	m := New(3, 2)(
 		2, 1,
 		1, -5,
 		-3, 2,
@@ -1480,13 +1498,13 @@ func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 
 	n := m.Transpose()
 
-	o, _ := New(3, 3)(
+	o := New(3, 3)(
 		3, 1, 0,
 		2, 0, -1,
 		-1, 4, 1,
 	)
 
-	r, _ := New(2, 3)(
+	r := New(2, 3)(
 		11, -10, -4,
 		-9, 9, 7,
 	)

@@ -5,6 +5,7 @@ const (
 	DIFFERENT_SIZE_PANIC
 	NOT_MULTIPLIABLE_PANIC
 	OUT_OF_RANGE_PANIC
+	INVALID_ELEMENTS_PANIC
 )
 
 func ShapeShouldBePositive(row, column int) {
