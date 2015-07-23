@@ -7,7 +7,7 @@ import (
 )
 
 func TestIsZerosMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 3)(
+	m := dense.New(4, 3)(
 		0, 0, 0,
 		0, 0, 0,
 		0, 0, 0,
@@ -21,7 +21,7 @@ func TestIsZerosMutableDense(t *testing.T) {
 }
 
 func TestIsNotZerosMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 3)(
+	m := dense.New(4, 3)(
 		0, 1, 2,
 		4, 5, 0,
 		2, 3, 4,
@@ -35,7 +35,7 @@ func TestIsNotZerosMutableDense(t *testing.T) {
 }
 
 func TestIsSquareMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		0, 1, 2, 3,
 		4, 5, 0, 1,
 		2, 3, 4, 5,
@@ -49,7 +49,7 @@ func TestIsSquareMutableDense(t *testing.T) {
 }
 
 func TestIsNotSquareMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 3)(
+	m := dense.New(4, 3)(
 		0, 1, 2,
 		4, 5, 0,
 		2, 3, 4,
@@ -63,7 +63,7 @@ func TestIsNotSquareMutableDense(t *testing.T) {
 }
 
 func TestIsDiagonalMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		2, 0, 0, 0,
 		0, 4, 0, 0,
 		0, 0, 1, 0,
@@ -77,7 +77,7 @@ func TestIsDiagonalMutableDense(t *testing.T) {
 }
 
 func TestIsNotDiagonalMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		0, 1, 1, 1,
 		1, 0, 1, 1,
 		1, 1, 0, 1,
@@ -91,7 +91,7 @@ func TestIsNotDiagonalMutableDense(t *testing.T) {
 }
 
 func TestIsNotDiagonalNonSquareMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 3)(
+	m := dense.New(4, 3)(
 		2, 0, 0,
 		0, 4, 0,
 		0, 0, 1,
@@ -105,7 +105,7 @@ func TestIsNotDiagonalNonSquareMutableDense(t *testing.T) {
 }
 
 func TestIsIdentityMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -119,7 +119,7 @@ func TestIsIdentityMutableDense(t *testing.T) {
 }
 
 func TestIsNotIdentityMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		2, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -133,7 +133,7 @@ func TestIsNotIdentityMutableDense(t *testing.T) {
 }
 
 func TestIsNotIdentityNonSquareMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 3)(
+	m := dense.New(4, 3)(
 		1, 0, 0,
 		0, 1, 0,
 		0, 0, 1,
@@ -147,7 +147,7 @@ func TestIsNotIdentityNonSquareMutableDense(t *testing.T) {
 }
 
 func TestIsScalarMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		7, 0, 0, 0,
 		0, 7, 0, 0,
 		0, 0, 7, 0,
@@ -161,7 +161,7 @@ func TestIsScalarMutableDense(t *testing.T) {
 }
 
 func TestIsNotScalarMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 4)(
+	m := dense.New(4, 4)(
 		7, 0, 0, 0,
 		0, 7, 0, 0,
 		0, 0, 7, 0,
@@ -175,7 +175,7 @@ func TestIsNotScalarMutableDense(t *testing.T) {
 }
 
 func TestIsNotScalarNonSquareMutableDense(t *testing.T) {
-	m, _ := dense.New(4, 3)(
+	m := dense.New(4, 3)(
 		7, 0, 0,
 		0, 7, 0,
 		0, 0, 7,
