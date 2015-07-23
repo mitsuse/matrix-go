@@ -1,12 +1,15 @@
 package validates
 
 const (
-	NON_POSITIVE_SIZE_PANIC = iota
+	NON_POSITIVE_SIZE_PANIC Panic = iota
 	DIFFERENT_SIZE_PANIC
 	NOT_MULTIPLIABLE_PANIC
 	OUT_OF_RANGE_PANIC
 	INVALID_ELEMENTS_PANIC
 )
+
+//go:generate stringer -type=Panic
+type Panic int
 
 func ShapeShouldBePositive(row, column int) {
 	if row > 0 && column > 0 {
