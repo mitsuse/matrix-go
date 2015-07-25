@@ -15,16 +15,11 @@ func TestReflect(t *testing.T) {
 		Y: 2,
 	}
 
-	if x, y := Reflect().Rewrite(test.X, test.Y); x != test.X || y != test.Y {
-		t.Error("The result pair should be reversed.")
-		t.Fatalf(
-			"# x = %d, y = %d, test.X = %d, test.Y = %d",
-			x,
-			y,
-			test.X,
-			test.Y,
-		)
+	if x, y := Reflect().Rewrite(test.X, test.Y); x == test.X && y == test.Y {
+		return
 	}
+
+	t.Fatal("The result pair should equal to the input pair.")
 }
 
 func TestReverse(t *testing.T) {
@@ -33,26 +28,25 @@ func TestReverse(t *testing.T) {
 		Y: 2,
 	}
 
-	if x, y := Reverse().Rewrite(test.X, test.Y); x != test.Y || y != test.X {
-		t.Error("The result pair should equal to the input pair.")
-		t.Fatalf(
-			"# x = %d, y = %d, test.X = %d, test.Y = %d",
-			x,
-			y,
-			test.X,
-			test.Y,
-		)
+	if x, y := Reverse().Rewrite(test.X, test.Y); x == test.Y && y == test.X {
+		return
 	}
+
+	t.Fatal("The result pair should be reversed.")
 }
 
 func TestReflectTranspose(t *testing.T) {
-	if Reflect().Transpose() != Reverse() {
-		t.Fatal("The transpose of \"Reflect\" should be \"Reverse\".")
+	if Reflect().Transpose() == Reverse() {
+		return
 	}
+
+	t.Fatal("The transpose of Reflect should be Reverse.")
 }
 
 func TestReverseTranspose(t *testing.T) {
-	if Reverse().Transpose() != Reflect() {
-		t.Fatal("The transpose of \"Reverse\" should be \"Reflect\".")
+	if Reverse().Transpose() == Reflect() {
+		return
 	}
+
+	t.Fatal("The transpose of Reverse should be Reflect.")
 }
