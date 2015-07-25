@@ -14,10 +14,11 @@ func TestIsZerosMutableDense(t *testing.T) {
 		0, 0, 0,
 	)
 
-	if isZeros := IsZeros(m); !isZeros {
-		t.Error("This matrix should be zeros.")
-		t.Fatalf("# matrix = %+v", m)
+	if IsZeros(m) {
+		return
 	}
+
+	t.Fatal("This matrix should be zeros.")
 }
 
 func TestIsNotZerosMutableDense(t *testing.T) {
@@ -28,10 +29,11 @@ func TestIsNotZerosMutableDense(t *testing.T) {
 		0, 1, 2,
 	)
 
-	if isZeros := IsZeros(m); isZeros {
-		t.Error("This matrix should not be zeros.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsZeros(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be zeros.")
 }
 
 func TestIsSquareMutableDense(t *testing.T) {
@@ -42,10 +44,11 @@ func TestIsSquareMutableDense(t *testing.T) {
 		0, 1, 2, 3,
 	)
 
-	if isSquare := IsSquare(m); !isSquare {
-		t.Error("This matrix should be square.")
-		t.Fatalf("# matrix = %+v", m)
+	if IsSquare(m) {
+		return
 	}
+
+	t.Fatal("This matrix should be square.")
 }
 
 func TestIsNotSquareMutableDense(t *testing.T) {
@@ -56,10 +59,11 @@ func TestIsNotSquareMutableDense(t *testing.T) {
 		0, 1, 2,
 	)
 
-	if isSquare := IsSquare(m); isSquare {
-		t.Error("This matrix should not be square.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsSquare(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be square.")
 }
 
 func TestIsDiagonalMutableDense(t *testing.T) {
@@ -70,10 +74,11 @@ func TestIsDiagonalMutableDense(t *testing.T) {
 		0, 0, 0, 0,
 	)
 
-	if isDiagonal := IsDiagonal(m); !isDiagonal {
-		t.Error("This matrix should be diagonal.")
-		t.Fatalf("# matrix = %+v", m)
+	if IsDiagonal(m) {
+		return
 	}
+
+	t.Fatal("This matrix should be diagonal.")
 }
 
 func TestIsNotDiagonalMutableDense(t *testing.T) {
@@ -84,10 +89,11 @@ func TestIsNotDiagonalMutableDense(t *testing.T) {
 		1, 1, 1, 0,
 	)
 
-	if isDiagonal := IsDiagonal(m); isDiagonal {
-		t.Error("This matrix should not be diagonal.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsDiagonal(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be diagonal.")
 }
 
 func TestIsNotDiagonalNonSquareMutableDense(t *testing.T) {
@@ -98,10 +104,11 @@ func TestIsNotDiagonalNonSquareMutableDense(t *testing.T) {
 		0, 0, 0,
 	)
 
-	if isDiagonal := IsDiagonal(m); isDiagonal {
-		t.Error("This matrix should not be diagonal.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsDiagonal(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be diagonal.")
 }
 
 func TestIsIdentityMutableDense(t *testing.T) {
@@ -112,10 +119,11 @@ func TestIsIdentityMutableDense(t *testing.T) {
 		0, 0, 0, 1,
 	)
 
-	if isIdentity := IsIdentity(m); !isIdentity {
-		t.Error("This matrix should be identity.")
-		t.Fatalf("# matrix = %+v", m)
+	if IsIdentity(m) {
+		return
 	}
+
+	t.Fatal("This matrix should be identity.")
 }
 
 func TestIsNotIdentityMutableDense(t *testing.T) {
@@ -126,10 +134,11 @@ func TestIsNotIdentityMutableDense(t *testing.T) {
 		0, 0, 0, 1,
 	)
 
-	if isIdentity := IsIdentity(m); isIdentity {
-		t.Error("This matrix should not be identity.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsIdentity(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be identity.")
 }
 
 func TestIsNotIdentityNonSquareMutableDense(t *testing.T) {
@@ -140,10 +149,11 @@ func TestIsNotIdentityNonSquareMutableDense(t *testing.T) {
 		0, 0, 0,
 	)
 
-	if isIdentity := IsIdentity(m); isIdentity {
-		t.Error("This matrix should not be identity.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsIdentity(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be identity.")
 }
 
 func TestIsScalarMutableDense(t *testing.T) {
@@ -154,10 +164,11 @@ func TestIsScalarMutableDense(t *testing.T) {
 		0, 0, 0, 7,
 	)
 
-	if isScalar := IsScalar(m); !isScalar {
-		t.Error("This matrix should be scalar.")
-		t.Fatalf("# matrix = %+v", m)
+	if IsScalar(m) {
+		return
 	}
+
+	t.Fatal("This matrix should be scalar.")
 }
 
 func TestIsNotScalarMutableDense(t *testing.T) {
@@ -168,10 +179,11 @@ func TestIsNotScalarMutableDense(t *testing.T) {
 		0, 0, 0, 6,
 	)
 
-	if isScalar := IsScalar(m); isScalar {
-		t.Error("This matrix should not be scalar.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsScalar(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be scalar.")
 }
 
 func TestIsNotScalarNonSquareMutableDense(t *testing.T) {
@@ -182,8 +194,9 @@ func TestIsNotScalarNonSquareMutableDense(t *testing.T) {
 		0, 0, 0,
 	)
 
-	if isScalar := IsScalar(m); isScalar {
-		t.Error("This matrix should not be scalar.")
-		t.Fatalf("# matrix = %+v", m)
+	if !IsScalar(m) {
+		return
 	}
+
+	t.Fatal("This matrix should not be scalar.")
 }
