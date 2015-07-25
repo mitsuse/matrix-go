@@ -5,7 +5,6 @@ package dense
 
 import (
 	"github.com/mitsuse/matrix-go"
-	"github.com/mitsuse/matrix-go/elements"
 	"github.com/mitsuse/matrix-go/internal/rewriters"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
@@ -59,15 +58,15 @@ func (m *matrixImpl) Columns() (columns int) {
 	return columns
 }
 
-func (m *matrixImpl) All() elements.Cursor {
+func (m *matrixImpl) All() matrix.Cursor {
 	return newAllCursor(m)
 }
 
-func (m *matrixImpl) NonZeros() elements.Cursor {
+func (m *matrixImpl) NonZeros() matrix.Cursor {
 	return newNonZerosCursor(m)
 }
 
-func (m *matrixImpl) Diagonal() elements.Cursor {
+func (m *matrixImpl) Diagonal() matrix.Cursor {
 	return newDiagonalCursor(m)
 }
 

@@ -1,11 +1,7 @@
 /*
-Package "matrix" provides the interface type which represents a matrix.
+Package "matrix" provides types which represent matrix, scalar and iterator of elements.
 */
 package matrix
-
-import (
-	"github.com/mitsuse/matrix-go/elements"
-)
 
 type Matrix interface {
 	// Return the shape of matrix, which consists of the "rows" and the "columns".
@@ -18,13 +14,13 @@ type Matrix interface {
 	Columns() (columns int)
 
 	// Create and return an iterator for all elements.
-	All() elements.Cursor
+	All() Cursor
 
 	// Create and return an iterator for non-zero elements.
-	NonZeros() elements.Cursor
+	NonZeros() Cursor
 
 	// Create and return an iterator for diagonal elements.
-	Diagonal() elements.Cursor
+	Diagonal() Cursor
 
 	// Get an element of matrix speficied with "row" and "column".
 	Get(row, column int) (element float64)
