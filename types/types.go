@@ -3,10 +3,12 @@ Package "types" provides functions to descriminate the type of given matrix.
 */
 package types
 
-import (
-	"github.com/mitsuse/matrix-go"
-	"github.com/mitsuse/matrix-go/elements"
-)
+import "github.com/mitsuse/matrix-go"
+
+/*
+"Match" is a type of functions to be used check an element satisfies arbitary condition.
+*/
+type Match func(element float64, row, column int) bool
 
 // Check whether "m" is zero matrix or not.
 func IsZeros(m matrix.Matrix) bool {
@@ -19,7 +21,7 @@ func IsSquare(m matrix.Matrix) bool {
 }
 
 // Check whether "m" is special diagonal matrix satisfying arbitary condition.
-func IsSpecialDiagonal(m matrix.Matrix, match elements.Match) bool {
+func IsSpecialDiagonal(m matrix.Matrix, match Match) bool {
 	if !IsSquare(m) {
 		return false
 	}
