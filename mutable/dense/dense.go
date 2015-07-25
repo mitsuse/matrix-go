@@ -154,9 +154,9 @@ func (m *matrixImpl) Dot(n matrix.Matrix) matrix.Matrix {
 	return r
 }
 
-func (m *matrixImpl) Multiply(s matrix.Scalar) matrix.Matrix {
+func (m *matrixImpl) Multiply(s float64) matrix.Matrix {
 	for index, element := range m.elements {
-		m.elements[index] = element * float64(s)
+		m.elements[index] = element * s
 	}
 
 	return m

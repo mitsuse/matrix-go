@@ -3,7 +3,6 @@ package dense
 import (
 	"testing"
 
-	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
@@ -659,7 +658,7 @@ func TestTransposeMultiplyReturnsTheOriginal(t *testing.T) {
 		2, 1, 2, 1,
 	).Transpose()
 
-	s := matrix.Scalar(3.0)
+	s := 3.0
 
 	if m.Multiply(s) == m {
 		return
@@ -675,7 +674,7 @@ func TestTransposeMultiplyTheResultOfMultiplication(t *testing.T) {
 		2, 1, 2, 1,
 	).Transpose()
 
-	s := matrix.Scalar(3.0)
+	s := 3.0
 
 	r := New(4, 3)(
 		0, 3, 6,
