@@ -3,6 +3,7 @@ package dense
 import (
 	"testing"
 
+	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/validates"
 )
 
@@ -606,7 +607,7 @@ func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 	m.Subtract(n)
 }
 
-func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
+func TestTransposeDotReturnsTheNewMatrixInstance(t *testing.T) {
 	m := New(3, 2)(
 		2, 1,
 		1, -5,
@@ -619,14 +620,14 @@ func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 		-1, 4, 1,
 	)
 
-	if r := m.Multiply(n); m != r && n != r {
+	if r := m.Dot(n); m != r && n != r {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return a new instance by multiplication.")
 }
 
-func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
+func TestTransposeDotReturnsTheResultOfMultiplication(t *testing.T) {
 	m := New(3, 2)(
 		2, 1,
 		1, -5,
@@ -644,37 +645,37 @@ func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 		-9, 9, 7,
 	)
 
-	if m.Multiply(n).Equal(r) {
+	if m.Dot(n).Equal(r) {
 		return
 	}
 
 	t.Fatal("Mutable matrix should multiply the receiver matrix by the given matrix.")
 }
 
-func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
+func TestTransposeMultiplyReturnsTheOriginal(t *testing.T) {
 	m := New(3, 4)(
 		0, 3, 0, 3,
 		1, 2, 1, 2,
 		2, 1, 2, 1,
 	).Transpose()
 
-	s := 3.0
+	s := matrix.Scalar(3.0)
 
-	if m.Scalar(s) == m {
+	if m.Multiply(s) == m {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return itself by scalar-multiplication.")
 }
 
-func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
+func TestTransposeMultiplyTheResultOfMultiplication(t *testing.T) {
 	m := New(3, 4)(
 		0, 3, 0, 3,
 		1, 2, 1, 2,
 		2, 1, 2, 1,
 	).Transpose()
 
-	s := 3.0
+	s := matrix.Scalar(3.0)
 
 	r := New(4, 3)(
 		0, 3, 6,
@@ -683,7 +684,7 @@ func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
 		9, 6, 3,
 	)
 
-	if m.Scalar(s).Equal(r) {
+	if m.Multiply(s).Equal(r) {
 		return
 	}
 

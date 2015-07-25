@@ -134,7 +134,7 @@ func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Multiply(n matrix.Matrix) matrix.Matrix {
+func (m *matrixImpl) Dot(n matrix.Matrix) matrix.Matrix {
 	validates.ShapeShouldBeMultipliable(m, n)
 
 	rows := m.Rows()
@@ -155,9 +155,9 @@ func (m *matrixImpl) Multiply(n matrix.Matrix) matrix.Matrix {
 	return r
 }
 
-func (m *matrixImpl) Scalar(s float64) matrix.Matrix {
+func (m *matrixImpl) Multiply(s matrix.Scalar) matrix.Matrix {
 	for index, element := range m.elements {
-		m.elements[index] = element * s
+		m.elements[index] = element * float64(s)
 	}
 
 	return m
