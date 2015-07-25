@@ -6,8 +6,8 @@ package dense
 import (
 	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/elements"
-	"github.com/mitsuse/matrix-go/rewriters"
-	"github.com/mitsuse/matrix-go/validates"
+	"github.com/mitsuse/matrix-go/internal/rewriters"
+	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
 type matrixImpl struct {

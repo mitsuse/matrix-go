@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/mitsuse/matrix-go"
-	"github.com/mitsuse/matrix-go/validates"
+	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
 func TestTransposeShapeReturnsTheNumberOfRowsAndColumns(t *testing.T) {
