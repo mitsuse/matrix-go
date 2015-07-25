@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/mitsuse/matrix-go"
+	"github.com/mitsuse/matrix-go/internal/validates"
 	"github.com/mitsuse/matrix-go/types"
-	"github.com/mitsuse/matrix-go/validates"
 )
 
 type constructTest struct {
