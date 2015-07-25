@@ -1,4 +1,4 @@
-package matrix
+package types
 
 /*
 "Cursor" interface is an iterator for elements of matrix.

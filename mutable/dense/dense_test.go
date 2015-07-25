@@ -3,7 +3,6 @@ package dense
 import (
 	"testing"
 
-	"github.com/mitsuse/matrix-go/feature"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
@@ -148,11 +147,13 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	if feature.IsZeros(Zeros(test.rows, test.columns)) {
-		return
-	}
+	for _, element := range Zeros(test.rows, test.columns).(*matrixImpl).elements {
+		if element == 0 {
+			continue
+		}
 
-	t.Fatal("The created matrix should be zero matrix.")
+		t.Fatal("The created matrix should be zero matrix.")
+	}
 }
 
 func TestZerosFailsForNonPositiveRows(t *testing.T) {

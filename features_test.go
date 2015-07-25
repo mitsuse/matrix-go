@@ -1,4 +1,4 @@
-package feature
+package matrix
 
 import (
 	"testing"
