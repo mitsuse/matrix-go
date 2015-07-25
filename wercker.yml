@@ -1,4 +1,4 @@
-box: mitsuse/golang
+box: golang:1.5
 build:
     steps:
         - setup-go-workspace
@@ -11,6 +11,7 @@ build:
             code: |
                 go test ./...
     after-steps:
-        - wantedly/pretty-slack-notify:
-            webhook_url: $SLACK_WEBHOOK_URL
+        - slack-notifier:
+            url: $SLACK_NOTIFIER_URL
+            channel: $SLACK_NOTIFIER_CHANNEL
             username: wercker
