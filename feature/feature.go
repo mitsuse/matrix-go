@@ -1,7 +1,7 @@
 /*
-Package "types" provides functions to descriminate the type of given matrix.
+Package "feature" provides functions to descriminate the feature of given matrix.
 */
-package types
+package feature
 
 import (
 	"github.com/mitsuse/matrix-go"

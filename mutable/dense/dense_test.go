@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/mitsuse/matrix-go"
+	"github.com/mitsuse/matrix-go/feature"
 	"github.com/mitsuse/matrix-go/internal/validates"
-	"github.com/mitsuse/matrix-go/types"
 )
 
 type constructTest struct {
@@ -149,7 +149,7 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	if types.IsZeros(Zeros(test.rows, test.columns)) {
+	if feature.IsZeros(Zeros(test.rows, test.columns)) {
 		return
 	}
 
