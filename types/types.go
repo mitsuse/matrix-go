@@ -3,7 +3,9 @@ Package "types" provides functions to descriminate the type of given matrix.
 */
 package types
 
-import "github.com/mitsuse/matrix-go"
+import (
+	"github.com/mitsuse/matrix-go"
+)
 
 /*
 "Match" is a type of functions to be used check an element satisfies arbitary condition.
