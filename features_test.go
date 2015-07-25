@@ -3,7 +3,7 @@ package matrix
 import (
 	"testing"
 
-	"github.com/mitsuse/matrix-go/mutable/dense"
+	"github.com/mitsuse/matrix-go/dense"
 )
 
 func TestIsZerosMutableDense(t *testing.T) {
