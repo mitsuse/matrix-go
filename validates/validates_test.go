@@ -21,17 +21,22 @@ func (t *shapeTest) Columns() int {
 	return t.columns
 }
 
+type indexTest struct {
+	Row    int
+	Column int
+}
+
+type rangeTest struct {
+	Shape shapeTest
+	Index indexTest
+}
+
 func TestShapeShouldBePositiveCausesNothing(t *testing.T) {
 	test := &shapeTest{rows: 1, columns: 1}
 
 	defer func() {
 		if p := recover(); p != nil {
-			t.Error("Positive rows or columns should be valid, but causes panic.")
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows(),
-				test.Columns(),
-			)
+			t.Fatalf("Positive rows or columns should be valid, but causes %s.", p)
 		}
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
@@ -41,16 +46,11 @@ func TestShapeShouldBePositiveCausePanicWithZeroRwos(t *testing.T) {
 	test := shapeTest{rows: 0, columns: 1}
 
 	defer func() {
-		if p := recover(); p != NON_POSITIVE_SIZE_PANIC {
-			t.Error(
-				"Non-positive rows or columns should be invalid, but causes nothing.",
-			)
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows(),
-				test.Columns(),
-			)
+		if p := recover(); p == NON_POSITIVE_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Non-positive rows or columns should cause %s.", NON_POSITIVE_SIZE_PANIC)
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
 }
@@ -59,16 +59,11 @@ func TestShapeShouldBePositiveCausePanicWithZeroColumns(t *testing.T) {
 	test := shapeTest{rows: 1, columns: 0}
 
 	defer func() {
-		if p := recover(); p != NON_POSITIVE_SIZE_PANIC {
-			t.Error(
-				"Non-positive rows or columns should be invalid, but causes nothing.",
-			)
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows,
-				test.Columns,
-			)
+		if p := recover(); p == NON_POSITIVE_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Non-positive rows or columns should cause %s.", NON_POSITIVE_SIZE_PANIC)
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
 }
@@ -77,16 +72,11 @@ func TestShapeShouldBePositiveCausePanicWithZeros(t *testing.T) {
 	test := shapeTest{rows: 0, columns: 0}
 
 	defer func() {
-		if p := recover(); p != NON_POSITIVE_SIZE_PANIC {
-			t.Error(
-				"Non-positive rows or columns should be invalid, but causes nothing.",
-			)
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows(),
-				test.Columns(),
-			)
+		if p := recover(); p == NON_POSITIVE_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Non-positive rows or columns should cause %s.", NON_POSITIVE_SIZE_PANIC)
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
 }
@@ -95,16 +85,11 @@ func TestShapeShouldBePositiveCausePanicWithNegativeRows(t *testing.T) {
 	test := shapeTest{rows: -1, columns: 0}
 
 	defer func() {
-		if p := recover(); p != NON_POSITIVE_SIZE_PANIC {
-			t.Error(
-				"Non-positive rows or columns should be invalid, but causes nothing.",
-			)
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows(),
-				test.Columns(),
-			)
+		if p := recover(); p == NON_POSITIVE_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Non-positive rows or columns should cause %s.", NON_POSITIVE_SIZE_PANIC)
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
 }
@@ -113,16 +98,11 @@ func TestShapeShouldBePositiveCausePanicWithNegativeColumnns(t *testing.T) {
 	test := shapeTest{rows: 0, columns: -1}
 
 	defer func() {
-		if p := recover(); p != NON_POSITIVE_SIZE_PANIC {
-			t.Error(
-				"Non-positive rows or columns should be invalid, but causes nothing.",
-			)
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows(),
-				test.Columns(),
-			)
+		if p := recover(); p == NON_POSITIVE_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Non-positive rows or columns should cause %s.", NON_POSITIVE_SIZE_PANIC)
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
 }
@@ -131,16 +111,11 @@ func TestShapeShouldBePositiveCausePanicWithNegative(t *testing.T) {
 	test := shapeTest{rows: -1, columns: -1}
 
 	defer func() {
-		if p := recover(); p != NON_POSITIVE_SIZE_PANIC {
-			t.Error(
-				"Non-positive rows or columns should be invalid, but causes nothing.",
-			)
-			t.Fatalf(
-				"# rows = %d, columns = %d",
-				test.Rows(),
-				test.Columns(),
-			)
+		if p := recover(); p == NON_POSITIVE_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Non-positive rows or columns should cause %s.", NON_POSITIVE_SIZE_PANIC)
 	}()
 	ShapeShouldBePositive(test.Rows(), test.Columns())
 }
@@ -151,16 +126,7 @@ func TestShapeShouldBeSameCauseNathing(t *testing.T) {
 
 	defer func() {
 		if p := recover(); p != nil {
-			t.Error(
-				"Two matrices have same size, but cause panic.",
-			)
-			t.Fatalf(
-				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
-				m.Rows(),
-				m.Columns(),
-				n.Rows(),
-				n.Columns(),
-			)
+			t.Fatalf("Two matrices have same size, but cause %s.", p)
 		}
 	}()
 	ShapeShouldBeSame(m, n)
@@ -171,18 +137,11 @@ func TestShapeShouldBeSameCausePanicWithDifferenceShape(t *testing.T) {
 	n := &shapeTest{rows: 6, columns: 2}
 
 	defer func() {
-		if p := recover(); p != DIFFERENT_SIZE_PANIC {
-			t.Error(
-				"Two matrices with different size should cause panic.",
-			)
-			t.Fatalf(
-				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
-				m.Rows(),
-				m.Columns(),
-				n.Rows(),
-				n.Columns(),
-			)
+		if p := recover(); p == DIFFERENT_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Two matrices with different size should cause %s.", DIFFERENT_SIZE_PANIC)
 	}()
 	ShapeShouldBeSame(m, n)
 }
@@ -192,18 +151,11 @@ func TestShapeShouldBeSameCausePanicWithDifferenceRows(t *testing.T) {
 	n := &shapeTest{rows: 6, columns: 3}
 
 	defer func() {
-		if p := recover(); p != DIFFERENT_SIZE_PANIC {
-			t.Error(
-				"Two matrices with different size should cause panic.",
-			)
-			t.Fatalf(
-				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
-				m.Rows(),
-				m.Columns(),
-				n.Rows(),
-				n.Columns(),
-			)
+		if p := recover(); p == DIFFERENT_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Two matrices with different size should cause %s.", DIFFERENT_SIZE_PANIC)
 	}()
 	ShapeShouldBeSame(m, n)
 }
@@ -213,18 +165,11 @@ func TestShapeShouldBeSameCausePanicWithDifferenceColumns(t *testing.T) {
 	n := &shapeTest{rows: 4, columns: 2}
 
 	defer func() {
-		if p := recover(); p != DIFFERENT_SIZE_PANIC {
-			t.Error(
-				"Two matrices with different size should cause panic.",
-			)
-			t.Fatalf(
-				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
-				m.Rows(),
-				m.Columns(),
-				n.Rows(),
-				n.Columns(),
-			)
+		if p := recover(); p == DIFFERENT_SIZE_PANIC {
+			return
 		}
+
+		t.Fatalf("Two matrices with different size should cause %s.", DIFFERENT_SIZE_PANIC)
 	}()
 	ShapeShouldBeSame(m, n)
 }
@@ -235,16 +180,7 @@ func TestShapeShouldBeMultipliableCausesNothing(t *testing.T) {
 
 	defer func() {
 		if p := recover(); p != nil {
-			t.Error(
-				"Two matrices are mulpliable, but cause panic.",
-			)
-			t.Fatalf(
-				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
-				m.Rows(),
-				m.Columns(),
-				n.Rows(),
-				n.Columns(),
-			)
+			t.Fatalf("Two matrices are mulpliable, but cause %s.", p)
 		}
 	}()
 	ShapeShouldBeMultipliable(m, n)
@@ -255,30 +191,13 @@ func TestShapeShouldBeMultipliableCausesPanic(t *testing.T) {
 	n := &shapeTest{rows: 5, columns: 3}
 
 	defer func() {
-		if p := recover(); p != NOT_MULTIPLIABLE_PANIC {
-			t.Error(
-				"Two matrices should not be mulpliable.",
-			)
-			t.Fatalf(
-				"# m.Rows = %d, m.Columns = %d, n.Rows = %d, n.Columns = %d",
-				m.Rows(),
-				m.Columns(),
-				n.Rows(),
-				n.Columns(),
-			)
+		if p := recover(); p == NOT_MULTIPLIABLE_PANIC {
+			return
 		}
+
+		t.Fatalf("Two matrices should not be mulpliable.")
 	}()
 	ShapeShouldBeMultipliable(m, n)
-}
-
-type indexTest struct {
-	Row    int
-	Column int
-}
-
-type rangeTest struct {
-	Shape shapeTest
-	Index indexTest
 }
 
 func TestIndexShouldBeInRangeCausesNothing(t *testing.T) {
@@ -317,13 +236,11 @@ func TestIndexShouldBeInRangeCausesNothing(t *testing.T) {
 	for _, test := range testSeq {
 		defer func(test *rangeTest) {
 			if p := recover(); p != nil {
-				t.Error("Inside-of-range index should be valid, but causes panic.")
 				t.Fatalf(
-					"# rows = %d, columns = %d, row = %d, column = %d",
-					test.Shape.Rows(),
-					test.Shape.Columns(),
-					test.Index.Row,
-					test.Index.Column,
+					"An index %v is contained in shape %v, but cause %s.",
+					test.Index,
+					test.Shape,
+					p,
 				)
 			}
 		}(test)
@@ -344,16 +261,11 @@ func TestIndexShouldBeInRangeCausesPanicWithNegativeRow(t *testing.T) {
 	}
 
 	defer func() {
-		if p := recover(); p != OUT_OF_RANGE_PANIC {
-			t.Error("Outside-of-range index should be invalid, but causes nothing.")
-			t.Fatalf(
-				"# rows = %d, columns = %d, row = %d, column = %d",
-				test.Shape.Rows(),
-				test.Shape.Columns(),
-				test.Index.Row,
-				test.Index.Column,
-			)
+		if p := recover(); p == OUT_OF_RANGE_PANIC {
+			return
 		}
+
+		t.Fatalf("Outside-of-range index should cause %s.", OUT_OF_RANGE_PANIC)
 	}()
 
 	IndexShouldBeInRange(
@@ -371,16 +283,11 @@ func TestIndexShouldBeInRangeCausesPanicWithNegativeColumn(t *testing.T) {
 	}
 
 	defer func() {
-		if p := recover(); p != OUT_OF_RANGE_PANIC {
-			t.Error("Outside-of-range index should be invalid, but causes nothing.")
-			t.Fatalf(
-				"# rows = %d, columns = %d, row = %d, column = %d",
-				test.Shape.Rows(),
-				test.Shape.Columns(),
-				test.Index.Row,
-				test.Index.Column,
-			)
+		if p := recover(); p == OUT_OF_RANGE_PANIC {
+			return
 		}
+
+		t.Fatalf("Outside-of-range index should cause %s.", OUT_OF_RANGE_PANIC)
 	}()
 
 	IndexShouldBeInRange(
@@ -398,16 +305,11 @@ func TestIndexShouldBeInRangeCausesPanicWithNegative(t *testing.T) {
 	}
 
 	defer func() {
-		if p := recover(); p != OUT_OF_RANGE_PANIC {
-			t.Error("Outside-of-range index should be invalid, but causes nothing.")
-			t.Fatalf(
-				"# rows = %d, columns = %d, row = %d, column = %d",
-				test.Shape.Rows(),
-				test.Shape.Columns(),
-				test.Index.Row,
-				test.Index.Column,
-			)
+		if p := recover(); p == OUT_OF_RANGE_PANIC {
+			return
 		}
+
+		t.Fatalf("Outside-of-range index should cause %s.", OUT_OF_RANGE_PANIC)
 	}()
 
 	IndexShouldBeInRange(
@@ -425,16 +327,11 @@ func TestIndexShouldBeInRangeCausesPanicWithLargeRow(t *testing.T) {
 	}
 
 	defer func() {
-		if p := recover(); p != OUT_OF_RANGE_PANIC {
-			t.Error("Outside-of-range index should be invalid, but causes nothing.")
-			t.Fatalf(
-				"# rows = %d, columns = %d, row = %d, column = %d",
-				test.Shape.Rows(),
-				test.Shape.Columns(),
-				test.Index.Row,
-				test.Index.Column,
-			)
+		if p := recover(); p == OUT_OF_RANGE_PANIC {
+			return
 		}
+
+		t.Fatalf("Outside-of-range index should cause %s.", OUT_OF_RANGE_PANIC)
 	}()
 
 	IndexShouldBeInRange(
@@ -452,16 +349,11 @@ func TestIndexShouldBeInRangeCausesPanicWithLargeColumn(t *testing.T) {
 	}
 
 	defer func() {
-		if p := recover(); p != OUT_OF_RANGE_PANIC {
-			t.Error("Outside-of-range index should be invalid, but causes nothing.")
-			t.Fatalf(
-				"# rows = %d, columns = %d, row = %d, column = %d",
-				test.Shape.Rows(),
-				test.Shape.Columns(),
-				test.Index.Row,
-				test.Index.Column,
-			)
+		if p := recover(); p == OUT_OF_RANGE_PANIC {
+			return
 		}
+
+		t.Fatalf("Outside-of-range index should cause %s.", OUT_OF_RANGE_PANIC)
 	}()
 
 	IndexShouldBeInRange(
@@ -479,16 +371,11 @@ func TestIndexShouldBeInRangeCausesPanicWithLarge(t *testing.T) {
 	}
 
 	defer func() {
-		if p := recover(); p != OUT_OF_RANGE_PANIC {
-			t.Error("Outside-of-range index should be invalid, but causes nothing.")
-			t.Fatalf(
-				"# rows = %d, columns = %d, row = %d, column = %d",
-				test.Shape.Rows(),
-				test.Shape.Columns(),
-				test.Index.Row,
-				test.Index.Column,
-			)
+		if p := recover(); p == OUT_OF_RANGE_PANIC {
+			return
 		}
+
+		t.Fatalf("Outside-of-range index should cause %s.", OUT_OF_RANGE_PANIC)
 	}()
 
 	IndexShouldBeInRange(
