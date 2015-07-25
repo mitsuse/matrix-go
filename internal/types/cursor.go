@@ -1,4 +1,4 @@
-package elements
+package types
 
 /*
 "Cursor" interface is an iterator for elements of matrix.
@@ -13,8 +13,3 @@ type Cursor interface {
 	// Return the current read element.
 	Get() (element float64, row, column int)
 }
-
-/*
-"Match" is a type of functions to be used check an element satisfies arbitary condition.
-*/
-type Match func(element float64, row, column int) bool

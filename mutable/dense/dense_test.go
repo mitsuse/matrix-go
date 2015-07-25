@@ -3,9 +3,7 @@ package dense
 import (
 	"testing"
 
-	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/internal/validates"
-	"github.com/mitsuse/matrix-go/types"
 )
 
 type constructTest struct {
@@ -149,11 +147,13 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	if types.IsZeros(Zeros(test.rows, test.columns)) {
-		return
-	}
+	for _, element := range Zeros(test.rows, test.columns).(*matrixImpl).elements {
+		if element == 0 {
+			continue
+		}
 
-	t.Fatal("The created matrix should be zero matrix.")
+		t.Fatal("The created matrix should be zero matrix.")
+	}
 }
 
 func TestZerosFailsForNonPositiveRows(t *testing.T) {
@@ -858,7 +858,7 @@ func TestMultiplyReturnsTheOriginal(t *testing.T) {
 		3, 2, 1,
 	)
 
-	s := matrix.Scalar(3.0)
+	s := 3.0
 
 	if m.Multiply(s) == m {
 		return
@@ -875,7 +875,7 @@ func TestMultiplyTheResultOfMultiplication(t *testing.T) {
 		3, 2, 1,
 	)
 
-	s := matrix.Scalar(3.0)
+	s := 3.0
 
 	r := New(4, 3)(
 		0, 3, 6,

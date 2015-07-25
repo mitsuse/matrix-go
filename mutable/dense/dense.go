@@ -4,9 +4,8 @@ Package "dense" provides an implementation of "Matrix" which stores elements in 
 package dense
 
 import (
-	"github.com/mitsuse/matrix-go"
-	"github.com/mitsuse/matrix-go/elements"
 	"github.com/mitsuse/matrix-go/internal/rewriters"
+	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
@@ -17,10 +16,10 @@ type matrixImpl struct {
 	rewriter rewriters.Rewriter
 }
 
-func New(rows, columns int) func(elements ...float64) matrix.Matrix {
+func New(rows, columns int) func(elements ...float64) types.Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
-	constructor := func(elements ...float64) matrix.Matrix {
+	constructor := func(elements ...float64) types.Matrix {
 		size := rows * columns
 
 		if len(elements) != size {
@@ -41,7 +40,7 @@ func New(rows, columns int) func(elements ...float64) matrix.Matrix {
 	return constructor
 }
 
-func Zeros(rows, columns int) matrix.Matrix {
+func Zeros(rows, columns int) types.Matrix {
 	return New(rows, columns)(make([]float64, rows*columns)...)
 }
 
@@ -59,15 +58,15 @@ func (m *matrixImpl) Columns() (columns int) {
 	return columns
 }
 
-func (m *matrixImpl) All() elements.Cursor {
+func (m *matrixImpl) All() types.Cursor {
 	return newAllCursor(m)
 }
 
-func (m *matrixImpl) NonZeros() elements.Cursor {
+func (m *matrixImpl) NonZeros() types.Cursor {
 	return newNonZerosCursor(m)
 }
 
-func (m *matrixImpl) Diagonal() elements.Cursor {
+func (m *matrixImpl) Diagonal() types.Cursor {
 	return newDiagonalCursor(m)
 }
 
@@ -81,7 +80,7 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 	return m.elements[row*m.columns+column]
 }
 
-func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
+func (m *matrixImpl) Update(row, column int, element float64) types.Matrix {
 	rows, columns := m.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
@@ -93,7 +92,7 @@ func (m *matrixImpl) Update(row, column int, element float64) matrix.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Equal(n matrix.Matrix) bool {
+func (m *matrixImpl) Equal(n types.Matrix) bool {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.All()
@@ -108,7 +107,7 @@ func (m *matrixImpl) Equal(n matrix.Matrix) bool {
 	return true
 }
 
-func (m *matrixImpl) Add(n matrix.Matrix) matrix.Matrix {
+func (m *matrixImpl) Add(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -121,7 +120,7 @@ func (m *matrixImpl) Add(n matrix.Matrix) matrix.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
+func (m *matrixImpl) Subtract(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -134,7 +133,7 @@ func (m *matrixImpl) Subtract(n matrix.Matrix) matrix.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Dot(n matrix.Matrix) matrix.Matrix {
+func (m *matrixImpl) Dot(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeMultipliable(m, n)
 
 	rows := m.Rows()
@@ -155,15 +154,15 @@ func (m *matrixImpl) Dot(n matrix.Matrix) matrix.Matrix {
 	return r
 }
 
-func (m *matrixImpl) Multiply(s matrix.Scalar) matrix.Matrix {
+func (m *matrixImpl) Multiply(s float64) types.Matrix {
 	for index, element := range m.elements {
-		m.elements[index] = element * float64(s)
+		m.elements[index] = element * s
 	}
 
 	return m
 }
 
-func (m *matrixImpl) Transpose() matrix.Matrix {
+func (m *matrixImpl) Transpose() types.Matrix {
 	n := &matrixImpl{
 		rows:     m.rows,
 		columns:  m.columns,
