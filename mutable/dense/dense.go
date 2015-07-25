@@ -4,9 +4,6 @@ Package "dense" provides an implementation of "Matrix" which stores elements in 
 package dense
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/mitsuse/matrix-go"
 	"github.com/mitsuse/matrix-go/elements"
 	"github.com/mitsuse/matrix-go/rewriters"
@@ -20,17 +17,14 @@ type matrixImpl struct {
 	rewriter rewriters.Rewriter
 }
 
-func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
+func New(rows, columns int) func(elements ...float64) matrix.Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
-	constructor := func(elements ...float64) (matrix.Matrix, error) {
+	constructor := func(elements ...float64) matrix.Matrix {
 		size := rows * columns
 
 		if len(elements) != size {
-			template := "The number of %q should equal to %q * %q."
-			message := fmt.Sprintf(template, "elements", "rows", "columns")
-
-			return nil, errors.New(message)
+			panic(validates.INVALID_ELEMENTS_PANIC)
 		}
 
 		m := &matrixImpl{
@@ -41,15 +35,14 @@ func New(rows, columns int) func(elements ...float64) (matrix.Matrix, error) {
 		}
 		copy(m.elements, elements)
 
-		return m, nil
+		return m
 	}
 
 	return constructor
 }
 
 func Zeros(rows, columns int) matrix.Matrix {
-	m, _ := New(rows, columns)(make([]float64, rows*columns)...)
-	return m
+	return New(rows, columns)(make([]float64, rows*columns)...)
 }
 
 func (m *matrixImpl) Shape() (rows, columns int) {
