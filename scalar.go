@@ -1,7 +1,7 @@
 package matrix
 
 /*
-"Scalar" is used to calculate the product with scala-left multiplication.
+"Scalar" is used to calculate the product with scalar-left multiplication.
 This type is underlying float64.
 */
 type Scalar float64

@@ -48,11 +48,11 @@ func IsScalar(m Matrix) bool {
 }
 
 /*
-matchFunc is a type of functions to be used check an element satisfies arbitary condition.
+matchFunc is a type of functions to be used check an element satisfies arbitrary condition.
 */
 type matchFunc func(element float64, row, column int) bool
 
-// Check whether "m" is special diagonal matrix satisfying arbitary condition.
+// Check whether "m" is special diagonal matrix satisfying arbitrary condition.
 func isSpecialDiagonal(m Matrix, match matchFunc) bool {
 	if !IsSquare(m) {
 		return false
