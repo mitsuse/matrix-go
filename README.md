@@ -94,7 +94,7 @@ When the receiver is mutable,
 the elements of which is rewritten.
 
 
-### Matrix Multiplication
+#### Matrix Multiplication
 
 The product of two matrices can be calculated by `(Matrix).Multiply`.
 
@@ -200,7 +200,7 @@ For details, please read the documentation of
 [`types.Matrix`](http://godoc.org/github.com/mitsuse/matrix-go/internal/types/#Matrix).
 
 
-### More Details
+## More Details
 
 Please read the [documentation][godoc].
 
