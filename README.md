@@ -156,7 +156,7 @@ Currently, three methods are implemented as follow:
 
 - `(Matrix).All`
 - `(Matrix).NonZeros`
-- `(Matrix).Diagonals
+- `(Matrix).Diagonal`
 
 
 ### More Details
