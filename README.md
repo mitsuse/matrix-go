@@ -2,12 +2,13 @@
 
 [![License](https://img.shields.io/badge/license-MIT-yellowgreen.svg?style=flat-square)][license]
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)][godoc]
-![Version](https://img.shields.io/github/tag/mitsuse/matrix-go.svg?style=flat-square)
+[![Version](https://img.shields.io/github/tag/mitsuse/matrix-go.svg?style=flat-square)][release]
 [![Wercker](http://img.shields.io/wercker/ci/55672222ee357fac39001a2a.svg?style=flat-square)][wercker]
 [![Coverage](https://img.shields.io/codecov/c/github/mitsuse/matrix-go/develop.svg?style=flat-square)][coverage]
 
 [license]: LICENSE.txt
 [godoc]: http://godoc.org/github.com/mitsuse/matrix-go
+[release]: https://github.com/mitsuse/matrix-go/releases
 [wercker]: https://app.wercker.com/project/bykey/093a5cff0964f0f4ba5fcf9117e940e4
 [coverage]: https://codecov.io/github/mitsuse/matrix-go
 
@@ -94,7 +95,7 @@ When the receiver is mutable,
 the elements of which is rewritten.
 
 
-### Matrix Multiplication
+#### Matrix Multiplication
 
 The product of two matrices can be calculated by `(Matrix).Multiply`.
 
@@ -200,7 +201,7 @@ For details, please read the documentation of
 [`types.Matrix`](http://godoc.org/github.com/mitsuse/matrix-go/internal/types/#Matrix).
 
 
-### More Details
+## More Details
 
 Please read the [documentation][godoc].
 
