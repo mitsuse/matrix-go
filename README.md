@@ -39,6 +39,6 @@ Currently, the following types are implemented:
 - mutable dense matrix
 
 
-## Usage
+### More Details
 
 Please read the [documentation][godoc].
