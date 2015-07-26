@@ -1,4 +1,4 @@
-box: mitsuse/golang
+box: golang:1.5
 build:
     steps:
         - setup-go-workspace
@@ -6,11 +6,15 @@ build:
             name: build
             code: |
                 go get -t ./...
+        - mitsuse/gover:
+            project: "github.com/mitsuse/matrix-go"
+            report: "coverage.txt"
         - script:
-            name: test
+            name: codecov
             code: |
-                go test ./...
+                bash <(curl -s https://codecov.io/bash)
     after-steps:
-        - mitsuse/bullet-send:
-            title: "${WERCKER_GIT_REPOSITORY} - Build ${WERCKER_RESULT}."
-            path: "${WERCKER_BUILD_URL}"
+        - slack-notifier:
+            url: $SLACK_NOTIFIER_URL
+            channel: $SLACK_NOTIFIER_CHANNEL
+            username: wercker
