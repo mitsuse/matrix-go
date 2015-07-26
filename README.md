@@ -162,3 +162,8 @@ Currently, three methods are implemented as follow:
 ### More Details
 
 Please read the [documentation][godoc].
+
+
+## License
+
+Please read [LICENSE.txt](LICENSE.txt).
