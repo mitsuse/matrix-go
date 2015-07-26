@@ -18,7 +18,7 @@ An experimental library for matrix manipulation implemented in Golang.
 
 1. Portability - Implement in pure Golang to achieve cgo-free.
 1. Efficiency - Pursue performance as possible without highly optimized back-ends like blas.
-1. Simplicity - Provide clean API. It is also not trivial.
+1. Simplicity - Provide clean API.
 
 
 ## Installation
