@@ -6,10 +6,9 @@ build:
             name: build
             code: |
                 go get -t ./...
-        - script:
-            name: test
-            code: |
-                go test ./...
+        - mitsuse/gover:
+            project: "github.com/mitsuse/matrix-go"
+            report: "coverage.txt"
     after-steps:
         - slack-notifier:
             url: $SLACK_NOTIFIER_URL
