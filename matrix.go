@@ -1,5 +1,5 @@
 /*
-Package "matrix" provides types which represent matrix, scalar and iterator of elements.
+Package "matrix" is an experimental library for matrix manipulation implemented in Golang.
 */
 package matrix
 
