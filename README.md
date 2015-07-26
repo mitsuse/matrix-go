@@ -21,6 +21,15 @@ An experimental library for matrix manipulation implemented in Golang.
 1. Simplicity - Provide clean API. It is also not trivial.
 
 
+## Installation
+
+For installation, execute the following command:
+
+```
+$ go get github.com/mitsuse/matrix-go
+```
+
+
 ## Example
 
 ```go
