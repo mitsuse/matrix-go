@@ -11,14 +11,16 @@
 [wercker]: https://app.wercker.com/project/bykey/093a5cff0964f0f4ba5fcf9117e940e4
 [coverage]: https://codecov.io/github/mitsuse/matrix-go
 
-An experimental library for matrix manipulation implemented in Golang.
+An experimental library for matrix manipulation implemented in [Golang][golang].
+
+[golang]: http://golang.org/
 
 
 ## Motivations
 
 1. Portability - Implement in pure Golang to achieve cgo-free.
 1. Efficiency - Pursue performance as possible without highly optimized back-ends like blas.
-1. Simplicity - Provide clean API. It is also not trivial.
+1. Simplicity - Provide clean API.
 
 
 ## Installation
@@ -32,7 +34,7 @@ $ go get github.com/mitsuse/matrix-go
 
 ## Features
 
-### Implementations
+### Matrix Types
 
 Currently, the following types are implemented:
 
@@ -87,6 +89,10 @@ m.Add(n).Equal(r)
 
 Similarly, `(Matrix).Subtract` is used for subtraction on two matrix.
 
+When the receiver is mutable,
+`(Matrix).Add` and `(Matrix).Subtract` return the receiver itself,
+the elements of which is rewritten.
+
 
 ### Matrix Multiplication
 
@@ -112,6 +118,9 @@ r := dense.New(3, 1)(
 
 m.Multiply(n).Equal(r)
 ```
+
+Matrix multiplication always create a new matrix.
+The type of the result matrix is same as the type of the receiver.
 
 
 #### Scalar Multiplication
@@ -150,6 +159,9 @@ r := dense.New(2, 2)(
 Scalar(-1).Multiply(m).Equal(r)
 ```
 
+When the matrix used for scalar multiplication is mutable,
+`(Matrix).Scalar` and `(Scalar).Multiply` rewrite elements of the matrix.
+
 
 ### Cursor
 
@@ -178,11 +190,14 @@ for c.HasNext() {
 }
 ```
 
-Currently, three methods are implemented as follow:
+Currently, three methods are implemented which return a cursor:
 
 - `(Matrix).All`
 - `(Matrix).NonZeros`
 - `(Matrix).Diagonal`
+
+For details, please read the documentation of
+[`types.Matrix`](http://godoc.org/github.com/mitsuse/matrix-go/internal/types/#Matrix).
 
 
 ### More Details
