@@ -59,6 +59,35 @@ m := dense.Zeros(2, 3)
 ```
 
 
+### Operations
+
+#### Addition & Subtraction
+
+Add a matrix to other with `(Matrix).Add`:
+
+```go
+m := dense.New(2, 3)(
+    0, 1, 2,
+    3, 4, 5,
+)
+
+n := dense.New(2, 3)(
+    5, 4, 3,
+    2, 1, 0,
+)
+
+r := dense.New(2, 3)(
+    5, 5, 5,
+    5, 5, 5,
+)
+
+// true
+m.Add(n).Equal(r)
+```
+
+Similarly, `(Matrix).Subtract` is used for subtraction on two matrix.
+
+
 ### More Details
 
 Please read the [documentation][godoc].
