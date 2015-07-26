@@ -196,9 +196,8 @@ Currently, three methods are implemented which return a cursor:
 - `(Matrix).NonZeros`
 - `(Matrix).Diagonal`
 
-For details, please read the documentation of [`types.Matrix`][godoc-matrix].
-
-[godocs-matrix]: http://godoc.org/github.com/mitsuse/matrix-go/internal/types/#Matrix
+For details, please read the documentation of
+[`types.Matrix`](http://godoc.org/github.com/mitsuse/matrix-go/internal/types/#Matrix).
 
 
 ### More Details
