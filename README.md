@@ -30,6 +30,15 @@ $ go get github.com/mitsuse/matrix-go
 ```
 
 
+## Features
+
+### Matrix Types
+
+Currently, the following types are implemented:
+
+- mutable dense matrix
+
+
 ## Usage
 
 Please read the [documentation][godoc].
