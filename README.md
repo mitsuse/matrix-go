@@ -39,6 +39,26 @@ Currently, the following types are implemented:
 - mutable dense matrix
 
 
+### Creation
+
+Use `dense.New` to create a new dense matrix with given elements.
+
+```go
+// Create a 2 x 3 matrix.
+m := dense.New(2, 3)(
+    0, 1, 2,
+    3, 4, 5,
+)
+```
+
+To create zero matrix, call `dense.Zeros` instead.
+
+```go
+// Create a 2 x 3 zero matrix.
+m := dense.Zeros(2, 3)
+```
+
+
 ### More Details
 
 Please read the [documentation][godoc].
