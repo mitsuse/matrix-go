@@ -21,78 +21,149 @@ An experimental library for matrix manipulation implemented in Golang.
 1. Simplicity - Provide clean API. It is also not trivial.
 
 
-## Example
+## Installation
+
+For installation, execute the following command:
+
+```
+$ go get github.com/mitsuse/matrix-go
+```
+
+
+## Features
+
+### Implementations
+
+Currently, the following types are implemented:
+
+- mutable dense matrix
+
+
+### Creation
+
+Use `dense.New` to create a new dense matrix with given elements.
 
 ```go
-package main
+// Create a 2 x 3 matrix.
+m := dense.New(2, 3)(
+    0, 1, 2,
+    3, 4, 5,
+)
+```
 
-import (
-	"fmt"
+To create zero matrix, call `dense.Zeros` instead.
 
-	. "github.com/mitsuse/matrix-go"
-	"github.com/mitsuse/matrix-go/dense"
+```go
+// Create a 2 x 3 zero matrix.
+m := dense.Zeros(2, 3)
+```
+
+
+### Operations
+
+#### Addition & Subtraction
+
+Add a matrix to other with `(Matrix).Add`:
+
+```go
+m := dense.New(2, 3)(
+    0, 1, 2,
+    3, 4, 5,
 )
 
-func main() {
-	// Create 3x3 zero matrix.
-	m := dense.Zeros(3, 3)
+n := dense.New(2, 3)(
+    5, 4, 3,
+    2, 1, 0,
+)
 
-	// true
-	fmt.Println("IsZeros(m) =", IsZeros(m))
+r := dense.New(2, 3)(
+    5, 5, 5,
+    5, 5, 5,
+)
 
-	// Update the element at (1, 0) to 1.
-	m.Update(1, 0, 1)
+// true
+m.Add(n).Equal(r)
+```
 
-	// false
-	fmt.Println("IsZeros(m) =", IsZeros(m))
+Similarly, `(Matrix).Subtract` is used for subtraction on two matrix.
 
-	// Create (3x3) matrix with given elements.
-	n := dense.New(3, 3)(
-		1, 0, 0,
-		0, 1, 0,
-		0, 0, 1,
-	)
 
-	// Add n to m.
-	m.Add(n)
+#### Scalar Multiplication
 
-	r1 := dense.New(3, 3)(
-		1, 0, 0,
-		1, 1, 0,
-		0, 0, 1,
-	)
+`(Matrix).Multiply` is available for Scalar multiplication (scalar-left multiplication).
 
-	// true
-	fmt.Println("m.Equal(r1) =", m.Equal(r1))
+```go
+m := dense.New(2, 2)(
+    0, 1,
+    2, 3,
+)
 
-	// Caluculate scalar-right multiplication.
-	m.Multiply(2)
+r := dense.New(2, 2)(
+    0, -1,
+    -2, -3,
+)
 
-	r2 := dense.New(3, 3)(
-		2, 0, 0,
-		2, 2, 0,
-		0, 0, 2,
-	)
+// true
+m.Multiply(-1).Equal(r)
+```
 
-	// true
-	fmt.Println("m.Equal(r2) =", m.Equal(r2))
+For scalar-right multiplication, use `(Scalar).Multiply`.
 
-	// Caluculate scalar-left multiplication.
-	Scalar(0.5).Multiply(m)
+```go
+m := dense.New(2, 2)(
+    0, 1,
+    2, 3,
+)
 
-	// true
-	fmt.Println("m.Equal(r1) =", m.Equal(r1))
+r := dense.New(2, 2)(
+    0, -1,
+    -2, -3,
+)
 
-	// Operations are chainable.
-	m.Multiply(-1).Add(n).Subtract(Scalar(0.5).Multiply(n))
+// true
+Scalar(-1).Multiply(m).Equal(r)
+```
 
-	r3 := dense.New(3, 3)(
-		-0.5, 0, 0,
-		-1, -0.5, 0,
-		0, 0, -0.5,
-	)
 
-	// true
-	fmt.Println("m.Equal(r3) =", m.Equal(r3))
+### Cursor
+
+`Matrix` has several methods to iterate elements.
+They return a value typed as `Cursor` which is a refernce to the element to visit.
+
+```go
+m := dense.New(2, 3)(
+    0, 1, 2,
+    3, 4, 5,
+)
+
+// Create a cursor to iterate all elements of matrix m.
+c := m.All()
+
+// Check whether the element to visit exists or not.
+for c.HasNext() {
+    element, row, column := c.Get()
+
+    fmt.Printf(
+        "element = %d, row = %d, column = %d\n",
+        element,
+        row,
+        column,
+    )
 }
 ```
+
+Currently, three methods are implemented as follow:
+
+- `(Matrix).All`
+- `(Matrix).NonZeros`
+- `(Matrix).Diagonal`
+
+
+### More Details
+
+Please read the [documentation][godoc].
+
+
+## License
+
+Please read [LICENSE.txt](LICENSE.txt).
