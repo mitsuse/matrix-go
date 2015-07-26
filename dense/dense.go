@@ -1,5 +1,5 @@
 /*
-Package "dense" provides an implementation of "Matrix" which stores elements in a slide.
+Package "dense" provides an implementation of mutable dense matrix.
 */
 package dense
 
