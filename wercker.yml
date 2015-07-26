@@ -9,6 +9,10 @@ build:
         - mitsuse/gover:
             project: "github.com/mitsuse/matrix-go"
             report: "coverage.txt"
+        - script:
+            name: codecov
+            code: |
+                bash <(curl -s https://codecov.io/bash)
     after-steps:
         - slack-notifier:
             url: $SLACK_NOTIFIER_URL
