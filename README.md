@@ -136,8 +136,10 @@ m := dense.New(2, 3)(
     3, 4, 5,
 )
 
+// Create a cursor to iterate all elements of matrix m.
 c := m.All()
 
+// Check whether the element to visit exists or not.
 for c.HasNext() {
     element, row, column := c.Get()
 
