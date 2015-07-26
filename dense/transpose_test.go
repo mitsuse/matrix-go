@@ -606,7 +606,7 @@ func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 	m.Subtract(n)
 }
 
-func TestTransposeDotReturnsTheNewMatrixInstance(t *testing.T) {
+func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 	m := New(3, 2)(
 		2, 1,
 		1, -5,
@@ -619,14 +619,14 @@ func TestTransposeDotReturnsTheNewMatrixInstance(t *testing.T) {
 		-1, 4, 1,
 	)
 
-	if r := m.Dot(n); m != r && n != r {
+	if r := m.Multiply(n); m != r && n != r {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return a new instance by multiplication.")
 }
 
-func TestTransposeDotReturnsTheResultOfMultiplication(t *testing.T) {
+func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 	m := New(3, 2)(
 		2, 1,
 		1, -5,
@@ -644,14 +644,14 @@ func TestTransposeDotReturnsTheResultOfMultiplication(t *testing.T) {
 		-9, 9, 7,
 	)
 
-	if m.Dot(n).Equal(r) {
+	if m.Multiply(n).Equal(r) {
 		return
 	}
 
 	t.Fatal("Mutable matrix should multiply the receiver matrix by the given matrix.")
 }
 
-func TestTransposeMultiplyReturnsTheOriginal(t *testing.T) {
+func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
 	m := New(3, 4)(
 		0, 3, 0, 3,
 		1, 2, 1, 2,
@@ -660,14 +660,14 @@ func TestTransposeMultiplyReturnsTheOriginal(t *testing.T) {
 
 	s := 3.0
 
-	if m.Multiply(s) == m {
+	if m.Scalar(s) == m {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return itself by scalar-multiplication.")
 }
 
-func TestTransposeMultiplyTheResultOfMultiplication(t *testing.T) {
+func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
 	m := New(3, 4)(
 		0, 3, 0, 3,
 		1, 2, 1, 2,
@@ -683,7 +683,7 @@ func TestTransposeMultiplyTheResultOfMultiplication(t *testing.T) {
 		9, 6, 3,
 	)
 
-	if m.Multiply(s).Equal(r) {
+	if m.Scalar(s).Equal(r) {
 		return
 	}
 

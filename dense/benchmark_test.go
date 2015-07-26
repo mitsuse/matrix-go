@@ -68,7 +68,7 @@ func BenchmarkSubtraction(b *testing.B) {
 	}
 }
 
-func BenchmarkDot(b *testing.B) {
+func BenchmarkMultiply(b *testing.B) {
 	m := New(4, 3)(
 		0, -1, 2, 3,
 		4.1, 5, -6, 7.4,
@@ -85,11 +85,11 @@ func BenchmarkDot(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		m.Dot(n)
+		m.Multiply(n)
 	}
 }
 
-func BenchmarkMultiply(b *testing.B) {
+func BenchmarkScalar(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 
@@ -103,6 +103,6 @@ func BenchmarkMultiply(b *testing.B) {
 
 		b.StartTimer()
 
-		m.Multiply(s)
+		m.Scalar(s)
 	}
 }

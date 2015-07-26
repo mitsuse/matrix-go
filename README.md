@@ -90,7 +90,7 @@ Similarly, `(Matrix).Subtract` is used for subtraction on two matrix.
 
 #### Scalar Multiplication
 
-`(Matrix).Multiply` is available for Scalar multiplication (scalar-left multiplication).
+`(Matrix).Scalar` is available for Scalar multiplication (scalar-left multiplication).
 
 ```go
 m := dense.New(2, 2)(
@@ -104,7 +104,7 @@ r := dense.New(2, 2)(
 )
 
 // true
-m.Multiply(-1).Equal(r)
+m.Scalar(-1).Equal(r)
 ```
 
 For scalar-right multiplication, use `(Scalar).Multiply`.

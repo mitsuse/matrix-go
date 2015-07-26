@@ -19,7 +19,7 @@ func TestScalarMultiplyIsCommutative(t *testing.T) {
 
 	s := 2.0
 
-	if Scalar(s).Multiply(m).Equal(n.Multiply(s)) {
+	if Scalar(s).Multiply(m).Equal(n.Scalar(s)) {
 		return
 	}
 
