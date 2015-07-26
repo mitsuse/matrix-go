@@ -125,7 +125,7 @@ Scalar(-1).Multiply(m).Equal(r)
 ```
 
 
-### Cursors
+### Cursor
 
 `Matrix` has several methods to iterate elements.
 They return a value typed as `Cursor` which is a refernce the element to visit.
