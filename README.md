@@ -125,6 +125,38 @@ Scalar(-1).Multiply(m).Equal(r)
 ```
 
 
+### Cursors
+
+`Matrix` has several methods to iterate elements.
+They return a value typed as `Cursor` which is a refernce the element to visit.
+
+```go
+m := dense.New(2, 3)(
+    0, 1, 2,
+    3, 4, 5,
+)
+
+c := m.All()
+
+for c.HasNext() {
+    element, row, column := c.Get()
+
+    fmt.Printf(
+        "element = %d, row = $d, column = %d",
+        element,
+        row,
+        column,
+    )
+}
+```
+
+Currently, three methods are implemented as follow:
+
+- `(Matrix).All`
+- `(Matrix).NonZeros`
+- `(Matrix).Diagonals
+
+
 ### More Details
 
 Please read the [documentation][godoc].
