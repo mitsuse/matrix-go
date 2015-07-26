@@ -135,7 +135,7 @@ func (m *matrixImpl) Subtract(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Dot(n types.Matrix) types.Matrix {
+func (m *matrixImpl) Multiply(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeMultipliable(m, n)
 
 	rows := m.Rows()
@@ -156,7 +156,7 @@ func (m *matrixImpl) Dot(n types.Matrix) types.Matrix {
 	return r
 }
 
-func (m *matrixImpl) Multiply(s float64) types.Matrix {
+func (m *matrixImpl) Scalar(s float64) types.Matrix {
 	for index, element := range m.elements {
 		m.elements[index] = element * s
 	}

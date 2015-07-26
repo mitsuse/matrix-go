@@ -807,7 +807,7 @@ func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 	m.Subtract(n)
 }
 
-func TestDotReturnsTheNewMatrixInstance(t *testing.T) {
+func TestMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 	m := New(2, 3)(
 		2, 1, -3,
 		1, -5, 2,
@@ -819,14 +819,14 @@ func TestDotReturnsTheNewMatrixInstance(t *testing.T) {
 		-1, 4, 1,
 	)
 
-	if r := m.Dot(n); m != r && n != r {
+	if r := m.Multiply(n); m != r && n != r {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return a new instance by multiplication.")
 }
 
-func TestDotReturnsTheResultOfMultiplication(t *testing.T) {
+func TestMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 	m := New(2, 3)(
 		2, 1, -3,
 		1, -5, 2,
@@ -843,14 +843,14 @@ func TestDotReturnsTheResultOfMultiplication(t *testing.T) {
 		-9, 9, 7,
 	)
 
-	if m.Dot(n).Equal(r) {
+	if m.Multiply(n).Equal(r) {
 		return
 	}
 
 	t.Fatal("Mutable matrix should multiply the receiver matrix by the given matrix.")
 }
 
-func TestMultiplyReturnsTheOriginal(t *testing.T) {
+func TestScalarReturnsTheOriginal(t *testing.T) {
 	m := New(4, 3)(
 		0, 1, 2,
 		3, 2, 1,
@@ -860,14 +860,14 @@ func TestMultiplyReturnsTheOriginal(t *testing.T) {
 
 	s := 3.0
 
-	if m.Multiply(s) == m {
+	if m.Scalar(s) == m {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return itself by scalar-multiplication.")
 }
 
-func TestMultiplyTheResultOfMultiplication(t *testing.T) {
+func TestScalarTheResultOfMultiplication(t *testing.T) {
 	m := New(4, 3)(
 		0, 1, 2,
 		3, 2, 1,
@@ -884,7 +884,7 @@ func TestMultiplyTheResultOfMultiplication(t *testing.T) {
 		9, 6, 3,
 	)
 
-	if m.Multiply(s).Equal(r) {
+	if m.Scalar(s).Equal(r) {
 		return
 	}
 

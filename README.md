@@ -88,9 +88,35 @@ m.Add(n).Equal(r)
 Similarly, `(Matrix).Subtract` is used for subtraction on two matrix.
 
 
+### Matrix Multiplication
+
+The product of two matrices can be calculated by `(Matrix).Multiply`.
+
+```go
+m := dense.New(3, 2)(
+    0, 1,
+    2, 3,
+    4, 5,
+)
+
+n := dense.New(2, 1)(
+    0,
+    -1,
+)
+
+r := dense.New(3, 1)(
+    -1,
+    -3,
+    -5,
+)
+
+m.Multiply(n).Equal(r)
+```
+
+
 #### Scalar Multiplication
 
-`(Matrix).Multiply` is available for Scalar multiplication (scalar-left multiplication).
+`(Matrix).Scalar` is available for Scalar multiplication (scalar-left multiplication).
 
 ```go
 m := dense.New(2, 2)(
@@ -104,7 +130,7 @@ r := dense.New(2, 2)(
 )
 
 // true
-m.Multiply(-1).Equal(r)
+m.Scalar(-1).Equal(r)
 ```
 
 For scalar-right multiplication, use `(Scalar).Multiply`.

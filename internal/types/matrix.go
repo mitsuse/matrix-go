@@ -35,10 +35,10 @@ type Matrix interface {
 	Subtract(n Matrix) Matrix
 
 	// Multiply the receiver matrix by the given matrix.
-	Dot(n Matrix) Matrix
+	Multiply(n Matrix) Matrix
 
 	// Multiply by scalar value.
-	Multiply(s float64) Matrix
+	Scalar(s float64) Matrix
 
 	// Create the transpose matrix.
 	Transpose() Matrix

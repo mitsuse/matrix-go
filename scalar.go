@@ -7,5 +7,5 @@ This type is underlying float64.
 type Scalar float64
 
 func (s Scalar) Multiply(m Matrix) Matrix {
-	return m.Multiply(float64(s))
+	return m.Scalar(float64(s))
 }
