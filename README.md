@@ -32,7 +32,7 @@ $ go get github.com/mitsuse/matrix-go
 
 ## Features
 
-### Matrix Types
+### Implementations
 
 Currently, the following types are implemented:
 
