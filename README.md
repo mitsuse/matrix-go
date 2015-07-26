@@ -11,7 +11,9 @@
 [wercker]: https://app.wercker.com/project/bykey/093a5cff0964f0f4ba5fcf9117e940e4
 [coverage]: https://codecov.io/github/mitsuse/matrix-go
 
-An experimental library for matrix manipulation implemented in Golang.
+An experimental library for matrix manipulation implemented in [Golang][golang].
+
+[golang]: http://golang.org/
 
 
 ## Motivations
