@@ -144,7 +144,7 @@ for c.HasNext() {
     element, row, column := c.Get()
 
     fmt.Printf(
-        "element = %d, row = %d, column = %d",
+        "element = %d, row = %d, column = %d\n",
         element,
         row,
         column,
