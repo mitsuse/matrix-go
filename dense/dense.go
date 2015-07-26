@@ -1,5 +1,5 @@
 /*
-Package "dense" provides an implementation of "Matrix" which stores elements in a slide.
+Package "dense" provides an implementation of mutable dense matrix.
 */
 package dense
 
@@ -16,6 +16,7 @@ type matrixImpl struct {
 	rewriter rewriters.Rewriter
 }
 
+// Create a new matrix with given elements.
 func New(rows, columns int) func(elements ...float64) types.Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
@@ -40,6 +41,7 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 	return constructor
 }
 
+// Create a new zero matrix.
 func Zeros(rows, columns int) types.Matrix {
 	return New(rows, columns)(make([]float64, rows*columns)...)
 }
