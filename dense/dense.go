@@ -17,6 +17,11 @@ type matrixImpl struct {
 }
 
 // Create a new matrix with given elements.
+// When "rows" and "columns" is not positive,
+// validates.NON_POSITIVE_SIZE_PANIC will be caused.
+// In addition,
+// when the product of "row"s and "column" doesn't equal to the size of "elements",
+// validates.INVALID_ELEMENTS_PANIC will be caused.
 func New(rows, columns int) func(elements ...float64) types.Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
@@ -42,6 +47,8 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 }
 
 // Create a new zero matrix.
+// When "rows" and "columns" is not positive,
+// validates.NON_POSITIVE_SIZE_PANIC will be caused.
 func Zeros(rows, columns int) types.Matrix {
 	return New(rows, columns)(make([]float64, rows*columns)...)
 }
