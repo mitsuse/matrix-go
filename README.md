@@ -88,6 +88,43 @@ m.Add(n).Equal(r)
 Similarly, `(Matrix).Subtract` is used for subtraction on two matrix.
 
 
+#### Scalar Multiplication
+
+`(Matrix).Multiply` is available for Scalar multiplication (scalar-left multiplication).
+
+```go
+m := dense.New(2, 2)(
+    0, 1,
+    2, 3,
+)
+
+r := dense.New(2, 2)(
+    0, 2,
+    4, 6,
+)
+
+// true
+m.Multiply(-1).Equal(r)
+```
+
+For scalar-right multiplication, use `(Scalar).Multiply`.
+
+```go
+m := dense.New(2, 2)(
+    0, 1,
+    2, 3,
+)
+
+r := dense.New(2, 2)(
+    0, 2,
+    4, 6,
+)
+
+// true
+Scalar(-1).Multiply(m).Equal(r)
+```
+
+
 ### More Details
 
 Please read the [documentation][godoc].
