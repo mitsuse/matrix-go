@@ -1,5 +1,5 @@
 /*
-Package "rewriters" provideds functions to rewrite the indexes or shape of matrix.
+Package "rewriters" provides functions to rewrite the indexes or shape of matrix.
 */
 package rewriters
 

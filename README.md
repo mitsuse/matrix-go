@@ -154,7 +154,7 @@ Scalar(-1).Multiply(m).Equal(r)
 ### Cursor
 
 `Matrix` has several methods to iterate elements.
-They return a value typed as `Cursor` which is a refernce to the element to visit.
+They return a value typed as `Cursor` which is a reference to the element to visit.
 
 ```go
 m := dense.New(2, 3)(

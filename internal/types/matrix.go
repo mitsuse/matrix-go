@@ -19,12 +19,12 @@ type Matrix interface {
 	// Create and return an iterator for diagonal elements.
 	Diagonal() Cursor
 
-	// Get an element of matrix speficied with "row" and "column".
+	// Get an element of matrix specified with "row" and "column".
 	// When "row" or "column" is lower than the number of rows or columns,
 	// validates.OUT_OF_RANGE_PANIC will be caused.
 	Get(row, column int) (element float64)
 
-	// Update the element of matrix speficied with "row" and "column".
+	// Update the element of matrix specified with "row" and "column".
 	// When "row" or "column" is lower than the number of rows or columns,
 	// validates.OUT_OF_RANGE_PANIC will be caused.
 	Update(row, column int, element float64) Matrix
