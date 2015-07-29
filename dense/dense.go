@@ -4,6 +4,8 @@ Package "dense" provides an implementation of mutable dense matrix.
 package dense
 
 import (
+	"math"
+
 	"github.com/mitsuse/matrix-go/internal/rewriters"
 	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
@@ -180,4 +182,32 @@ func (m *matrixImpl) Transpose() types.Matrix {
 	}
 
 	return n
+}
+
+func (m *matrixImpl) Max() (element float64) {
+	max := math.Inf(-1)
+
+	for _, current := range m.elements {
+		if max >= current {
+			continue
+		}
+
+		max = current
+	}
+
+	return max
+}
+
+func (m *matrixImpl) Min() (element float64) {
+	min := math.Inf(0)
+
+	for _, current := range m.elements {
+		if min <= current {
+			continue
+		}
+
+		min = current
+	}
+
+	return min
 }

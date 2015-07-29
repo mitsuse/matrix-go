@@ -55,4 +55,10 @@ type Matrix interface {
 
 	// Create the transpose matrix.
 	Transpose() Matrix
+
+	// Find and return the maximum elements.
+	Max() (element float64)
+
+	// Find and return the minimum elements.
+	Min() (element float64)
 }

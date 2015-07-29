@@ -890,3 +890,33 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 
 	t.Fatal("Mutable matrix should multiply each element of itselt by scalar.")
 }
+
+func TestMaxFindsTheMaximumElements(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	expectation := 3.0
+
+	if max := m.Max(); max != expectation {
+		t.Fatal("The maximum element shold be %d, but %d is returned.", expectation, max)
+	}
+}
+
+func TestMinFindsTheMaximumElements(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	expectation := 0.0
+
+	if min := m.Min(); min != expectation {
+		t.Fatal("The minimum element shold be %d, but %d is returned.", expectation, min)
+	}
+}
