@@ -221,10 +221,10 @@ element, row, column := m.Max()
 element == 5
 
 // true
-row == 2
+row == 1
 
 // true
-column == 3
+column == 2
 ```
 
 
