@@ -57,8 +57,8 @@ type Matrix interface {
 	Transpose() Matrix
 
 	// Find and return the maximum elements.
-	Max() (element float64)
+	Max() (element float64, row, column int)
 
 	// Find and return the minimum elements.
-	Min() (element float64)
+	Min() (element float64, row, column int)
 }

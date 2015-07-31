@@ -184,30 +184,47 @@ func (m *matrixImpl) Transpose() types.Matrix {
 	return n
 }
 
-func (m *matrixImpl) Max() (element float64) {
+func (m *matrixImpl) Max() (element float64, row, column int) {
 	max := math.Inf(-1)
+	index := 0
 
-	for _, current := range m.elements {
-		if max >= current {
+	for i, c := range m.elements {
+		if max >= c {
 			continue
 		}
 
-		max = current
+		max = c
+		index = i
 	}
 
-	return max
+	row, column = m.convertToRowColumn(index)
+
+	return max, row, column
 }
 
-func (m *matrixImpl) Min() (element float64) {
+func (m *matrixImpl) Min() (element float64, row, column int) {
 	min := math.Inf(0)
+	index := 0
 
-	for _, current := range m.elements {
-		if min <= current {
+	for i, c := range m.elements {
+		if min <= c {
 			continue
 		}
 
-		min = current
+		min = c
+		index = i
 	}
 
-	return min
+	row, column = m.convertToRowColumn(index)
+
+	return min, row, column
+}
+
+func (m *matrixImpl) convertToRowColumn(index int) (row, column int) {
+	columns := m.Columns()
+
+	row = index / columns
+	column = index - (row * columns)
+
+	return row, column
 }

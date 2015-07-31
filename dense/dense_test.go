@@ -899,11 +899,23 @@ func TestMaxFindsTheMaximumElements(t *testing.T) {
 		3, 2, 1,
 	)
 
-	expectation := 3.0
-
-	if max := m.Max(); max != expectation {
-		t.Fatal("The maximum element shold be %d, but %d is returned.", expectation, max)
+	test := elementTest{
+		row:     1,
+		column:  0,
+		element: 3.0,
 	}
+
+	max, row, column := m.Max()
+
+	if test.row == row && test.column == column && test.element == max {
+		return
+	}
+
+	t.Fatalf(
+		"The max element shold be %v at (%d, %d), but %v at (%d, %d)is returned.",
+		test.element, test.row, test.column,
+		max, row, column,
+	)
 }
 
 func TestMinFindsTheMaximumElements(t *testing.T) {
@@ -914,9 +926,21 @@ func TestMinFindsTheMaximumElements(t *testing.T) {
 		3, 2, 1,
 	)
 
-	expectation := 0.0
-
-	if min := m.Min(); min != expectation {
-		t.Fatal("The minimum element shold be %d, but %d is returned.", expectation, min)
+	test := elementTest{
+		row:     0,
+		column:  0,
+		element: 0.0,
 	}
+
+	min, row, column := m.Min()
+
+	if test.row == row && test.column == column && test.element == min {
+		return
+	}
+
+	t.Fatalf(
+		"The min element shold be %v at (%d, %d), but %v at (%d, %d)is returned.",
+		test.element, test.row, test.column,
+		min, row, column,
+	)
 }
