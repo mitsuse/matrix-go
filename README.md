@@ -207,7 +207,7 @@ For details, please read the documentation of
 `(Matrix).Max` returns the one of maximum elements and its index (the row and column).
 `(Matrix).Min` also does similarly.
 
-```
+```go
 m := dense.New(3, 3)(
     0, 1, 2,
     3, 4, 5,
