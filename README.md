@@ -233,6 +233,15 @@ column == 3
 Please read the [documentation][godoc].
 
 
+## Related Projects
+
+This is a list of projects using `mitsuse/matrix-go`.
+
+- [Olive][repo-olive] - Online algorithms for machine learning implemented in Golang.
+
+[repo-olive]: https://github.com/mitsuse/olive
+
+
 ## License
 
 Please read [LICENSE.txt](LICENSE.txt).
