@@ -4,7 +4,7 @@
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)][godoc]
 [![Version](https://img.shields.io/github/tag/mitsuse/matrix-go.svg?style=flat-square)][release]
 [![Wercker](http://img.shields.io/wercker/ci/55672222ee357fac39001a2a.svg?style=flat-square)][wercker]
-[![Coverage](https://img.shields.io/codecov/c/github/mitsuse/matrix-go/develop.svg?style=flat-square)][coverage]
+[![Coverage](https://img.shields.io/codecov/c/github/mitsuse/matrix-go.svg?style=flat-square)][coverage]
 
 [license]: LICENSE.txt
 [godoc]: http://godoc.org/github.com/mitsuse/matrix-go
