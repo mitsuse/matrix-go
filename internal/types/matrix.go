@@ -1,6 +1,13 @@
 package types
 
+import (
+	"io"
+)
+
 type Matrix interface {
+	// Serialize the receiver matrix by using the given writer.
+	Serialize(wrtier io.Writer) error
+
 	// Return the shape of matrix, which consists of the "rows" and the "columns".
 	Shape() (rows, columns int)
 
