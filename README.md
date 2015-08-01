@@ -4,7 +4,7 @@
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)][godoc]
 [![Version](https://img.shields.io/github/tag/mitsuse/matrix-go.svg?style=flat-square)][release]
 [![Wercker](http://img.shields.io/wercker/ci/55672222ee357fac39001a2a.svg?style=flat-square)][wercker]
-[![Coverage](https://img.shields.io/codecov/c/github/mitsuse/matrix-go/develop.svg?style=flat-square)][coverage]
+[![Coverage](https://img.shields.io/codecov/c/github/mitsuse/matrix-go.svg?style=flat-square)][coverage]
 
 [license]: LICENSE.txt
 [godoc]: http://godoc.org/github.com/mitsuse/matrix-go
@@ -201,9 +201,45 @@ For details, please read the documentation of
 [`types.Matrix`](http://godoc.org/github.com/mitsuse/matrix-go/internal/types/#Matrix).
 
 
+### Find the Maximum/Minimum Element
+
+`Maxtrix` provides methods to find the maximum or minimum elements.
+`(Matrix).Max` returns the one of maximum elements and its index (the row and column).
+`(Matrix).Min` also does similarly.
+
+```go
+m := dense.New(3, 3)(
+    0, 1, 2,
+    3, 4, 5,
+    4, 3, 2,
+)
+
+// Find the one of maximum elements.
+element, row, column := m.Max()
+
+// true
+element == 5
+
+// true
+row == 1
+
+// true
+column == 2
+```
+
+
 ## More Details
 
 Please read the [documentation][godoc].
+
+
+## Related Projects
+
+This is a list of projects using `mitsuse/matrix-go`.
+
+- [Olive][repo-olive] - Online algorithms for machine learning implemented in Golang.
+
+[repo-olive]: https://github.com/mitsuse/olive
 
 
 ## License

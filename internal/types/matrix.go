@@ -1,6 +1,13 @@
 package types
 
+import (
+	"io"
+)
+
 type Matrix interface {
+	// Serialize the receiver matrix by using the given writer.
+	Serialize(wrtier io.Writer) error
+
 	// Return the shape of matrix, which consists of the "rows" and the "columns".
 	Shape() (rows, columns int)
 
@@ -55,4 +62,10 @@ type Matrix interface {
 
 	// Create the transpose matrix.
 	Transpose() Matrix
+
+	// Find and return the first one of maximum elements.
+	Max() (element float64, row, column int)
+
+	// Find and return the first one of minimum elements.
+	Min() (element float64, row, column int)
 }

@@ -1,6 +1,7 @@
 package rewriters
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -33,6 +34,82 @@ func TestReverse(t *testing.T) {
 	}
 
 	t.Fatal("The result pair should be reversed.")
+}
+
+func TestReflectSerialize(t *testing.T) {
+	writer := bytes.NewBuffer([]byte{})
+
+	if err := Reflect().Serialize(writer); err != nil {
+		t.Fatalf("An expected error occured on serialization: %s", err)
+	}
+
+	reader := bytes.NewReader(writer.Bytes())
+
+	rewriter, err := Deserialize(reader)
+
+	if err != nil {
+		t.Fatalf("An expected error occured on deserialization: %s", err)
+	}
+
+	if rewriter != Reflect() {
+		t.Fatal("Deserialization failed for a serialized rewriter.")
+	}
+}
+
+func TestReverseSerialize(t *testing.T) {
+	writer := bytes.NewBuffer([]byte{})
+
+	if err := Reverse().Serialize(writer); err != nil {
+		t.Fatalf("An expected error occured on serialization: %s", err)
+	}
+
+	reader := bytes.NewReader(writer.Bytes())
+
+	rewriter, err := Deserialize(reader)
+
+	if err != nil {
+		t.Fatalf("An expected error occured on deserialization: %s", err)
+	}
+
+	if rewriter != Reverse() {
+		t.Fatal("Deserialization failed for a serialized rewriter.")
+	}
+}
+
+func TestDeserializeFailsForIncompatibleId(t *testing.T) {
+	test := []byte("...")
+	test = append(test, version)
+	test = append(test, typeReflect)
+
+	reader := bytes.NewReader(test)
+
+	if _, err := Deserialize(reader); err == nil {
+		t.Fatal("The incompatible id should cause an error on deserialization.")
+	}
+}
+
+func TestDeserializeFailsForIncompatibleVersion(t *testing.T) {
+	test := []byte(id)
+	test = append(test, 255)
+	test = append(test, typeReflect)
+
+	reader := bytes.NewReader(test)
+
+	if _, err := Deserialize(reader); err == nil {
+		t.Fatal("The incompatible version should cause an error on deserialization.")
+	}
+}
+
+func TestDeserializeFailsForUnknownRewriter(t *testing.T) {
+	test := []byte(id)
+	test = append(test, version)
+	test = append(test, 255)
+
+	reader := bytes.NewReader(test)
+
+	if _, err := Deserialize(reader); err == nil {
+		t.Fatal("The unknown rewriter should cause an error on deserialization.")
+	}
 }
 
 func TestReflectTranspose(t *testing.T) {

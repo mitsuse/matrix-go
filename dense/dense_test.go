@@ -1,6 +1,7 @@
 package dense
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/mitsuse/matrix-go/internal/validates"
@@ -211,6 +212,32 @@ func TestZerosFailsForNonPositive(t *testing.T) {
 		)
 	}()
 	Zeros(test.rows, test.columns)
+}
+
+func TestSerialize(t *testing.T) {
+	m := New(3, 3)(
+		1.0, 0.1, 0.9,
+		0.1, 2.5, 0.2,
+		0.2, 0.1, 3.1,
+	)
+
+	writer := bytes.NewBuffer([]byte{})
+
+	if err := m.Serialize(writer); err != nil {
+		t.Fatalf("An expected error occured on serialization: %s", err)
+	}
+
+	reader := bytes.NewReader(writer.Bytes())
+
+	n, err := Deserialize(reader)
+
+	if err != nil {
+		t.Fatalf("An expected error occured on deserialization: %s", err)
+	}
+
+	if m.Equal(n) {
+		t.Fatal("Deserialization failed for a serialized matrix.")
+	}
 }
 
 func TestShapeReturnsTheNumberOfRowsAndColumns(t *testing.T) {
@@ -889,4 +916,58 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 	}
 
 	t.Fatal("Mutable matrix should multiply each element of itselt by scalar.")
+}
+
+func TestMaxFindsTheMaximumElements(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	test := elementTest{
+		row:     1,
+		column:  0,
+		element: 3.0,
+	}
+
+	max, row, column := m.Max()
+
+	if test.row == row && test.column == column && test.element == max {
+		return
+	}
+
+	t.Fatalf(
+		"The max element shold be %v at (%d, %d), but %v at (%d, %d)is returned.",
+		test.element, test.row, test.column,
+		max, row, column,
+	)
+}
+
+func TestMinFindsTheMaximumElements(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		3, 2, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	test := elementTest{
+		row:     0,
+		column:  0,
+		element: 0.0,
+	}
+
+	min, row, column := m.Min()
+
+	if test.row == row && test.column == column && test.element == min {
+		return
+	}
+
+	t.Fatalf(
+		"The min element shold be %v at (%d, %d), but %v at (%d, %d)is returned.",
+		test.element, test.row, test.column,
+		min, row, column,
+	)
 }
