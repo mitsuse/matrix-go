@@ -1,6 +1,7 @@
 package dense
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/mitsuse/matrix-go/internal/validates"
@@ -211,6 +212,32 @@ func TestZerosFailsForNonPositive(t *testing.T) {
 		)
 	}()
 	Zeros(test.rows, test.columns)
+}
+
+func TestSerialize(t *testing.T) {
+	m := New(3, 3)(
+		1.0, 0.1, 0.9,
+		0.1, 2.5, 0.2,
+		0.2, 0.1, 3.1,
+	)
+
+	writer := bytes.NewBuffer([]byte{})
+
+	if err := m.Serialize(writer); err != nil {
+		t.Fatalf("An expected error occured on serialization: %s", err)
+	}
+
+	reader := bytes.NewReader(writer.Bytes())
+
+	n, err := Deserialize(reader)
+
+	if err != nil {
+		t.Fatalf("An expected error occured on deserialization: %s", err)
+	}
+
+	if m.Equal(n) {
+		t.Fatal("Deserialization failed for a serialized matrix.")
+	}
 }
 
 func TestShapeReturnsTheNumberOfRowsAndColumns(t *testing.T) {

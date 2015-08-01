@@ -4,11 +4,18 @@ Package "dense" provides an implementation of mutable dense matrix.
 package dense
 
 import (
+	"io"
 	"math"
 
 	"github.com/mitsuse/matrix-go/internal/rewriters"
 	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
+	"github.com/mitsuse/serial-go"
+)
+
+const (
+	id      string = "github.com/mitsuse/matrix-go/dense"
+	version byte   = 0
 )
 
 type matrixImpl struct {
@@ -53,6 +60,80 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 // validates.NON_POSITIVE_SIZE_PANIC will be caused.
 func Zeros(rows, columns int) types.Matrix {
 	return New(rows, columns)(make([]float64, rows*columns)...)
+}
+
+// Deserialize a matrix from the given reader.
+// This accepts data generated with (*matrixImpl).Serialize.
+func Deserialize(reader io.Reader) (types.Matrix, error) {
+	r := serial.NewReader(id, version, reader)
+
+	r.ReadId()
+	r.ReadVersion()
+	r.ReadArch()
+
+	var rows int64
+	r.Read(&rows)
+
+	var columns int64
+	r.Read(&columns)
+
+	var size int64
+	r.Read(&size)
+
+	elements := make([]float64, int(size))
+	for index := 0; index < len(elements); index++ {
+		var element float64
+		r.Read(&element)
+		elements[index] = element
+	}
+
+	if err := r.Error(); err != nil {
+		return nil, err
+	}
+
+	rewriter, err := rewriters.Deserialize(reader)
+	if err != nil {
+		return nil, err
+	}
+
+	m := &matrixImpl{
+		rows:     int(rows),
+		columns:  int(columns),
+		elements: elements,
+		rewriter: rewriter,
+	}
+
+	if len(elements) != m.rows*m.columns {
+		panic(validates.INVALID_ELEMENTS_PANIC)
+	}
+
+	return m, nil
+}
+
+func (m *matrixImpl) Serialize(writer io.Writer) error {
+	w := serial.NewWriter(id, version, writer)
+
+	w.WriteId()
+	w.WriteVersion()
+	w.WriteArch()
+
+	w.Write(int64(m.rows))
+	w.Write(int64(m.columns))
+
+	w.Write(int64(len(m.elements)))
+	for _, element := range m.elements {
+		w.Write(int64(element))
+	}
+
+	if err := w.Error(); err != nil {
+		return err
+	}
+
+	if err := m.rewriter.Serialize(writer); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *matrixImpl) Shape() (rows, columns int) {
