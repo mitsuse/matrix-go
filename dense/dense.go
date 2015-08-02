@@ -18,7 +18,7 @@ const (
 	version byte   = 0
 )
 
-type matrixImpl struct {
+type denseMatrix struct {
 	rows     int
 	columns  int
 	elements []float64
@@ -41,7 +41,7 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 			panic(validates.INVALID_ELEMENTS_PANIC)
 		}
 
-		m := &matrixImpl{
+		m := &denseMatrix{
 			rows:     rows,
 			columns:  columns,
 			elements: make([]float64, size),
@@ -63,7 +63,7 @@ func Zeros(rows, columns int) types.Matrix {
 }
 
 // Deserialize a matrix from the given reader.
-// This accepts data generated with (*matrixImpl).Serialize.
+// This accepts data generated with (*denseMatrix).Serialize.
 func Deserialize(reader io.Reader) (types.Matrix, error) {
 	r := serial.NewReader(id, version, reader)
 
@@ -96,7 +96,7 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 		return nil, err
 	}
 
-	m := &matrixImpl{
+	m := &denseMatrix{
 		rows:     int(rows),
 		columns:  int(columns),
 		elements: elements,
@@ -110,7 +110,7 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 	return m, nil
 }
 
-func (m *matrixImpl) Serialize(writer io.Writer) error {
+func (m *denseMatrix) Serialize(writer io.Writer) error {
 	w := serial.NewWriter(id, version, writer)
 
 	w.WriteId()
@@ -136,33 +136,33 @@ func (m *matrixImpl) Serialize(writer io.Writer) error {
 	return nil
 }
 
-func (m *matrixImpl) Shape() (rows, columns int) {
+func (m *denseMatrix) Shape() (rows, columns int) {
 	return m.rewriter.Rewrite(m.rows, m.columns)
 }
 
-func (m *matrixImpl) Rows() (rows int) {
+func (m *denseMatrix) Rows() (rows int) {
 	rows, _ = m.Shape()
 	return rows
 }
 
-func (m *matrixImpl) Columns() (columns int) {
+func (m *denseMatrix) Columns() (columns int) {
 	_, columns = m.Shape()
 	return columns
 }
 
-func (m *matrixImpl) All() types.Cursor {
+func (m *denseMatrix) All() types.Cursor {
 	return newAllCursor(m)
 }
 
-func (m *matrixImpl) NonZeros() types.Cursor {
+func (m *denseMatrix) NonZeros() types.Cursor {
 	return newNonZerosCursor(m)
 }
 
-func (m *matrixImpl) Diagonal() types.Cursor {
+func (m *denseMatrix) Diagonal() types.Cursor {
 	return newDiagonalCursor(m)
 }
 
-func (m *matrixImpl) Get(row, column int) (element float64) {
+func (m *denseMatrix) Get(row, column int) (element float64) {
 	rows, columns := m.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
@@ -172,7 +172,7 @@ func (m *matrixImpl) Get(row, column int) (element float64) {
 	return m.elements[row*m.columns+column]
 }
 
-func (m *matrixImpl) Update(row, column int, element float64) types.Matrix {
+func (m *denseMatrix) Update(row, column int, element float64) types.Matrix {
 	rows, columns := m.Shape()
 
 	validates.IndexShouldBeInRange(rows, columns, row, column)
@@ -184,7 +184,7 @@ func (m *matrixImpl) Update(row, column int, element float64) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Equal(n types.Matrix) bool {
+func (m *denseMatrix) Equal(n types.Matrix) bool {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.All()
@@ -199,7 +199,7 @@ func (m *matrixImpl) Equal(n types.Matrix) bool {
 	return true
 }
 
-func (m *matrixImpl) Add(n types.Matrix) types.Matrix {
+func (m *denseMatrix) Add(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -212,7 +212,7 @@ func (m *matrixImpl) Add(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Subtract(n types.Matrix) types.Matrix {
+func (m *denseMatrix) Subtract(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -225,7 +225,7 @@ func (m *matrixImpl) Subtract(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Multiply(n types.Matrix) types.Matrix {
+func (m *denseMatrix) Multiply(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeMultipliable(m, n)
 
 	rows := m.Rows()
@@ -246,7 +246,7 @@ func (m *matrixImpl) Multiply(n types.Matrix) types.Matrix {
 	return r
 }
 
-func (m *matrixImpl) Scalar(s float64) types.Matrix {
+func (m *denseMatrix) Scalar(s float64) types.Matrix {
 	for index, element := range m.elements {
 		m.elements[index] = element * s
 	}
@@ -254,8 +254,8 @@ func (m *matrixImpl) Scalar(s float64) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Transpose() types.Matrix {
-	n := &matrixImpl{
+func (m *denseMatrix) Transpose() types.Matrix {
+	n := &denseMatrix{
 		rows:     m.rows,
 		columns:  m.columns,
 		elements: m.elements,
@@ -265,7 +265,7 @@ func (m *matrixImpl) Transpose() types.Matrix {
 	return n
 }
 
-func (m *matrixImpl) Max() (element float64, row, column int) {
+func (m *denseMatrix) Max() (element float64, row, column int) {
 	max := math.Inf(-1)
 	index := 0
 
@@ -283,7 +283,7 @@ func (m *matrixImpl) Max() (element float64, row, column int) {
 	return max, row, column
 }
 
-func (m *matrixImpl) Min() (element float64, row, column int) {
+func (m *denseMatrix) Min() (element float64, row, column int) {
 	min := math.Inf(0)
 	index := 0
 
@@ -301,7 +301,7 @@ func (m *matrixImpl) Min() (element float64, row, column int) {
 	return min, row, column
 }
 
-func (m *matrixImpl) convertToRowColumn(index int) (row, column int) {
+func (m *denseMatrix) convertToRowColumn(index int) (row, column int) {
 	columns := m.Columns()
 
 	row = index / columns

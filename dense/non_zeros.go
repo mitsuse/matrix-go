@@ -1,14 +1,14 @@
 package dense
 
 type nonZerosCursor struct {
-	matrix  *matrixImpl
+	matrix  *denseMatrix
 	element float64
 	row     int
 	column  int
 	index   int
 }
 
-func newNonZerosCursor(matrix *matrixImpl) *nonZerosCursor {
+func newNonZerosCursor(matrix *denseMatrix) *nonZerosCursor {
 	c := &nonZerosCursor{
 		matrix:  matrix,
 		element: 0,

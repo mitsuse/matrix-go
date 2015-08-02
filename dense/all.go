@@ -1,14 +1,14 @@
 package dense
 
 type allCursor struct {
-	matrix  *matrixImpl
+	matrix  *denseMatrix
 	element float64
 	row     int
 	column  int
 	index   int
 }
 
-func newAllCursor(matrix *matrixImpl) *allCursor {
+func newAllCursor(matrix *denseMatrix) *allCursor {
 	c := &allCursor{
 		matrix:  matrix,
 		element: 0,

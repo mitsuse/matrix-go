@@ -148,7 +148,7 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	for _, element := range Zeros(test.rows, test.columns).(*matrixImpl).elements {
+	for _, element := range Zeros(test.rows, test.columns).(*denseMatrix).elements {
 		if element == 0 {
 			continue
 		}
