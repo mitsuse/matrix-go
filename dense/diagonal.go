@@ -1,14 +1,14 @@
 package dense
 
 type diagonalCursor struct {
-	matrix  *matrixImpl
+	matrix  *denseMatrix
 	element float64
 	row     int
 	column  int
 	index   int
 }
 
-func newDiagonalCursor(matrix *matrixImpl) *diagonalCursor {
+func newDiagonalCursor(matrix *denseMatrix) *diagonalCursor {
 	c := &diagonalCursor{
 		matrix:  matrix,
 		element: 0,
