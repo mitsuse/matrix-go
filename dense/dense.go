@@ -19,6 +19,9 @@ const (
 )
 
 type denseMatrix struct {
+	base     types.Shape
+	view     types.Shape
+	offset   types.Index
 	rows     int
 	columns  int
 	elements []float64
