@@ -124,6 +124,9 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 	}
 
 	m := &denseMatrix{
+		base:     types.NewShape(int(baseRows), int(baseColumns)),
+		view:     types.NewShape(int(viewRows), int(viewColumns)),
+		offset:   types.NewIndex(int(offsetRow), int(offsetColumn)),
 		rows:     int(rows),
 		columns:  int(columns),
 		elements: elements,
