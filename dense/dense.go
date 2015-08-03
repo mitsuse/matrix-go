@@ -171,7 +171,7 @@ func (m *denseMatrix) Serialize(writer io.Writer) error {
 }
 
 func (m *denseMatrix) Shape() (rows, columns int) {
-	return m.rewriter.Rewrite(m.rows, m.columns)
+	return m.rewriter.Rewrite(m.view.Rows(), m.view.Columns())
 }
 
 func (m *denseMatrix) Rows() (rows int) {
@@ -197,23 +197,21 @@ func (m *denseMatrix) Diagonal() types.Cursor {
 }
 
 func (m *denseMatrix) Get(row, column int) (element float64) {
-	rows, columns := m.Shape()
-
-	validates.IndexShouldBeInRange(rows, columns, row, column)
+	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
 
 	row, column = m.rewriter.Rewrite(row, column)
+	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
 
-	return m.elements[row*m.columns+column]
+	return m.elements[index]
 }
 
 func (m *denseMatrix) Update(row, column int, element float64) types.Matrix {
-	rows, columns := m.Shape()
-
-	validates.IndexShouldBeInRange(rows, columns, row, column)
+	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
 
 	row, column = m.rewriter.Rewrite(row, column)
+	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
 
-	m.elements[row*m.columns+column] = element
+	m.elements[index] = element
 
 	return m
 }
