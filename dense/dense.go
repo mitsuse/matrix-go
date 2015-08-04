@@ -200,20 +200,21 @@ func (m *denseMatrix) Diagonal() types.Cursor {
 }
 
 func (m *denseMatrix) Get(row, column int) (element float64) {
+	row, column = m.rewriter.Rewrite(row, column)
+
 	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
 
-	row, column = m.rewriter.Rewrite(row, column)
 	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
 
 	return m.elements[index]
 }
 
 func (m *denseMatrix) Update(row, column int, element float64) types.Matrix {
+	row, column = m.rewriter.Rewrite(row, column)
+
 	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
 
-	row, column = m.rewriter.Rewrite(row, column)
 	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
-
 	m.elements[index] = element
 
 	return m
