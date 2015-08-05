@@ -15,7 +15,7 @@ import (
 
 const (
 	id      string = "github.com/mitsuse/matrix-go/dense"
-	version byte   = 0
+	version byte   = 1
 )
 
 type denseMatrix struct {
