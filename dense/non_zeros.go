@@ -1,38 +1,25 @@
 package dense
 
+import (
+	"github.com/mitsuse/matrix-go/internal/types"
+)
+
 type nonZerosCursor struct {
-	matrix  *denseMatrix
-	element float64
-	row     int
-	column  int
-	index   int
+	cursor types.Cursor
 }
 
 func newNonZerosCursor(matrix *denseMatrix) *nonZerosCursor {
 	c := &nonZerosCursor{
-		matrix:  matrix,
-		element: 0,
-		row:     0,
-		column:  0,
-		index:   0,
+		cursor: matrix.All(),
 	}
 
 	return c
 }
 
 func (c *nonZerosCursor) HasNext() bool {
-	for c.index < len(c.matrix.elements) {
-		if element := c.matrix.elements[c.index]; element != 0 {
-			c.element = element
-
-			c.row = c.index / c.matrix.columns
-			c.column = c.index % c.matrix.columns
-
-			c.index++
-
+	for c.cursor.HasNext() {
+		if element, _, _ := c.cursor.Get(); element != 0 {
 			return true
-		} else {
-			c.index++
 		}
 	}
 
@@ -40,6 +27,5 @@ func (c *nonZerosCursor) HasNext() bool {
 }
 
 func (c *nonZerosCursor) Get() (element float64, row, column int) {
-	row, column = c.matrix.rewriter.Rewrite(c.row, c.column)
-	return c.element, row, column
+	return c.cursor.Get()
 }
