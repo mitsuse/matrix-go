@@ -1,49 +1,43 @@
 package dense
 
+import (
+	"github.com/mitsuse/matrix-go/internal/types"
+)
+
 type diagonalCursor struct {
 	matrix  *denseMatrix
 	element float64
-	row     int
-	column  int
-	index   int
+	current types.Index
+	next    types.Index
 }
 
 func newDiagonalCursor(matrix *denseMatrix) *diagonalCursor {
 	c := &diagonalCursor{
 		matrix:  matrix,
 		element: 0,
-		row:     0,
-		column:  0,
-		index:   0,
+		current: types.NewIndex(0, 0),
+		next:    types.NewIndex(0, 0),
 	}
 
 	return c
 }
 
 func (c *diagonalCursor) HasNext() bool {
-	for c.index < len(c.matrix.elements) {
-		columns := c.matrix.Columns()
+	c.current = c.next
 
-		row := c.index / columns
-		column := c.index % columns
-
-		if row == column {
-			c.element = c.matrix.elements[c.index]
-			c.row = row
-			c.column = column
-
-			c.index++
-
-			return true
-		} else {
-			c.index++
-		}
+	if c.current.Row() >= c.matrix.view.Rows() || c.current.Column() >= c.matrix.view.Columns() {
+		return false
 	}
 
-	return false
+	index := c.matrix.base.Columns()*(c.matrix.offset.Row()+c.current.Row()) + c.matrix.offset.Column() + c.current.Column()
+	c.element = c.matrix.elements[index]
+
+	c.next = types.NewIndex(c.current.Row()+1, c.current.Column()+1)
+
+	return true
 }
 
 func (c *diagonalCursor) Get() (element float64, row, column int) {
-	row, column = c.matrix.rewriter.Rewrite(c.row, c.column)
+	row, column = c.matrix.rewriter.Rewrite(c.current.Row(), c.current.Column())
 	return c.element, row, column
 }
