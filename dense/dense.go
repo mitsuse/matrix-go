@@ -22,8 +22,6 @@ type denseMatrix struct {
 	base     types.Shape
 	view     types.Shape
 	offset   types.Index
-	rows     int
-	columns  int
 	elements []float64
 	rewriter rewriters.Rewriter
 }
@@ -51,8 +49,6 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 			base:     shape,
 			view:     shape,
 			offset:   offset,
-			rows:     rows,
-			columns:  columns,
 			elements: make([]float64, size),
 			rewriter: rewriters.Reflect(),
 		}
@@ -98,12 +94,6 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 	var offsetColumn int64
 	r.Read(&offsetColumn)
 
-	var rows int64
-	r.Read(&rows)
-
-	var columns int64
-	r.Read(&columns)
-
 	var size int64
 	r.Read(&size)
 
@@ -127,13 +117,11 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 		base:     types.NewShape(int(baseRows), int(baseColumns)),
 		view:     types.NewShape(int(viewRows), int(viewColumns)),
 		offset:   types.NewIndex(int(offsetRow), int(offsetColumn)),
-		rows:     int(rows),
-		columns:  int(columns),
 		elements: elements,
 		rewriter: rewriter,
 	}
 
-	if len(elements) != m.rows*m.columns {
+	if len(elements) != m.base.Rows()*m.base.Columns() {
 		panic(validates.INVALID_ELEMENTS_PANIC)
 	}
 
@@ -153,9 +141,6 @@ func (m *denseMatrix) Serialize(writer io.Writer) error {
 	w.Write(int64(m.view.Columns()))
 	w.Write(int64(m.offset.Row()))
 	w.Write(int64(m.offset.Column()))
-
-	w.Write(int64(m.rows))
-	w.Write(int64(m.columns))
 
 	w.Write(int64(len(m.elements)))
 	for _, element := range m.elements {
@@ -295,8 +280,6 @@ func (m *denseMatrix) Transpose() types.Matrix {
 		base:     m.base,
 		view:     m.view,
 		offset:   m.offset,
-		rows:     m.rows,
-		columns:  m.columns,
 		elements: m.elements,
 		rewriter: m.rewriter.Transpose(),
 	}
