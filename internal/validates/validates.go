@@ -1,11 +1,14 @@
 package validates
 
+import "github.com/mitsuse/matrix-go/internal/types"
+
 const (
 	NON_POSITIVE_SIZE_PANIC Panic = iota
 	DIFFERENT_SIZE_PANIC
 	NOT_MULTIPLIABLE_PANIC
 	OUT_OF_RANGE_PANIC
 	INVALID_ELEMENTS_PANIC
+	INVALID_VIEW_PANIC
 )
 
 //go:generate stringer -type=Panic
@@ -50,4 +53,15 @@ func IndexShouldBeInRange(rows, columns, row, column int) {
 	}
 
 	panic(OUT_OF_RANGE_PANIC)
+}
+
+func ViewShouldBeInBase(base, view types.Shape, offset types.Index) {
+	rows := offset.Row() + view.Rows()
+	columns := offset.Column() + view.Columns()
+
+	if 0 < rows && rows <= base.Rows() && 0 < columns && columns <= base.Columns() {
+		return
+	}
+
+	panic(INVALID_VIEW_PANIC)
 }

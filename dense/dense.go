@@ -287,6 +287,31 @@ func (m *denseMatrix) Transpose() types.Matrix {
 	return n
 }
 
+func (m *denseMatrix) View(row, column, rows, columns int) types.Matrix {
+	offset := types.NewIndex(m.offset.Row()+row, m.offset.Column()+column)
+	view := types.NewShape(rows, columns)
+
+	validates.ViewShouldBeInBase(m.base, view, offset)
+
+	n := &denseMatrix{
+		base:     m.base,
+		view:     view,
+		offset:   offset,
+		elements: m.elements,
+		rewriter: m.rewriter,
+	}
+
+	return n
+}
+
+func (m *denseMatrix) Row(row int) types.Matrix {
+	return m.View(row, 0, 1, m.view.Columns())
+}
+
+func (m *denseMatrix) Column(column int) types.Matrix {
+	return m.View(0, column, m.view.Rows(), 1)
+}
+
 func (m *denseMatrix) Max() (element float64, row, column int) {
 	max := math.Inf(-1)
 	index := 0
