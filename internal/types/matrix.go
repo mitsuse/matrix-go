@@ -66,6 +66,9 @@ type Matrix interface {
 	// Create a arbitrary view.
 	View(row, column, rows, columns int) Matrix
 
+	// Get the base matrix.
+	Base() Matrix
+
 	// Create a row view.
 	Row(row int) Matrix
 

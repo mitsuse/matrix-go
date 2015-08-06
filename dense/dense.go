@@ -304,6 +304,18 @@ func (m *denseMatrix) View(row, column, rows, columns int) types.Matrix {
 	return n
 }
 
+func (m *denseMatrix) Base() types.Matrix {
+	n := &denseMatrix{
+		base:     m.base,
+		view:     m.base,
+		offset:   m.offset,
+		elements: m.elements,
+		rewriter: m.rewriter,
+	}
+
+	return n
+}
+
 func (m *denseMatrix) Row(row int) types.Matrix {
 	return m.View(row, 0, 1, m.view.Columns())
 }
