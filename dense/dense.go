@@ -326,38 +326,42 @@ func (m *denseMatrix) Column(column int) types.Matrix {
 
 func (m *denseMatrix) Max() (element float64, row, column int) {
 	max := math.Inf(-1)
-	index := 0
+	index := types.NewIndex(0, 0)
 
-	for i, c := range m.elements {
-		if max >= c {
+	cursor := m.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if max >= element {
 			continue
 		}
 
-		max = c
-		index = i
+		max = element
+		index = types.NewIndex(row, column)
 	}
 
-	row, column = m.convertToRowColumn(index)
-
-	return max, row, column
+	return max, index.Row(), index.Column()
 }
 
 func (m *denseMatrix) Min() (element float64, row, column int) {
-	min := math.Inf(0)
-	index := 0
+	max := math.Inf(1)
+	index := types.NewIndex(0, 0)
 
-	for i, c := range m.elements {
-		if min <= c {
+	cursor := m.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if max <= element {
 			continue
 		}
 
-		min = c
-		index = i
+		max = element
+		index = types.NewIndex(row, column)
 	}
 
-	row, column = m.convertToRowColumn(index)
-
-	return min, row, column
+	return max, index.Row(), index.Column()
 }
 
 func (m *denseMatrix) convertToRowColumn(index int) (row, column int) {
