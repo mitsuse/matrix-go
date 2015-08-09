@@ -228,6 +228,109 @@ column == 2
 ```
 
 
+### Create View of Matrix
+
+
+`(Matrix).View(ro, co, rs, cs)` creates a view of matrix,
+which can be used as a `(rs * cs)` matrix.
+The access to the element of view at index `(i, j)` is mapped to
+the element of the base matrix at index `(ro + i, co + j)`.
+
+```go
+m := dense.New(4, 4)(
+    9, 9, 9, 9,
+    9, 1, 2, 9,
+    9, 3, 4, 9,
+    9, 9, 9, 9,
+).View(1, 1, 2, 2)
+
+n := dense.New(2, 2)(
+    1, 2,
+    3, 4,
+)
+
+// true
+m.Equal(n)
+```
+
+Operations between view and matrix is defined
+on the same condition as the case of operations between matrices.
+
+```go
+m := dense.New(4, 4)(
+    9, 9, 9, 9,
+    9, 1, 2, 9,
+    9, 3, 4, 9,
+    9, 9, 9, 9,
+).View(1, 1, 2, 2)
+
+n := dense.New(2, 2)(
+    8, 7,
+    6, 5,
+)
+
+m.Add(n)
+
+r := dense.new(2, 2)(
+    9, 9,
+    9, 9,
+)
+
+// true
+m.Equal(r)
+```
+
+A view of mutable matrix updates the receiver view by addition.
+The view refers to elements of the base matrix,
+therefore the base matrix is also updated.
+
+```go
+m := dense.New(4, 4)(
+    9, 9, 9, 9,
+    9, 1, 2, 9,
+    9, 3, 4, 9,
+    9, 9, 9, 9,
+)
+
+n := dense.New(2, 2)(
+    8, 7,
+    6, 5,
+)
+
+m.View(1, 1, 2, 2).Add(n)
+
+r := dense.new(4, 4)(
+    9, 9, 9, 9,
+    9, 9, 9, 9,
+    9, 9, 9, 9,
+    9, 9, 9, 9,
+)
+
+// true
+m.Equal(r)
+```
+
+`(Matrix).Row` is an alias for `(Matrix).View` to create a row-vector view.
+`(Matrix).Column` is also available for column-vector view.
+
+```go
+m := dense.New(3, 3)(
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8,
+)
+
+r := dense.New(1, 3)(3, 4, 5)
+c := dense.New(3, 1)(1, 4, 7)
+
+// true
+m.Row(1).Equal(r)
+
+// true
+m.Column(1).Equal(c)
+```
+
+
 ## More Details
 
 Please read the [documentation][godoc].
