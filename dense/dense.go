@@ -367,12 +367,3 @@ func (m *denseMatrix) Min() (element float64, row, column int) {
 
 	return max, index.Row(), index.Column()
 }
-
-func (m *denseMatrix) convertToRowColumn(index int) (row, column int) {
-	columns := m.Columns()
-
-	row = index / columns
-	column = index - (row * columns)
-
-	return row, column
-}
