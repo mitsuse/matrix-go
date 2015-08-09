@@ -2,6 +2,8 @@ package validates
 
 import (
 	"testing"
+
+	"github.com/mitsuse/matrix-go/internal/types"
 )
 
 type shapeTest struct {
@@ -384,4 +386,134 @@ func TestIndexShouldBeInRangeCausesPanicWithLarge(t *testing.T) {
 		test.Index.Row,
 		test.Index.Column,
 	)
+}
+
+func TestViewShouldBeInBasePanicsForNegativeRowOffset(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 1)
+	offset := types.NewIndex(-1, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForNegativeColumnOffset(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 1)
+	offset := types.NewIndex(0, -1)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForTooLargeRowOffset(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 1)
+	offset := types.NewIndex(4, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForTooLargeColumnOffset(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 1)
+	offset := types.NewIndex(0, 4)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForTooNonPositiveRows(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(0, 1)
+	offset := types.NewIndex(0, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForNonPositiveColumns(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 0)
+	offset := types.NewIndex(0, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForTooLargeRows(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(5, 1)
+	offset := types.NewIndex(0, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForTooLargeColumns(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 5)
+	offset := types.NewIndex(0, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForRowsExtendedOutside(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(2, 1)
+	offset := types.NewIndex(3, 0)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
+}
+
+func TestViewShouldBeInBasePanicsForColumnsExtendedOutside(t *testing.T) {
+	base := types.NewShape(4, 4)
+	view := types.NewShape(1, 2)
+	offset := types.NewIndex(0, 3)
+
+	defer func() {
+		if p := recover(); p != INVALID_VIEW_PANIC {
+			t.Fatalf("%s should be caused, but %s causes", INVALID_VIEW_PANIC, p)
+		}
+	}()
+	ViewShouldBeInBase(base, view, offset)
 }

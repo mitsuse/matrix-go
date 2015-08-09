@@ -31,12 +31,14 @@ func TestTransposeRowsReturnsTheNumberOfRows(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	rows := New(test.rows, test.columns)(test.elements...).Transpose().Rows()
-	if rows == test.columns {
+	m := New(test.rows, test.columns)(test.elements...)
+
+	rows := m.View(1, 1, 2, 1).Transpose().Rows()
+	if rows == 1 {
 		return
 	}
 
-	t.Fatalf("The rows should be %d, but is %d.", test.columns, rows)
+	t.Fatalf("The rows should be %d, but is %d.", 1, rows)
 }
 
 func TestTransposeColumnsReturnsTheNumberOfColumns(t *testing.T) {
@@ -46,20 +48,23 @@ func TestTransposeColumnsReturnsTheNumberOfColumns(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	columns := New(test.rows, test.columns)(test.elements...).Transpose().Columns()
-	if columns == test.rows {
+	m := New(test.rows, test.columns)(test.elements...)
+
+	columns := m.View(1, 1, 2, 1).Transpose().Columns()
+	if columns == 2 {
 		return
 	}
 
-	t.Fatalf("The columns should be %d, but is %d.", test.rows, columns)
+	t.Fatalf("The columns should be %d, but is %d.", 2, columns)
 }
 
 func TestTransposeAllCreatesCursorToIterateAllElements(t *testing.T) {
-	m := New(3, 2)(
-		0, 3,
-		1, 4,
-		2, 5,
-	).Transpose()
+	m := New(4, 3)(
+		0, 0, 0,
+		0, 0, 3,
+		0, 1, 4,
+		0, 2, 5,
+	).View(1, 1, 3, 2).Transpose()
 
 	checkTable := [][]bool{
 		[]bool{false, false, false},
@@ -99,11 +104,12 @@ func TestTransposeAllCreatesCursorToIterateAllElements(t *testing.T) {
 }
 
 func TestTransposeNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
-	m := New(3, 2)(
-		0, 0,
-		1, 0,
-		2, 3,
-	).Transpose()
+	m := New(4, 3)(
+		0, 0, 0,
+		0, 0, 0,
+		0, 1, 0,
+		0, 2, 5,
+	).View(1, 1, 3, 2).Transpose()
 
 	checkTable := [][]bool{
 		[]bool{true, false, false},
@@ -143,11 +149,12 @@ func TestTransposeNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
 }
 
 func TestTransposeDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
-	m := New(3, 3)(
-		1, 0, 0,
-		0, 2, 0,
-		0, 0, 3,
-	).Transpose()
+	m := New(4, 4)(
+		9, 9, 9, 9,
+		9, 1, 0, 0,
+		9, 0, 2, 0,
+		9, 0, 0, 3,
+	).View(1, 1, 3, 3).Transpose()
 
 	checkTable := [][]bool{
 		[]bool{false, true, true},
@@ -189,7 +196,7 @@ func TestTransposeDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 
 func TestTransposeGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -206,7 +213,7 @@ func TestTransposeGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 
 func TestTransposeGetFailsByAccessingWithNegativeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -223,7 +230,7 @@ func TestTransposeGetFailsByAccessingWithNegativeRow(t *testing.T) {
 
 func TestTransposeGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -240,7 +247,7 @@ func TestTransposeGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 
 func TestTransposeGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -257,7 +264,7 @@ func TestTransposeGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 
 func TestTransposeUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -274,7 +281,7 @@ func TestTransposeUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 
 func TestTransposeUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -291,7 +298,7 @@ func TestTransposeUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 
 func TestTransposeUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -308,7 +315,7 @@ func TestTransposeUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 
 func TestTransposeUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns).Transpose()
+	m := Zeros(rows+1, columns+1).View(0, 0, rows, columns).Transpose()
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -328,13 +335,13 @@ func TestTransposeUpdateReplacesElement(t *testing.T) {
 
 	rows, columns := 8, 8
 	m := Zeros(rows, columns)
-	n := m.Transpose()
+	n := m.View(1, 2, 7, 6).Transpose()
 
-	if element := m.Get(test.row, test.column); element != 0 {
+	if element := m.Get(test.row+1, test.column+2); element != 0 {
 		t.Fatalf(
 			"The element at (%d, %d) should be 0 before updating, but is %v.",
-			test.row,
-			test.column,
+			test.row+1,
+			test.column+2,
 			element,
 		)
 	}
@@ -350,11 +357,11 @@ func TestTransposeUpdateReplacesElement(t *testing.T) {
 
 	n.Update(test.column, test.row, test.element)
 
-	if element := m.Get(test.row, test.column); element != test.element {
+	if element := m.Get(test.row+1, test.column+2); element != test.element {
 		t.Fatalf(
 			"The element at (%d, %d) should be %v after updating, but is %v.",
-			test.row,
-			test.column,
+			test.row+1,
+			test.column+2,
 			test.element,
 			element,
 		)
@@ -372,18 +379,19 @@ func TestTransposeUpdateReplacesElement(t *testing.T) {
 }
 
 func TestTransposeEqualIsTrue(t *testing.T) {
-	m := New(3, 4)(
+	m := New(4, 4)(
+		0, 0, 0, 0,
 		0, 3, 6, 9,
 		1, 4, 7, 0,
 		2, 5, 8, 1,
-	).Transpose()
+	).View(1, 0, 3, 4).Transpose()
 
-	n := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	n := New(4, 4)(
+		0, 0, 1, 2,
+		0, 3, 4, 5,
+		0, 6, 7, 8,
+		0, 9, 0, 1,
+	).View(0, 1, 4, 3)
 
 	if m.Equal(n) && n.Equal(m) {
 		return
@@ -393,18 +401,20 @@ func TestTransposeEqualIsTrue(t *testing.T) {
 }
 
 func TestTransposeEqualIsFalse(t *testing.T) {
-	m := New(3, 4)(
-		0, 3, 6, 9,
-		1, 4, 7, 0,
-		2, 5, 8, 1,
-	).Transpose()
+	m := New(4, 5)(
+		0, 0, 3, 6, 9,
+		0, 1, 4, 7, 0,
+		0, 2, 5, 8, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
 
-	n := New(4, 3)(
-		0, 1, 2,
-		3, 1, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	n := New(5, 4)(
+		0, 0, 0, 0,
+		0, 1, 2, 0,
+		3, 1, 5, 0,
+		6, 7, 8, 0,
+		9, 0, 1, 0,
+	).View(0, 1, 4, 3)
 
 	if !m.Equal(n) && !n.Equal(m) {
 		return
@@ -420,11 +430,12 @@ func TestTransposeEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
 		2, 5, 8, 1,
 	).Transpose()
 
-	n := New(3, 3)(
+	n := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
-	)
+		0, 0, 0,
+	).View(0, 0, 3, 3)
 
 	defer func() {
 		if r := recover(); r == validates.DIFFERENT_SIZE_PANIC {
@@ -440,18 +451,20 @@ func TestTransposeEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestTransposeAddReturnsTheOriginal(t *testing.T) {
-	m := New(3, 4)(
-		0, 3, 6, 9,
-		1, 4, 7, 0,
-		2, 5, 8, 1,
-	).Transpose()
+	m := New(4, 5)(
+		0, 3, 6, 9, 0,
+		1, 4, 7, 0, 0,
+		2, 5, 8, 1, 0,
+		0, 0, 0, 0, 0,
+	).View(0, 0, 3, 4).Transpose()
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(5, 4)(
+		0, 0, 0, 0,
+		0, 9, 8, 7,
+		0, 6, 5, 4,
+		0, 3, 2, 1,
+		0, 0, 9, 8,
+	).View(1, 1, 4, 3)
 
 	if r := m.Add(n); m == r {
 		return
@@ -461,38 +474,44 @@ func TestTransposeAddReturnsTheOriginal(t *testing.T) {
 }
 
 func TestTransposeAddReturnsTheResultOfAddition(t *testing.T) {
-	m1 := New(3, 4)(
-		0, 3, 6, 9,
-		1, 4, 7, 0,
-		2, 5, 8, 1,
-	).Transpose()
+	m1 := New(4, 5)(
+		0, 0, 3, 6, 9,
+		0, 1, 4, 7, 0,
+		0, 2, 5, 8, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
 
-	n1 := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n1 := New(5, 4)(
+		0, 0, 0, 0,
+		9, 8, 7, 0,
+		6, 5, 4, 0,
+		3, 2, 1, 0,
+		0, 9, 8, 0,
+	).View(1, 0, 4, 3)
 
-	m2 := New(3, 4)(
-		0, 3, 6, 9,
-		1, 4, 7, 0,
-		2, 5, 8, 1,
-	).Transpose()
+	m2 := New(4, 5)(
+		0, 0, 3, 6, 9,
+		0, 1, 4, 7, 0,
+		0, 2, 5, 8, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
 
-	n2 := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n2 := New(5, 4)(
+		0, 0, 0, 0,
+		9, 8, 7, 0,
+		6, 5, 4, 0,
+		3, 2, 1, 0,
+		0, 9, 8, 0,
+	).View(1, 0, 4, 3)
 
-	r := New(4, 3)(
-		9, 9, 9,
-		9, 9, 9,
-		9, 9, 9,
-		9, 9, 9,
-	)
+	r := New(6, 5)(
+		0, 0, 0, 0, 0,
+		0, 9, 9, 9, 0,
+		0, 9, 9, 9, 0,
+		0, 9, 9, 9, 0,
+		0, 9, 9, 9, 0,
+		0, 0, 0, 0, 0,
+	).View(1, 1, 4, 3)
 
 	if m1.Add(n1).Equal(r) && n2.Add(m2).Equal(r) {
 		return
@@ -502,19 +521,21 @@ func TestTransposeAddReturnsTheResultOfAddition(t *testing.T) {
 }
 
 func TestTransposeAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	).Transpose()
+	m := New(5, 5)(
+		0, 0, 0, 0, 0,
+		0, 0, 0, 1, 2,
+		0, 0, 3, 4, 5,
+		0, 0, 6, 7, 8,
+		0, 0, 9, 0, 1,
+	).View(1, 2, 4, 3).Transpose()
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(5, 4)(
+		0, 9, 8, 7,
+		0, 6, 5, 4,
+		0, 3, 2, 1,
+		0, 0, 9, 8,
+		0, 0, 0, 0,
+	).View(0, 1, 4, 3)
 
 	defer func() {
 		if r := recover(); r == validates.DIFFERENT_SIZE_PANIC {
@@ -530,18 +551,20 @@ func TestTransposeAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestTransposeSubtractReturnsTheOriginal(t *testing.T) {
-	m := New(3, 4)(
-		9, 9, 9, 9,
-		9, 9, 9, 9,
-		9, 9, 9, 9,
-	).Transpose()
+	m := New(4, 5)(
+		9, 9, 9, 9, 0,
+		9, 9, 9, 9, 0,
+		9, 9, 9, 9, 0,
+		0, 0, 0, 0, 0,
+	).View(0, 0, 3, 4).Transpose()
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(5, 4)(
+		0, 9, 8, 7,
+		0, 6, 5, 4,
+		0, 3, 2, 1,
+		0, 0, 9, 8,
+		0, 0, 0, 0,
+	).View(0, 1, 4, 3)
 
 	if r := m.Subtract(n); m == r {
 		return
@@ -551,25 +574,28 @@ func TestTransposeSubtractReturnsTheOriginal(t *testing.T) {
 }
 
 func TestTransposeSubtractReturnsTheResultOfSubtractition(t *testing.T) {
-	m := New(3, 4)(
-		9, 9, 9, 9,
-		9, 9, 9, 9,
-		9, 9, 9, 9,
-	).Transpose()
+	m := New(4, 6)(
+		0, 9, 9, 9, 9, 0,
+		0, 9, 9, 9, 9, 0,
+		0, 9, 9, 9, 9, 0,
+		0, 0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(5, 4)(
+		9, 8, 7, 0,
+		6, 5, 4, 0,
+		3, 2, 1, 0,
+		0, 9, 8, 0,
+		0, 0, 0, 0,
+	).View(0, 0, 4, 3)
 
-	r := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	r := New(5, 4)(
+		0, 0, 0, 0,
+		0, 0, 1, 2,
+		0, 3, 4, 5,
+		0, 6, 7, 8,
+		0, 9, 0, 1,
+	).View(1, 1, 4, 3)
 
 	if m.Subtract(n).Equal(r) {
 		return
@@ -579,19 +605,21 @@ func TestTransposeSubtractReturnsTheResultOfSubtractition(t *testing.T) {
 }
 
 func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m := New(4, 3)(
-		9, 9, 9,
-		9, 9, 9,
-		9, 9, 9,
-		9, 9, 9,
-	).Transpose()
+	m := New(5, 4)(
+		0, 9, 9, 9,
+		0, 9, 9, 9,
+		0, 9, 9, 9,
+		0, 9, 9, 9,
+		0, 0, 0, 0,
+	).View(0, 1, 4, 3).Transpose()
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(5, 5)(
+		9, 8, 7, 0, 0,
+		6, 5, 4, 0, 0,
+		3, 2, 1, 0, 0,
+		0, 9, 8, 0, 0,
+		0, 0, 0, 0, 0,
+	).View(0, 0, 4, 3)
 
 	defer func() {
 		if r := recover(); r == validates.DIFFERENT_SIZE_PANIC {
@@ -607,17 +635,19 @@ func TestTransposeSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
-	m := New(3, 2)(
-		2, 1,
-		1, -5,
-		-3, 2,
-	).Transpose()
+	m := New(4, 3)(
+		0, 0, 0,
+		2, 1, 0,
+		1, -5, 0,
+		-3, 2, 0,
+	).View(1, 0, 3, 2).Transpose()
 
-	n := New(3, 3)(
-		3, 1, 0,
-		2, 0, -1,
-		-1, 4, 1,
-	)
+	n := New(4, 4)(
+		0, 3, 1, 0,
+		0, 2, 0, -1,
+		0, -1, 4, 1,
+		0, 0, 0, 0,
+	).View(0, 1, 3, 3)
 
 	if r := m.Multiply(n); m != r && n != r {
 		return
@@ -627,22 +657,25 @@ func TestTransposeMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 }
 
 func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
-	m := New(3, 2)(
-		2, 1,
-		1, -5,
-		-3, 2,
-	).Transpose()
+	m := New(4, 3)(
+		0, 0, 0,
+		0, 2, 1,
+		0, 1, -5,
+		0, -3, 2,
+	).View(1, 1, 3, 2).Transpose()
 
-	n := New(3, 3)(
-		3, 1, 0,
-		2, 0, -1,
-		-1, 4, 1,
-	)
+	n := New(4, 4)(
+		0, 3, 1, 0,
+		0, 2, 0, -1,
+		0, -1, 4, 1,
+		0, 0, 0, 0,
+	).View(0, 1, 3, 3)
 
-	r := New(2, 3)(
-		11, -10, -4,
-		-9, 9, 7,
-	)
+	r := New(3, 4)(
+		0, 0, 0, 0,
+		11, -10, -4, 0,
+		-9, 9, 7, 0,
+	).View(1, 0, 2, 3)
 
 	if m.Multiply(n).Equal(r) {
 		return
@@ -652,11 +685,12 @@ func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 }
 
 func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
-	m := New(3, 4)(
-		0, 3, 0, 3,
-		1, 2, 1, 2,
-		2, 1, 2, 1,
-	).Transpose()
+	m := New(4, 5)(
+		0, 0, 3, 0, 3,
+		0, 1, 2, 1, 2,
+		0, 2, 1, 2, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
 
 	s := 3.0
 
@@ -668,20 +702,23 @@ func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
 }
 
 func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
-	m := New(3, 4)(
-		0, 3, 0, 3,
-		1, 2, 1, 2,
-		2, 1, 2, 1,
-	).Transpose()
+	m := New(4, 5)(
+		0, 0, 3, 0, 3,
+		0, 1, 2, 1, 2,
+		0, 2, 1, 2, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
 
 	s := 3.0
 
-	r := New(4, 3)(
-		0, 3, 6,
-		9, 6, 3,
-		0, 3, 6,
-		9, 6, 3,
-	)
+	r := New(6, 5)(
+		0, 0, 0, 0, 0,
+		0, 0, 0, 3, 6,
+		0, 0, 9, 6, 3,
+		0, 0, 0, 3, 6,
+		0, 0, 9, 6, 3,
+		0, 0, 0, 0, 0,
+	).View(1, 2, 4, 3)
 
 	if m.Scalar(s).Equal(r) {
 		return
@@ -699,4 +736,26 @@ func TestTransposeTwiceEqualsToTheOriginalMatrix(t *testing.T) {
 	if !m.Equal(n) {
 		t.Fatal("The re-transpose matrix should equal to the original matrix.")
 	}
+}
+
+func TestViewOfTransposeEqualsTransposeOfView(t *testing.T) {
+	m := New(4, 5)(
+		0, 0, 3, 0, 3,
+		0, 1, 2, 1, 2,
+		0, 2, 1, 2, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
+
+	n := New(4, 5)(
+		0, 0, 3, 0, 3,
+		0, 1, 2, 1, 2,
+		0, 2, 1, 2, 1,
+		0, 0, 0, 0, 0,
+	).Transpose().View(1, 0, 4, 3)
+
+	if m.Equal(n) {
+		return
+	}
+
+	t.Fatal("The offset and view shape should be transposed when creating on transpose.")
 }
