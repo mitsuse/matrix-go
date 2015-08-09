@@ -291,6 +291,7 @@ func (m *denseMatrix) View(row, column, rows, columns int) types.Matrix {
 	offset := types.NewIndex(m.offset.Row()+row, m.offset.Column()+column)
 	view := types.NewShape(rows, columns)
 
+	validates.ShapeShouldBePositive(rows, columns)
 	validates.ViewShouldBeInBase(m.base, view, offset)
 
 	n := &denseMatrix{

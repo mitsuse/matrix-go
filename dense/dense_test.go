@@ -1013,3 +1013,72 @@ func TestMinFindsTheMaximumElements(t *testing.T) {
 		min, row, column,
 	)
 }
+
+func TestRowCallView(t *testing.T) {
+	r := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	).Row(1)
+
+	v := New(1, 3)(4, 3, 1)
+
+	if r.Equal(v) {
+		return
+	}
+
+	t.Fatalf("m.Row(row) should call m.View(row, 0, 1, m.Columns())")
+}
+
+func TestColumnCallView(t *testing.T) {
+	c := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	).Column(1)
+
+	v := New(4, 1)(1, 3, 1, 2)
+
+	if c.Equal(v) {
+		return
+	}
+	t.Fatalf("m.Column(column) should call m.View(0, column, m.Rows(), 1)")
+}
+
+func TestViewPanicsForNegativeOffset(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	defer func() {
+		if r := recover(); r == validates.INVALID_VIEW_PANIC {
+			return
+		}
+
+		t.Fatalf("(*denseMatrix).View should use validates.ViewShouldBeInBase")
+	}()
+	m.View(-1, 0, 1, 1)
+}
+
+func TestViewPanicsForNonPositiveShape(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	defer func() {
+		if r := recover(); r == validates.NON_POSITIVE_SIZE_PANIC {
+			return
+		}
+
+		t.Fatalf("(*denseMatrix).View should use validates.ShapeShouldBePositive")
+	}()
+	m.View(0, 0, 1, 0)
+}
