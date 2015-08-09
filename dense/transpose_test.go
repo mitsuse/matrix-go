@@ -737,3 +737,25 @@ func TestTransposeTwiceEqualsToTheOriginalMatrix(t *testing.T) {
 		t.Fatal("The re-transpose matrix should equal to the original matrix.")
 	}
 }
+
+func TestViewOfTransposeEqualsTransposeOfView(t *testing.T) {
+	m := New(4, 5)(
+		0, 0, 3, 0, 3,
+		0, 1, 2, 1, 2,
+		0, 2, 1, 2, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 1, 3, 4).Transpose()
+
+	n := New(4, 5)(
+		0, 0, 3, 0, 3,
+		0, 1, 2, 1, 2,
+		0, 2, 1, 2, 1,
+		0, 0, 0, 0, 0,
+	).Transpose().View(1, 0, 4, 3)
+
+	if m.Equal(n) {
+		return
+	}
+
+	t.Fatal("The offset and view shape should be transposed when creating on transpose.")
+}

@@ -288,6 +288,9 @@ func (m *denseMatrix) Transpose() types.Matrix {
 }
 
 func (m *denseMatrix) View(row, column, rows, columns int) types.Matrix {
+	row, column = m.rewriter.Rewrite(row, column)
+	rows, columns = m.rewriter.Rewrite(rows, columns)
+
 	offset := types.NewIndex(m.offset.Row()+row, m.offset.Column()+column)
 	view := types.NewShape(rows, columns)
 
