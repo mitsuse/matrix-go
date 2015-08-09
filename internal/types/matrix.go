@@ -63,6 +63,18 @@ type Matrix interface {
 	// Create the transpose matrix.
 	Transpose() Matrix
 
+	// Create a arbitrary view.
+	View(row, column, rows, columns int) Matrix
+
+	// Get the base matrix.
+	Base() Matrix
+
+	// Create a row view.
+	Row(row int) Matrix
+
+	// Create a column view.
+	Column(column int) Matrix
+
 	// Find and return the first one of maximum elements.
 	Max() (element float64, row, column int)
 

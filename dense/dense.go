@@ -15,12 +15,13 @@ import (
 
 const (
 	id      string = "github.com/mitsuse/matrix-go/dense"
-	version byte   = 0
+	version byte   = 1
 )
 
-type matrixImpl struct {
-	rows     int
-	columns  int
+type denseMatrix struct {
+	base     types.Shape
+	view     types.Shape
+	offset   types.Index
 	elements []float64
 	rewriter rewriters.Rewriter
 }
@@ -41,9 +42,13 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 			panic(validates.INVALID_ELEMENTS_PANIC)
 		}
 
-		m := &matrixImpl{
-			rows:     rows,
-			columns:  columns,
+		shape := types.NewShape(rows, columns)
+		offset := types.NewIndex(0, 0)
+
+		m := &denseMatrix{
+			base:     shape,
+			view:     shape,
+			offset:   offset,
 			elements: make([]float64, size),
 			rewriter: rewriters.Reflect(),
 		}
@@ -63,7 +68,7 @@ func Zeros(rows, columns int) types.Matrix {
 }
 
 // Deserialize a matrix from the given reader.
-// This accepts data generated with (*matrixImpl).Serialize.
+// This accepts data generated with (*denseMatrix).Serialize.
 func Deserialize(reader io.Reader) (types.Matrix, error) {
 	r := serial.NewReader(id, version, reader)
 
@@ -71,11 +76,23 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 	r.ReadVersion()
 	r.ReadArch()
 
-	var rows int64
-	r.Read(&rows)
+	var baseRows int64
+	r.Read(&baseRows)
 
-	var columns int64
-	r.Read(&columns)
+	var baseColumns int64
+	r.Read(&baseColumns)
+
+	var viewRows int64
+	r.Read(&viewRows)
+
+	var viewColumns int64
+	r.Read(&viewColumns)
+
+	var offsetRow int64
+	r.Read(&offsetRow)
+
+	var offsetColumn int64
+	r.Read(&offsetColumn)
 
 	var size int64
 	r.Read(&size)
@@ -96,29 +113,34 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 		return nil, err
 	}
 
-	m := &matrixImpl{
-		rows:     int(rows),
-		columns:  int(columns),
+	m := &denseMatrix{
+		base:     types.NewShape(int(baseRows), int(baseColumns)),
+		view:     types.NewShape(int(viewRows), int(viewColumns)),
+		offset:   types.NewIndex(int(offsetRow), int(offsetColumn)),
 		elements: elements,
 		rewriter: rewriter,
 	}
 
-	if len(elements) != m.rows*m.columns {
+	if len(elements) != m.base.Rows()*m.base.Columns() {
 		panic(validates.INVALID_ELEMENTS_PANIC)
 	}
 
 	return m, nil
 }
 
-func (m *matrixImpl) Serialize(writer io.Writer) error {
+func (m *denseMatrix) Serialize(writer io.Writer) error {
 	w := serial.NewWriter(id, version, writer)
 
 	w.WriteId()
 	w.WriteVersion()
 	w.WriteArch()
 
-	w.Write(int64(m.rows))
-	w.Write(int64(m.columns))
+	w.Write(int64(m.base.Rows()))
+	w.Write(int64(m.base.Columns()))
+	w.Write(int64(m.view.Rows()))
+	w.Write(int64(m.view.Columns()))
+	w.Write(int64(m.offset.Row()))
+	w.Write(int64(m.offset.Column()))
 
 	w.Write(int64(len(m.elements)))
 	for _, element := range m.elements {
@@ -136,55 +158,54 @@ func (m *matrixImpl) Serialize(writer io.Writer) error {
 	return nil
 }
 
-func (m *matrixImpl) Shape() (rows, columns int) {
-	return m.rewriter.Rewrite(m.rows, m.columns)
+func (m *denseMatrix) Shape() (rows, columns int) {
+	return m.rewriter.Rewrite(m.view.Rows(), m.view.Columns())
 }
 
-func (m *matrixImpl) Rows() (rows int) {
+func (m *denseMatrix) Rows() (rows int) {
 	rows, _ = m.Shape()
 	return rows
 }
 
-func (m *matrixImpl) Columns() (columns int) {
+func (m *denseMatrix) Columns() (columns int) {
 	_, columns = m.Shape()
 	return columns
 }
 
-func (m *matrixImpl) All() types.Cursor {
+func (m *denseMatrix) All() types.Cursor {
 	return newAllCursor(m)
 }
 
-func (m *matrixImpl) NonZeros() types.Cursor {
+func (m *denseMatrix) NonZeros() types.Cursor {
 	return newNonZerosCursor(m)
 }
 
-func (m *matrixImpl) Diagonal() types.Cursor {
+func (m *denseMatrix) Diagonal() types.Cursor {
 	return newDiagonalCursor(m)
 }
 
-func (m *matrixImpl) Get(row, column int) (element float64) {
-	rows, columns := m.Shape()
-
-	validates.IndexShouldBeInRange(rows, columns, row, column)
-
+func (m *denseMatrix) Get(row, column int) (element float64) {
 	row, column = m.rewriter.Rewrite(row, column)
 
-	return m.elements[row*m.columns+column]
+	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
+
+	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
+
+	return m.elements[index]
 }
 
-func (m *matrixImpl) Update(row, column int, element float64) types.Matrix {
-	rows, columns := m.Shape()
-
-	validates.IndexShouldBeInRange(rows, columns, row, column)
-
+func (m *denseMatrix) Update(row, column int, element float64) types.Matrix {
 	row, column = m.rewriter.Rewrite(row, column)
 
-	m.elements[row*m.columns+column] = element
+	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
+
+	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
+	m.elements[index] = element
 
 	return m
 }
 
-func (m *matrixImpl) Equal(n types.Matrix) bool {
+func (m *denseMatrix) Equal(n types.Matrix) bool {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.All()
@@ -199,7 +220,7 @@ func (m *matrixImpl) Equal(n types.Matrix) bool {
 	return true
 }
 
-func (m *matrixImpl) Add(n types.Matrix) types.Matrix {
+func (m *denseMatrix) Add(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -212,7 +233,7 @@ func (m *matrixImpl) Add(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Subtract(n types.Matrix) types.Matrix {
+func (m *denseMatrix) Subtract(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -225,7 +246,7 @@ func (m *matrixImpl) Subtract(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Multiply(n types.Matrix) types.Matrix {
+func (m *denseMatrix) Multiply(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeMultipliable(m, n)
 
 	rows := m.Rows()
@@ -246,7 +267,7 @@ func (m *matrixImpl) Multiply(n types.Matrix) types.Matrix {
 	return r
 }
 
-func (m *matrixImpl) Scalar(s float64) types.Matrix {
+func (m *denseMatrix) Scalar(s float64) types.Matrix {
 	for index, element := range m.elements {
 		m.elements[index] = element * s
 	}
@@ -254,10 +275,11 @@ func (m *matrixImpl) Scalar(s float64) types.Matrix {
 	return m
 }
 
-func (m *matrixImpl) Transpose() types.Matrix {
-	n := &matrixImpl{
-		rows:     m.rows,
-		columns:  m.columns,
+func (m *denseMatrix) Transpose() types.Matrix {
+	n := &denseMatrix{
+		base:     m.base,
+		view:     m.view,
+		offset:   m.offset,
 		elements: m.elements,
 		rewriter: m.rewriter.Transpose(),
 	}
@@ -265,47 +287,83 @@ func (m *matrixImpl) Transpose() types.Matrix {
 	return n
 }
 
-func (m *matrixImpl) Max() (element float64, row, column int) {
+func (m *denseMatrix) View(row, column, rows, columns int) types.Matrix {
+	row, column = m.rewriter.Rewrite(row, column)
+	rows, columns = m.rewriter.Rewrite(rows, columns)
+
+	offset := types.NewIndex(m.offset.Row()+row, m.offset.Column()+column)
+	view := types.NewShape(rows, columns)
+
+	validates.ShapeShouldBePositive(rows, columns)
+	validates.ViewShouldBeInBase(m.base, view, offset)
+
+	n := &denseMatrix{
+		base:     m.base,
+		view:     view,
+		offset:   offset,
+		elements: m.elements,
+		rewriter: m.rewriter,
+	}
+
+	return n
+}
+
+func (m *denseMatrix) Base() types.Matrix {
+	n := &denseMatrix{
+		base:     m.base,
+		view:     m.base,
+		offset:   m.offset,
+		elements: m.elements,
+		rewriter: m.rewriter,
+	}
+
+	return n
+}
+
+func (m *denseMatrix) Row(row int) types.Matrix {
+	return m.View(row, 0, 1, m.view.Columns())
+}
+
+func (m *denseMatrix) Column(column int) types.Matrix {
+	return m.View(0, column, m.view.Rows(), 1)
+}
+
+func (m *denseMatrix) Max() (element float64, row, column int) {
 	max := math.Inf(-1)
-	index := 0
+	index := types.NewIndex(0, 0)
 
-	for i, c := range m.elements {
-		if max >= c {
+	cursor := m.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if max >= element {
 			continue
 		}
 
-		max = c
-		index = i
+		max = element
+		index = types.NewIndex(row, column)
 	}
 
-	row, column = m.convertToRowColumn(index)
-
-	return max, row, column
+	return max, index.Row(), index.Column()
 }
 
-func (m *matrixImpl) Min() (element float64, row, column int) {
-	min := math.Inf(0)
-	index := 0
+func (m *denseMatrix) Min() (element float64, row, column int) {
+	max := math.Inf(1)
+	index := types.NewIndex(0, 0)
 
-	for i, c := range m.elements {
-		if min <= c {
+	cursor := m.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if max <= element {
 			continue
 		}
 
-		min = c
-		index = i
+		max = element
+		index = types.NewIndex(row, column)
 	}
 
-	row, column = m.convertToRowColumn(index)
-
-	return min, row, column
-}
-
-func (m *matrixImpl) convertToRowColumn(index int) (row, column int) {
-	columns := m.Columns()
-
-	row = index / columns
-	column = index - (row * columns)
-
-	return row, column
+	return max, index.Row(), index.Column()
 }

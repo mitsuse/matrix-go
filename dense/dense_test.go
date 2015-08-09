@@ -148,7 +148,7 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	for _, element := range Zeros(test.rows, test.columns).(*matrixImpl).elements {
+	for _, element := range Zeros(test.rows, test.columns).(*denseMatrix).elements {
 		if element == 0 {
 			continue
 		}
@@ -219,7 +219,7 @@ func TestSerialize(t *testing.T) {
 		1.0, 0.1, 0.9,
 		0.1, 2.5, 0.2,
 		0.2, 0.1, 3.1,
-	)
+	).View(1, 1, 2, 1)
 
 	writer := bytes.NewBuffer([]byte{})
 
@@ -235,7 +235,7 @@ func TestSerialize(t *testing.T) {
 		t.Fatalf("An expected error occured on deserialization: %s", err)
 	}
 
-	if m.Equal(n) {
+	if m.Base().Equal(n.Base()) {
 		t.Fatal("Deserialization failed for a serialized matrix.")
 	}
 }
@@ -247,13 +247,14 @@ func TestShapeReturnsTheNumberOfRowsAndColumns(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	rows, columns := New(test.rows, test.columns)(test.elements...).Shape()
+	m := New(test.rows, test.columns)(test.elements...)
+	rows, columns := m.View(2, 1, 1, 1).Shape()
 
-	if rows != test.rows {
+	if rows != 1 {
 		t.Fatalf("The rows should be %d, but is %d.", test.rows, rows)
 	}
 
-	if columns != test.columns {
+	if columns != 1 {
 		t.Fatalf("The columns should be %d, but is %d.", test.columns, columns)
 	}
 }
@@ -265,8 +266,10 @@ func TestRowsReturnsTheNumberOfRows(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	rows := New(test.rows, test.columns)(test.elements...).Rows()
-	if rows == test.rows {
+	m := New(test.rows, test.columns)(test.elements...)
+	rows, _ := m.View(2, 1, 1, 1).Shape()
+
+	if rows == 1 {
 		return
 	}
 
@@ -280,8 +283,10 @@ func TestColumnsReturnsTheNumberOfColumns(t *testing.T) {
 		elements: []float64{0, 1, 2, 3, 4, 5},
 	}
 
-	columns := New(test.rows, test.columns)(test.elements...).Columns()
-	if columns == test.columns {
+	m := New(test.rows, test.columns)(test.elements...)
+	_, columns := m.View(2, 1, 1, 1).Shape()
+
+	if columns == 1 {
 		return
 	}
 
@@ -292,11 +297,10 @@ func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
 	m := New(2, 3)(
 		0, 1, 2,
 		3, 4, 5,
-	)
+	).View(1, 1, 1, 2)
 
 	checkTable := [][]bool{
-		[]bool{false, false, false},
-		[]bool{false, false, false},
+		[]bool{false, false},
 	}
 
 	cursor := m.All()
@@ -335,11 +339,10 @@ func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
 	m := New(2, 3)(
 		0, 1, 2,
 		0, 0, 3,
-	)
+	).View(1, 1, 1, 2)
 
 	checkTable := [][]bool{
-		[]bool{true, false, false},
-		[]bool{true, true, false},
+		[]bool{true, false},
 	}
 
 	cursor := m.NonZeros()
@@ -379,12 +382,11 @@ func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 		1, 0, 0,
 		0, 2, 0,
 		0, 0, 3,
-	)
+	).View(1, 1, 2, 2)
 
 	checkTable := [][]bool{
-		[]bool{false, true, true},
-		[]bool{true, false, true},
-		[]bool{true, true, false},
+		[]bool{false, true},
+		[]bool{true, false},
 	}
 
 	cursor := m.Diagonal()
@@ -421,7 +423,10 @@ func TestDiagonalCreatesCursorToIterateDiagonalElements(t *testing.T) {
 
 func TestGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 4, 3
+	offsetRow, offsetColumn := 2, 3
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -433,12 +438,15 @@ func TestGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 			validates.OUT_OF_RANGE_PANIC,
 		)
 	}()
-	m.Get(rows, 0)
+	m.Get(viewRows, 0)
 }
 
 func TestGetFailsByAccessingWithNegativeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 4, 3
+	offsetRow, offsetColumn := 2, 3
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -455,7 +463,10 @@ func TestGetFailsByAccessingWithNegativeRow(t *testing.T) {
 
 func TestGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 3, 4
+	offsetRow, offsetColumn := 3, 2
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -467,12 +478,15 @@ func TestGetFailsByAccessingWithTooLargeColumn(t *testing.T) {
 			validates.OUT_OF_RANGE_PANIC,
 		)
 	}()
-	m.Get(0, columns)
+	m.Get(0, viewColumns)
 }
 
 func TestGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 3, 4
+	offsetRow, offsetColumn := 3, 2
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -489,7 +503,10 @@ func TestGetFailsByAccessingWithNegativeColumn(t *testing.T) {
 
 func TestUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 4, 3
+	offsetRow, offsetColumn := 2, 3
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -501,12 +518,15 @@ func TestUpdateFailsByAccessingWithTooLargeRow(t *testing.T) {
 			validates.OUT_OF_RANGE_PANIC,
 		)
 	}()
-	m.Update(rows, 0, 0)
+	m.Update(viewRows, 0, 0)
 }
 
 func TestUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 	rows, columns := 8, 6
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 4, 3
+	offsetRow, offsetColumn := 2, 3
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -523,7 +543,10 @@ func TestUpdateFailsByAccessingWithNegativeRow(t *testing.T) {
 
 func TestUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 3, 4
+	offsetRow, offsetColumn := 3, 2
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -535,12 +558,15 @@ func TestUpdateFailsByAccessingWithTooLargeColumn(t *testing.T) {
 			validates.OUT_OF_RANGE_PANIC,
 		)
 	}()
-	m.Update(0, columns, 0)
+	m.Update(0, viewColumns, 0)
 }
 
 func TestUpdateFailsByAccessingWithNegativeColumn(t *testing.T) {
 	rows, columns := 6, 8
-	m := Zeros(rows, columns)
+	viewRows, viewColumns := 3, 4
+	offsetRow, offsetColumn := 3, 2
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	defer func() {
 		if r := recover(); r == validates.OUT_OF_RANGE_PANIC {
@@ -566,8 +592,11 @@ func TestUpdateReplacesElement(t *testing.T) {
 		&elementTest{row: 7, column: 7, element: 7},
 	}
 
-	rows, columns := 8, 8
-	m := Zeros(rows, columns)
+	rows, columns := 12, 11
+	viewRows, viewColumns := 8, 8
+	offsetRow, offsetColumn := 1, 2
+
+	m := Zeros(rows, columns).View(offsetRow, offsetColumn, viewRows, viewColumns)
 
 	for _, test := range testSeq {
 		if element := m.Get(test.row, test.column); element != 0 {
@@ -594,19 +623,23 @@ func TestUpdateReplacesElement(t *testing.T) {
 }
 
 func TestEqualIsTrue(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	m := New(5, 4)(
+		0, 1, 2, 0,
+		3, 4, 5, 0,
+		6, 7, 8, 0,
+		9, 0, 1, 0,
+		0, 0, 0, 0,
+	).View(0, 0, 4, 3)
 
-	n := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	n := New(7, 5)(
+		0, 0, 0, 0, 0,
+		0, 0, 0, 1, 2,
+		0, 0, 3, 4, 5,
+		0, 0, 6, 7, 8,
+		0, 0, 9, 0, 1,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+	).View(1, 2, 4, 3)
 
 	if m.Equal(n) && n.Equal(m) {
 		return
@@ -616,19 +649,23 @@ func TestEqualIsTrue(t *testing.T) {
 }
 
 func TestEqualIsFalse(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	m := New(5, 4)(
+		0, 1, 2, 0,
+		3, 4, 5, 0,
+		6, 7, 8, 0,
+		9, 0, 1, 0,
+		0, 0, 0, 0,
+	).View(0, 0, 4, 3)
 
-	n := New(4, 3)(
-		0, 1, 2,
-		3, 1, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	n := New(7, 5)(
+		0, 0, 0, 0, 0,
+		0, 0, 0, 1, 2,
+		0, 0, 3, 1, 5,
+		0, 0, 6, 7, 8,
+		0, 0, 9, 0, 1,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+	).View(1, 2, 4, 3)
 
 	if !m.Equal(n) && !n.Equal(m) {
 		return
@@ -638,18 +675,20 @@ func TestEqualIsFalse(t *testing.T) {
 }
 
 func TestEqualCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	m := New(5, 6)(
+		0, 0, 0, 1, 2, 0,
+		0, 0, 3, 4, 5, 0,
+		0, 0, 6, 7, 8, 0,
+		0, 0, 9, 0, 1, 0,
+		0, 0, 0, 0, 0, 0,
+	).View(0, 2, 4, 3)
 
-	n := New(3, 3)(
+	n := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
-	)
+		0, 0, 0,
+	).View(0, 0, 3, 3)
 
 	defer func() {
 		if r := recover(); r == validates.DIFFERENT_SIZE_PANIC {
@@ -670,14 +709,13 @@ func TestAddReturnsTheOriginal(t *testing.T) {
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
-	)
+	).View(1, 1, 2, 2)
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(3, 4)(
+		0, 0, 0, 0,
+		5, 4, 0, 0,
+		2, 1, 0, 0,
+	).View(1, 0, 2, 2)
 
 	if r := m.Add(n); m == r {
 		return
@@ -692,35 +730,32 @@ func TestAddReturnsTheResultOfAddition(t *testing.T) {
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
-	)
+	).View(1, 1, 2, 2)
 
-	n1 := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n1 := New(3, 3)(
+		0, 5, 4,
+		0, 2, 1,
+		0, 0, 0,
+	).View(0, 1, 2, 2)
 
 	m2 := New(4, 3)(
 		0, 1, 2,
 		3, 4, 5,
 		6, 7, 8,
 		9, 0, 1,
-	)
+	).View(1, 1, 2, 2)
 
-	n2 := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n2 := New(3, 3)(
+		0, 5, 4,
+		0, 2, 1,
+		0, 0, 0,
+	).View(0, 1, 2, 2)
 
-	r := New(4, 3)(
-		9, 9, 9,
-		9, 9, 9,
-		9, 9, 9,
-		9, 9, 9,
-	)
+	r := New(3, 2)(
+		9, 9,
+		9, 9,
+		0, 0,
+	).View(0, 0, 2, 2)
 
 	if m1.Add(n1).Equal(r) && n2.Add(m2).Equal(r) {
 		return
@@ -730,18 +765,19 @@ func TestAddReturnsTheResultOfAddition(t *testing.T) {
 }
 
 func TestAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	m := New(4, 5)(
+		0, 0, 1, 2, 0,
+		0, 3, 4, 5, 0,
+		0, 6, 7, 8, 0,
+		0, 9, 0, 1, 0,
+	).View(0, 1, 4, 3)
 
-	n := New(3, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-	)
+	n := New(4, 4)(
+		0, 0, 0, 0,
+		0, 0, 1, 2,
+		0, 3, 4, 5,
+		0, 6, 7, 8,
+	).View(1, 1, 3, 3)
 
 	defer func() {
 		if r := recover(); r == validates.DIFFERENT_SIZE_PANIC {
@@ -762,14 +798,12 @@ func TestSubtractReturnsTheOriginal(t *testing.T) {
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
-	)
+	).View(1, 1, 2, 2)
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(2, 3)(
+		5, 4, 0,
+		2, 1, 0,
+	).View(0, 0, 2, 2)
 
 	if r := m.Subtract(n); m == r {
 		return
@@ -784,21 +818,19 @@ func TestSubtractReturnsTheResultOfSubtractition(t *testing.T) {
 		9, 9, 9,
 		9, 9, 9,
 		9, 9, 9,
-	)
+	).View(1, 1, 2, 2)
 
-	n := New(4, 3)(
-		9, 8, 7,
-		6, 5, 4,
-		3, 2, 1,
-		0, 9, 8,
-	)
+	n := New(3, 3)(
+		0, 5, 4,
+		0, 2, 1,
+		0, 0, 0,
+	).View(0, 1, 2, 2)
 
-	r := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	r := New(3, 3)(
+		0, 0, 0,
+		4, 5, 0,
+		7, 8, 0,
+	).View(1, 0, 2, 2)
 
 	if m.Subtract(n).Equal(r) {
 		return
@@ -808,18 +840,19 @@ func TestSubtractReturnsTheResultOfSubtractition(t *testing.T) {
 }
 
 func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-		9, 0, 1,
-	)
+	m := New(4, 4)(
+		0, 0, 1, 2,
+		0, 3, 4, 5,
+		0, 6, 7, 8,
+		0, 9, 0, 1,
+	).View(0, 1, 4, 3)
 
-	n := New(3, 3)(
-		0, 1, 2,
-		3, 4, 5,
-		6, 7, 8,
-	)
+	n := New(4, 4)(
+		0, 0, 0, 0,
+		0, 1, 2, 0,
+		3, 4, 5, 0,
+		6, 7, 8, 0,
+	).View(1, 0, 3, 3)
 
 	defer func() {
 		if r := recover(); r == validates.DIFFERENT_SIZE_PANIC {
@@ -835,16 +868,19 @@ func TestSubtractCausesPanicForDifferentShapeMatrices(t *testing.T) {
 }
 
 func TestMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
-	m := New(2, 3)(
-		2, 1, -3,
-		1, -5, 2,
-	)
+	m := New(4, 4)(
+		0, 2, 1, -3,
+		0, 1, -5, 2,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+	).View(0, 1, 2, 3)
 
-	n := New(3, 3)(
-		3, 1, 0,
-		2, 0, -1,
-		-1, 4, 1,
-	)
+	n := New(4, 5)(
+		0, 0, 3, 1, 0,
+		0, 0, 2, 0, -1,
+		0, 0, -1, 4, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 2, 3, 3)
 
 	if r := m.Multiply(n); m != r && n != r {
 		return
@@ -854,16 +890,19 @@ func TestMultiplyReturnsTheNewMatrixInstance(t *testing.T) {
 }
 
 func TestMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
-	m := New(2, 3)(
-		2, 1, -3,
-		1, -5, 2,
-	)
+	m := New(4, 4)(
+		0, 2, 1, -3,
+		0, 1, -5, 2,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+	).View(0, 1, 2, 3)
 
-	n := New(3, 3)(
-		3, 1, 0,
-		2, 0, -1,
-		-1, 4, 1,
-	)
+	n := New(4, 5)(
+		0, 0, 3, 1, 0,
+		0, 0, 2, 0, -1,
+		0, 0, -1, 4, 1,
+		0, 0, 0, 0, 0,
+	).View(0, 2, 3, 3)
 
 	r := New(2, 3)(
 		11, -10, -4,
@@ -878,12 +917,13 @@ func TestMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 }
 
 func TestScalarReturnsTheOriginal(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 2, 1,
-		0, 1, 2,
-		3, 2, 1,
-	)
+	m := New(5, 4)(
+		0, 1, 2, 0,
+		3, 2, 1, 0,
+		0, 1, 2, 0,
+		3, 2, 1, 0,
+		0, 0, 0, 0,
+	).View(0, 0, 4, 3)
 
 	s := 3.0
 
@@ -895,21 +935,23 @@ func TestScalarReturnsTheOriginal(t *testing.T) {
 }
 
 func TestScalarTheResultOfMultiplication(t *testing.T) {
-	m := New(4, 3)(
-		0, 1, 2,
-		3, 2, 1,
-		0, 1, 2,
-		3, 2, 1,
-	)
+	m := New(5, 4)(
+		0, 1, 2, 0,
+		3, 2, 1, 0,
+		0, 1, 2, 0,
+		3, 2, 1, 0,
+		0, 0, 0, 0,
+	).View(0, 0, 4, 3)
 
 	s := 3.0
 
-	r := New(4, 3)(
-		0, 3, 6,
-		9, 6, 3,
-		0, 3, 6,
-		9, 6, 3,
-	)
+	r := New(5, 4)(
+		0, 0, 0, 0,
+		0, 0, 3, 6,
+		0, 9, 6, 3,
+		0, 0, 3, 6,
+		0, 9, 6, 3,
+	).View(1, 1, 4, 3)
 
 	if m.Scalar(s).Equal(r) {
 		return
@@ -921,10 +963,10 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 func TestMaxFindsTheMaximumElements(t *testing.T) {
 	m := New(4, 3)(
 		0, 1, 2,
+		4, 1, 1,
+		0, 3, 2,
 		3, 2, 1,
-		0, 1, 2,
-		3, 2, 1,
-	)
+	).View(1, 1, 2, 1)
 
 	test := elementTest{
 		row:     1,
@@ -948,15 +990,15 @@ func TestMaxFindsTheMaximumElements(t *testing.T) {
 func TestMinFindsTheMaximumElements(t *testing.T) {
 	m := New(4, 3)(
 		0, 1, 2,
-		3, 2, 1,
+		4, 3, 1,
 		0, 1, 2,
 		3, 2, 1,
-	)
+	).View(1, 1, 2, 1)
 
 	test := elementTest{
-		row:     0,
+		row:     1,
 		column:  0,
-		element: 0.0,
+		element: 1.0,
 	}
 
 	min, row, column := m.Min()
@@ -970,4 +1012,73 @@ func TestMinFindsTheMaximumElements(t *testing.T) {
 		test.element, test.row, test.column,
 		min, row, column,
 	)
+}
+
+func TestRowCallView(t *testing.T) {
+	r := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	).Row(1)
+
+	v := New(1, 3)(4, 3, 1)
+
+	if r.Equal(v) {
+		return
+	}
+
+	t.Fatalf("m.Row(row) should call m.View(row, 0, 1, m.Columns())")
+}
+
+func TestColumnCallView(t *testing.T) {
+	c := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	).Column(1)
+
+	v := New(4, 1)(1, 3, 1, 2)
+
+	if c.Equal(v) {
+		return
+	}
+	t.Fatalf("m.Column(column) should call m.View(0, column, m.Rows(), 1)")
+}
+
+func TestViewPanicsForNegativeOffset(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	defer func() {
+		if r := recover(); r == validates.INVALID_VIEW_PANIC {
+			return
+		}
+
+		t.Fatalf("(*denseMatrix).View should use validates.ViewShouldBeInBase")
+	}()
+	m.View(-1, 0, 1, 1)
+}
+
+func TestViewPanicsForNonPositiveShape(t *testing.T) {
+	m := New(4, 3)(
+		0, 1, 2,
+		4, 3, 1,
+		0, 1, 2,
+		3, 2, 1,
+	)
+
+	defer func() {
+		if r := recover(); r == validates.NON_POSITIVE_SIZE_PANIC {
+			return
+		}
+
+		t.Fatalf("(*denseMatrix).View should use validates.ShapeShouldBePositive")
+	}()
+	m.View(0, 0, 1, 0)
 }
