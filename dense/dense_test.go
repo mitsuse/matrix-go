@@ -2,8 +2,11 @@ package dense
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
 
+	"github.com/mitsuse/matrix-go/internal/rewriters"
+	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
@@ -148,7 +151,7 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	for _, element := range Zeros(test.rows, test.columns).(*denseMatrix).elements {
+	for _, element := range Zeros(test.rows, test.columns).(*DenseMatrix).elements {
 		if element == 0 {
 			continue
 		}
@@ -219,7 +222,7 @@ func TestSerialize(t *testing.T) {
 		1.0, 0.1, 0.9,
 		0.1, 2.5, 0.2,
 		0.2, 0.1, 3.1,
-	).View(1, 1, 2, 1)
+	).View(1, 1, 2, 1).Transpose()
 
 	writer := bytes.NewBuffer([]byte{})
 
@@ -235,8 +238,75 @@ func TestSerialize(t *testing.T) {
 		t.Fatalf("An expected error occured on deserialization: %s", err)
 	}
 
-	if m.Base().Equal(n.Base()) {
+	if !m.Base().Equal(n.Base()) || !m.Equal(n) {
 		t.Fatal("Deserialization failed for a serialized matrix.")
+	}
+}
+
+func TestUnmarshalJSONFailsWithAlreadyInitializedMatrix(t *testing.T) {
+	m := New(3, 3)(
+		1.0, 0.1, 0.9,
+		0.1, 2.5, 0.2,
+		0.2, 0.1, 3.1,
+	).View(1, 1, 2, 1).Transpose()
+
+	n := New(3, 3)(
+		1.0, 0.1, 0.9,
+		0.1, 2.5, 0.2,
+		0.2, 0.1, 3.1,
+	).View(1, 1, 2, 1).Transpose().(*DenseMatrix)
+
+	b, _ := json.Marshal(m)
+
+	if err := json.Unmarshal(b, n); err == nil || err.Error() != AlreadyInitializedError {
+		t.Fatalf("Unmarshal can be applied to uninitialized matrix.")
+	}
+}
+
+func TestUnmarshalJSONFailsWithIncompatibleVersion(t *testing.T) {
+	m := &matrixJson{
+		Version: 99999,
+		Base:    types.NewShape(3, 3),
+		View:    types.NewShape(2, 1),
+		Offset:  types.NewIndex(1, 1),
+		Elements: []float64{
+			1.0, 0.1, 0.9,
+			0.1, 2.5, 0.2,
+			0.2, 0.1, 3.1,
+		},
+		Rewriter: rewriters.Reverse().Type(),
+	}
+
+	n := &DenseMatrix{}
+
+	b, _ := json.Marshal(m)
+
+	if err := json.Unmarshal(b, n); err == nil || err.Error() != IncompatibleVersionError {
+		t.Fatalf("Unmarshal can be applied to compatible-version matrix.")
+	}
+}
+
+func TestUnmarshalJSONFailsWithUnknownRewriter(t *testing.T) {
+	m := &matrixJson{
+		Version: version,
+		Base:    types.NewShape(3, 3),
+		View:    types.NewShape(2, 1),
+		Offset:  types.NewIndex(1, 1),
+		Elements: []float64{
+			1.0, 0.1, 0.9,
+			0.1, 2.5, 0.2,
+			0.2, 0.1, 3.1,
+		},
+		Rewriter: 255,
+	}
+
+	n := &DenseMatrix{}
+
+	b, _ := json.Marshal(m)
+
+	// TODO: Use an exported error constant.
+	if err := json.Unmarshal(b, n); err == nil || err.Error() != "UNKNOWN_REWRITER_ERROR" {
+		t.Fatalf("Unmarshal can be applied to matrix which has a valid rewriter.")
 	}
 }
 
@@ -1060,7 +1130,7 @@ func TestViewPanicsForNegativeOffset(t *testing.T) {
 			return
 		}
 
-		t.Fatalf("(*denseMatrix).View should use validates.ViewShouldBeInBase")
+		t.Fatalf("(*DenseMatrix).View should use validates.ViewShouldBeInBase")
 	}()
 	m.View(-1, 0, 1, 1)
 }
@@ -1078,7 +1148,7 @@ func TestViewPanicsForNonPositiveShape(t *testing.T) {
 			return
 		}
 
-		t.Fatalf("(*denseMatrix).View should use validates.ShapeShouldBePositive")
+		t.Fatalf("(*DenseMatrix).View should use validates.ShapeShouldBePositive")
 	}()
 	m.View(0, 0, 1, 0)
 }
