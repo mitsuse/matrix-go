@@ -1,6 +1,8 @@
 package validates
 
-import "github.com/mitsuse/matrix-go/internal/types"
+import (
+	"github.com/mitsuse/matrix-go/internal/types"
+)
 
 const (
 	NON_POSITIVE_SIZE_PANIC Panic = iota
@@ -55,7 +57,7 @@ func IndexShouldBeInRange(rows, columns, row, column int) {
 	panic(OUT_OF_RANGE_PANIC)
 }
 
-func ViewShouldBeInBase(base, view types.Shape, offset types.Index) {
+func ViewShouldBeInBase(base, view *types.Shape, offset *types.Index) {
 	rows := offset.Row() + view.Rows()
 	columns := offset.Column() + view.Columns()
 
