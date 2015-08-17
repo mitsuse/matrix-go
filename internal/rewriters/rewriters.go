@@ -34,6 +34,17 @@ func init() {
 	reverse = &reverseImpl{}
 }
 
+func Get(typeId byte) (Rewriter, error) {
+	switch typeId {
+	case typeReflect:
+		return Reflect(), nil
+	case typeReverse:
+		return Reverse(), nil
+	}
+
+	return nil, errors.New(UNKNOWN_REWRITER_ERROR)
+}
+
 func Reflect() Rewriter {
 	return reflect
 }
@@ -68,12 +79,17 @@ func Deserialize(reader io.Reader) (Rewriter, error) {
 }
 
 type Rewriter interface {
+	Type() byte
 	Serialize(writer io.Writer) error
 	Rewrite(int, int) (int, int)
 	Transpose() Rewriter
 }
 
 type reflectImpl struct {
+}
+
+func (r *reflectImpl) Type() byte {
+	return typeReflect
 }
 
 func (r *reflectImpl) Serialize(writer io.Writer) error {
@@ -96,6 +112,10 @@ func (r *reflectImpl) Transpose() Rewriter {
 }
 
 type reverseImpl struct {
+}
+
+func (r *reverseImpl) Type() byte {
+	return typeReverse
 }
 
 func (r *reverseImpl) Serialize(writer io.Writer) error {
