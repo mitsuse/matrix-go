@@ -221,6 +221,20 @@ func TestZerosFailsForNonPositive(t *testing.T) {
 	Zeros(test.rows, test.columns)
 }
 
+func TestConvertJustReturnsTheOriginalMatrix(t *testing.T) {
+	m := New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	if Convert(m) == m {
+		return
+	}
+
+	t.Fatal("dense.Convert should just return the given matrix instead of creating a new matrix.")
+}
+
 func TestSerialize(t *testing.T) {
 	m := New(3, 3)(
 		1.0, 0.1, 0.9,

@@ -65,6 +65,21 @@ func Zeros(rows, columns int) *Matrix {
 	return New(rows, columns)(make([]float64, rows*columns)...)
 }
 
+// Convert the given matrix to *dense.Matrix.
+// If the given matrix is already typed as *dense.Matrix, just returns it.
+// In other cases, create a new matrix.
+func Convert(m types.Matrix) *Matrix {
+	d, isDense := m.(*Matrix)
+
+	if isDense {
+		return d
+	}
+
+	// TODO: Convert the other type of matrix to *Matrix.
+
+	return nil
+}
+
 // Deserialize a matrix from the given reader.
 func Deserialize(reader io.Reader) (types.Matrix, error) {
 	m := &Matrix{}
