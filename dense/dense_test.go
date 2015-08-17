@@ -22,6 +22,10 @@ type elementTest struct {
 	element float64
 }
 
+func TestDenseMatixSatisfiesMatrixInterface(t *testing.T) {
+	var _ types.Matrix = &Matrix{}
+}
+
 func TestNewCreatesDenseMatrix(t *testing.T) {
 	test := &constructTest{
 		rows:     3,
@@ -151,7 +155,7 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		columns: 2,
 	}
 
-	for _, element := range Zeros(test.rows, test.columns).(*DenseMatrix).elements {
+	for _, element := range Zeros(test.rows, test.columns).elements {
 		if element == 0 {
 			continue
 		}
@@ -217,6 +221,20 @@ func TestZerosFailsForNonPositive(t *testing.T) {
 	Zeros(test.rows, test.columns)
 }
 
+func TestConvertJustReturnsTheOriginalMatrix(t *testing.T) {
+	m := New(3, 3)(
+		0, 1, 2,
+		3, 4, 5,
+		6, 7, 8,
+	)
+
+	if Convert(m) == m {
+		return
+	}
+
+	t.Fatal("dense.Convert should just return the given matrix instead of creating a new matrix.")
+}
+
 func TestSerialize(t *testing.T) {
 	m := New(3, 3)(
 		1.0, 0.1, 0.9,
@@ -254,7 +272,7 @@ func TestUnmarshalJSONFailsWithAlreadyInitializedMatrix(t *testing.T) {
 		1.0, 0.1, 0.9,
 		0.1, 2.5, 0.2,
 		0.2, 0.1, 3.1,
-	).View(1, 1, 2, 1).Transpose().(*DenseMatrix)
+	).View(1, 1, 2, 1).Transpose()
 
 	b, _ := json.Marshal(m)
 
@@ -277,7 +295,7 @@ func TestUnmarshalJSONFailsWithIncompatibleVersion(t *testing.T) {
 		Rewriter: rewriters.Reverse().Type(),
 	}
 
-	n := &DenseMatrix{}
+	n := &Matrix{}
 
 	b, _ := json.Marshal(m)
 
@@ -300,7 +318,7 @@ func TestUnmarshalJSONFailsWithUnknownRewriter(t *testing.T) {
 		Rewriter: 255,
 	}
 
-	n := &DenseMatrix{}
+	n := &Matrix{}
 
 	b, _ := json.Marshal(m)
 
@@ -1130,7 +1148,7 @@ func TestViewPanicsForNegativeOffset(t *testing.T) {
 			return
 		}
 
-		t.Fatalf("(*DenseMatrix).View should use validates.ViewShouldBeInBase")
+		t.Fatalf("(*Matrix).View should use validates.ViewShouldBeInBase")
 	}()
 	m.View(-1, 0, 1, 1)
 }
@@ -1148,7 +1166,7 @@ func TestViewPanicsForNonPositiveShape(t *testing.T) {
 			return
 		}
 
-		t.Fatalf("(*DenseMatrix).View should use validates.ShapeShouldBePositive")
+		t.Fatalf("(*Matrix).View should use validates.ShapeShouldBePositive")
 	}()
 	m.View(0, 0, 1, 0)
 }

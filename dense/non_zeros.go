@@ -8,7 +8,7 @@ type nonZerosCursor struct {
 	cursor types.Cursor
 }
 
-func newNonZerosCursor(matrix *DenseMatrix) *nonZerosCursor {
+func newNonZerosCursor(matrix *Matrix) *nonZerosCursor {
 	c := &nonZerosCursor{
 		cursor: matrix.All(),
 	}
