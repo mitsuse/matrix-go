@@ -5,13 +5,13 @@ import (
 )
 
 type allCursor struct {
-	matrix  *DenseMatrix
+	matrix  *Matrix
 	element float64
 	current *types.Index
 	next    *types.Index
 }
 
-func newAllCursor(matrix *DenseMatrix) *allCursor {
+func newAllCursor(matrix *Matrix) *allCursor {
 	c := &allCursor{
 		matrix:  matrix,
 		element: 0,

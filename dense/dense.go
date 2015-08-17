@@ -14,7 +14,7 @@ import (
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
-type DenseMatrix struct {
+type Matrix struct {
 	initialized bool
 	base        *types.Shape
 	view        *types.Shape
@@ -29,10 +29,10 @@ type DenseMatrix struct {
 // In addition,
 // when the product of "row"s and "column" doesn't equal to the size of "elements",
 // validates.INVALID_ELEMENTS_PANIC will be caused.
-func New(rows, columns int) func(elements ...float64) types.Matrix {
+func New(rows, columns int) func(elements ...float64) *Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
-	constructor := func(elements ...float64) types.Matrix {
+	constructor := func(elements ...float64) *Matrix {
 		size := rows * columns
 
 		if len(elements) != size {
@@ -42,7 +42,7 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 		shape := types.NewShape(rows, columns)
 		offset := types.NewIndex(0, 0)
 
-		m := &DenseMatrix{
+		m := &Matrix{
 			initialized: true,
 			base:        shape,
 			view:        shape,
@@ -61,13 +61,13 @@ func New(rows, columns int) func(elements ...float64) types.Matrix {
 // Create a new zero matrix.
 // When "rows" and "columns" is not positive,
 // validates.NON_POSITIVE_SIZE_PANIC will be caused.
-func Zeros(rows, columns int) types.Matrix {
+func Zeros(rows, columns int) *Matrix {
 	return New(rows, columns)(make([]float64, rows*columns)...)
 }
 
 // Deserialize a matrix from the given reader.
 func Deserialize(reader io.Reader) (types.Matrix, error) {
-	m := &DenseMatrix{}
+	m := &Matrix{}
 
 	if err := json.NewDecoder(reader).Decode(m); err != nil {
 		return nil, err
@@ -76,11 +76,11 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 	return m, nil
 }
 
-func (m *DenseMatrix) Serialize(writer io.Writer) error {
+func (m *Matrix) Serialize(writer io.Writer) error {
 	return json.NewEncoder(writer).Encode(m)
 }
 
-func (m *DenseMatrix) MarshalJSON() ([]byte, error) {
+func (m *Matrix) MarshalJSON() ([]byte, error) {
 	jsonObject := matrixJson{
 		Version:  version,
 		Base:     m.base,
@@ -93,7 +93,7 @@ func (m *DenseMatrix) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&jsonObject)
 }
 
-func (m *DenseMatrix) UnmarshalJSON(b []byte) error {
+func (m *Matrix) UnmarshalJSON(b []byte) error {
 	if m.initialized {
 		return errors.New(AlreadyInitializedError)
 	}
@@ -136,33 +136,33 @@ func (m *DenseMatrix) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (m *DenseMatrix) Shape() (rows, columns int) {
+func (m *Matrix) Shape() (rows, columns int) {
 	return m.rewriter.Rewrite(m.view.Rows(), m.view.Columns())
 }
 
-func (m *DenseMatrix) Rows() (rows int) {
+func (m *Matrix) Rows() (rows int) {
 	rows, _ = m.Shape()
 	return rows
 }
 
-func (m *DenseMatrix) Columns() (columns int) {
+func (m *Matrix) Columns() (columns int) {
 	_, columns = m.Shape()
 	return columns
 }
 
-func (m *DenseMatrix) All() types.Cursor {
+func (m *Matrix) All() types.Cursor {
 	return newAllCursor(m)
 }
 
-func (m *DenseMatrix) NonZeros() types.Cursor {
+func (m *Matrix) NonZeros() types.Cursor {
 	return newNonZerosCursor(m)
 }
 
-func (m *DenseMatrix) Diagonal() types.Cursor {
+func (m *Matrix) Diagonal() types.Cursor {
 	return newDiagonalCursor(m)
 }
 
-func (m *DenseMatrix) Get(row, column int) (element float64) {
+func (m *Matrix) Get(row, column int) (element float64) {
 	row, column = m.rewriter.Rewrite(row, column)
 
 	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
@@ -172,7 +172,7 @@ func (m *DenseMatrix) Get(row, column int) (element float64) {
 	return m.elements[index]
 }
 
-func (m *DenseMatrix) Update(row, column int, element float64) types.Matrix {
+func (m *Matrix) Update(row, column int, element float64) types.Matrix {
 	row, column = m.rewriter.Rewrite(row, column)
 
 	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
@@ -183,7 +183,7 @@ func (m *DenseMatrix) Update(row, column int, element float64) types.Matrix {
 	return m
 }
 
-func (m *DenseMatrix) Equal(n types.Matrix) bool {
+func (m *Matrix) Equal(n types.Matrix) bool {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.All()
@@ -198,7 +198,7 @@ func (m *DenseMatrix) Equal(n types.Matrix) bool {
 	return true
 }
 
-func (m *DenseMatrix) Add(n types.Matrix) types.Matrix {
+func (m *Matrix) Add(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -211,7 +211,7 @@ func (m *DenseMatrix) Add(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *DenseMatrix) Subtract(n types.Matrix) types.Matrix {
+func (m *Matrix) Subtract(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeSame(m, n)
 
 	cursor := n.NonZeros()
@@ -224,7 +224,7 @@ func (m *DenseMatrix) Subtract(n types.Matrix) types.Matrix {
 	return m
 }
 
-func (m *DenseMatrix) Multiply(n types.Matrix) types.Matrix {
+func (m *Matrix) Multiply(n types.Matrix) types.Matrix {
 	validates.ShapeShouldBeMultipliable(m, n)
 
 	rows := m.Rows()
@@ -245,7 +245,7 @@ func (m *DenseMatrix) Multiply(n types.Matrix) types.Matrix {
 	return r
 }
 
-func (m *DenseMatrix) Scalar(s float64) types.Matrix {
+func (m *Matrix) Scalar(s float64) types.Matrix {
 	for index, element := range m.elements {
 		m.elements[index] = element * s
 	}
@@ -253,8 +253,8 @@ func (m *DenseMatrix) Scalar(s float64) types.Matrix {
 	return m
 }
 
-func (m *DenseMatrix) Transpose() types.Matrix {
-	n := &DenseMatrix{
+func (m *Matrix) Transpose() types.Matrix {
+	n := &Matrix{
 		initialized: true,
 		base:        m.base,
 		view:        m.view,
@@ -266,7 +266,7 @@ func (m *DenseMatrix) Transpose() types.Matrix {
 	return n
 }
 
-func (m *DenseMatrix) View(row, column, rows, columns int) types.Matrix {
+func (m *Matrix) View(row, column, rows, columns int) types.Matrix {
 	row, column = m.rewriter.Rewrite(row, column)
 	rows, columns = m.rewriter.Rewrite(rows, columns)
 
@@ -276,7 +276,7 @@ func (m *DenseMatrix) View(row, column, rows, columns int) types.Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 	validates.ViewShouldBeInBase(m.base, view, offset)
 
-	n := &DenseMatrix{
+	n := &Matrix{
 		initialized: true,
 		base:        m.base,
 		view:        view,
@@ -288,8 +288,8 @@ func (m *DenseMatrix) View(row, column, rows, columns int) types.Matrix {
 	return n
 }
 
-func (m *DenseMatrix) Base() types.Matrix {
-	n := &DenseMatrix{
+func (m *Matrix) Base() types.Matrix {
+	n := &Matrix{
 		initialized: true,
 		base:        m.base,
 		view:        m.base,
@@ -301,15 +301,15 @@ func (m *DenseMatrix) Base() types.Matrix {
 	return n
 }
 
-func (m *DenseMatrix) Row(row int) types.Matrix {
+func (m *Matrix) Row(row int) types.Matrix {
 	return m.View(row, 0, 1, m.view.Columns())
 }
 
-func (m *DenseMatrix) Column(column int) types.Matrix {
+func (m *Matrix) Column(column int) types.Matrix {
 	return m.View(0, column, m.view.Rows(), 1)
 }
 
-func (m *DenseMatrix) Max() (element float64, row, column int) {
+func (m *Matrix) Max() (element float64, row, column int) {
 	max := math.Inf(-1)
 	index := types.NewIndex(0, 0)
 
@@ -329,7 +329,7 @@ func (m *DenseMatrix) Max() (element float64, row, column int) {
 	return max, index.Row(), index.Column()
 }
 
-func (m *DenseMatrix) Min() (element float64, row, column int) {
+func (m *Matrix) Min() (element float64, row, column int) {
 	max := math.Inf(1)
 	index := types.NewIndex(0, 0)
 
