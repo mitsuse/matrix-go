@@ -4,6 +4,9 @@ Package "hash" provides an hash-based implementation of mutable sparse matrix.
 package hash
 
 import (
+	"encoding/json"
+	"io"
+
 	"github.com/mitsuse/matrix-go/internal/rewriters"
 	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
@@ -66,4 +69,47 @@ func New(rows, columns int) func(elements ...Element) *Matrix {
 // validates.NON_POSITIVE_SIZE_PANIC will be caused.
 func Zeros(rows, columns int) *Matrix {
 	return New(rows, columns)()
+}
+
+// Convert the given matrix to *hash.Matrix.
+// If the given matrix is already typed as *hash.Matrix, just returns it.
+// In other cases, create a new matrix.
+func Convert(m types.Matrix) *Matrix {
+	// TODO: Implement.
+	// d, isHash := m.(*Matrix)
+	//
+	// if isHash {
+	// 	return d
+	// }
+	//
+	// // TODO: Convert the other type of matrix to *Matrix.
+	//
+	return nil
+}
+
+// Deserialize a matrix from the given reader.
+func Deserialize(reader io.Reader) (types.Matrix, error) {
+	m := &Matrix{}
+
+	if err := json.NewDecoder(reader).Decode(m); err != nil {
+		return nil, err
+	}
+
+	// return m, nil
+	// TODO: Implement.
+	return nil, nil
+}
+
+func (m *Matrix) Serialize(writer io.Writer) error {
+	return json.NewEncoder(writer).Encode(m)
+}
+
+func (m *Matrix) MarshalJSON() ([]byte, error) {
+	// TODO: Implement.
+	return nil, nil
+}
+
+func (m *Matrix) UnmarshalJSON([]byte) error {
+	// TODO: Implement.
+	return nil
 }
