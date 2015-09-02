@@ -14,7 +14,7 @@ type Matrix struct {
 	base        *types.Shape
 	view        *types.Shape
 	offset      *types.Index
-	elements    map[int]map[int]float64
+	elements    map[int]float64
 	rewriter    rewriters.Rewriter
 }
 
@@ -28,8 +28,6 @@ func New(rows, columns int) func(elements ...Element) *Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
 	constructor := func(elements ...Element) *Matrix {
-		// TODO: Validate.
-
 		shape := types.NewShape(rows, columns)
 		offset := types.NewIndex(0, 0)
 
@@ -38,11 +36,18 @@ func New(rows, columns int) func(elements ...Element) *Matrix {
 			base:        shape,
 			view:        shape,
 			offset:      offset,
-			elements:    make(map[int]map[int]float64),
+			elements:    make(map[int]float64),
 			rewriter:    rewriters.Reflect(),
 		}
 
-		// TODO: Copy elements.
+		for _, element := range elements {
+			key := element.Row*columns + element.Column
+			if _, exist := m.elements[key]; exist {
+				panic(validates.INVALID_ELEMENTS_PANIC)
+			}
+
+			m.elements[key] = element.Value
+		}
 
 		return m
 	}
