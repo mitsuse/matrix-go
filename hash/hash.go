@@ -24,6 +24,12 @@ type Element struct {
 	Value  float64
 }
 
+// Create a new matrix with given elements.
+// When "rows" and "columns" is not positive,
+// validates.NON_POSITIVE_SIZE_PANIC will be caused.
+// In addition,
+// when each element has the index out of shape,
+// validates.INVALID_ELEMENTS_PANIC will be caused.
 func New(rows, columns int) func(elements ...Element) *Matrix {
 	validates.ShapeShouldBePositive(rows, columns)
 
@@ -55,6 +61,9 @@ func New(rows, columns int) func(elements ...Element) *Matrix {
 	return constructor
 }
 
+// Create a new zero matrix.
+// When "rows" and "columns" is not positive,
+// validates.NON_POSITIVE_SIZE_PANIC will be caused.
 func Zeros(rows, columns int) *Matrix {
 	return New(rows, columns)()
 }
