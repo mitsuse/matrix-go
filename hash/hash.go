@@ -113,3 +113,17 @@ func (m *Matrix) UnmarshalJSON([]byte) error {
 	// TODO: Implement.
 	return nil
 }
+
+func (m *Matrix) Shape() (rows, columns int) {
+	return m.rewriter.Rewrite(m.view.Rows(), m.view.Columns())
+}
+
+func (m *Matrix) Rows() (rows int) {
+	rows, _ = m.Shape()
+	return rows
+}
+
+func (m *Matrix) Columns() (columns int) {
+	_, columns = m.Shape()
+	return columns
+}
