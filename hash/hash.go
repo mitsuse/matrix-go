@@ -142,3 +142,73 @@ func (m *Matrix) Diagonal() types.Cursor {
 	// TODO: Implement.
 	return nil
 }
+
+func (m *Matrix) Get(row, column int) (element float64) {
+	// TODO: Implement.
+	return 0
+}
+
+func (m *Matrix) Update(row, column int, element float64) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Equal(n types.Matrix) bool {
+	// TODO: Implement.
+	return true
+}
+
+func (m *Matrix) Add(n types.Matrix) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Subtract(n types.Matrix) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Multiply(n types.Matrix) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Scalar(s float64) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Transpose() types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) View(row, column, rows, columns int) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Base() types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Row(row int) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Column(column int) types.Matrix {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Max() (element float64, row, column int) {
+	// TODO: Implement.
+	return 0, 0, 0
+}
+
+func (m *Matrix) Min() (element float64, row, column int) {
+	// TODO: Implement.
+	return 0, 0, 0
+}
