@@ -144,13 +144,34 @@ func (m *Matrix) Diagonal() types.Cursor {
 }
 
 func (m *Matrix) Get(row, column int) (element float64) {
-	// TODO: Implement.
-	return 0
+	row, column = m.rewriter.Rewrite(row, column)
+
+	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
+
+	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
+
+	element, exist := m.elements[index]
+	if !exist {
+		return 0
+	}
+
+	return element
 }
 
 func (m *Matrix) Update(row, column int, element float64) types.Matrix {
-	// TODO: Implement.
-	return nil
+	row, column = m.rewriter.Rewrite(row, column)
+
+	validates.IndexShouldBeInRange(m.view.Rows(), m.view.Columns(), row, column)
+
+	index := (row+m.offset.Row())*m.base.Columns() + column + m.offset.Column()
+
+	if element == 0 {
+		delete(m.elements, index)
+	} else {
+		m.elements[index] = element
+	}
+
+	return m
 }
 
 func (m *Matrix) Equal(n types.Matrix) bool {
@@ -184,23 +205,46 @@ func (m *Matrix) Transpose() types.Matrix {
 }
 
 func (m *Matrix) View(row, column, rows, columns int) types.Matrix {
-	// TODO: Implement.
-	return nil
+	row, column = m.rewriter.Rewrite(row, column)
+	rows, columns = m.rewriter.Rewrite(rows, columns)
+
+	offset := types.NewIndex(m.offset.Row()+row, m.offset.Column()+column)
+	view := types.NewShape(rows, columns)
+
+	validates.ShapeShouldBePositive(rows, columns)
+	validates.ViewShouldBeInBase(m.base, view, offset)
+
+	n := &Matrix{
+		initialized: true,
+		base:        m.base,
+		view:        view,
+		offset:      offset,
+		elements:    m.elements,
+		rewriter:    m.rewriter,
+	}
+
+	return n
 }
 
 func (m *Matrix) Base() types.Matrix {
-	// TODO: Implement.
-	return nil
+	n := &Matrix{
+		initialized: true,
+		base:        m.base,
+		view:        m.base,
+		offset:      types.NewIndex(0, 0),
+		elements:    m.elements,
+		rewriter:    m.rewriter,
+	}
+
+	return n
 }
 
 func (m *Matrix) Row(row int) types.Matrix {
-	// TODO: Implement.
-	return nil
+	return m.View(row, 0, 1, m.view.Columns())
 }
 
 func (m *Matrix) Column(column int) types.Matrix {
-	// TODO: Implement.
-	return nil
+	return m.View(0, column, m.view.Rows(), 1)
 }
 
 func (m *Matrix) Max() (element float64, row, column int) {
