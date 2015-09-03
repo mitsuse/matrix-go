@@ -129,8 +129,7 @@ func (m *Matrix) Columns() (columns int) {
 }
 
 func (m *Matrix) All() types.Cursor {
-	// TODO: Implement.
-	return nil
+	return newAllCursor(m)
 }
 
 func (m *Matrix) NonZeros() types.Cursor {
