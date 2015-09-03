@@ -127,3 +127,18 @@ func (m *Matrix) Columns() (columns int) {
 	_, columns = m.Shape()
 	return columns
 }
+
+func (m *Matrix) All() types.Cursor {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) NonZeros() types.Cursor {
+	// TODO: Implement.
+	return nil
+}
+
+func (m *Matrix) Diagonal() types.Cursor {
+	// TODO: Implement.
+	return nil
+}
