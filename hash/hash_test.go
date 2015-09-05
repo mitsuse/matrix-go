@@ -57,6 +57,49 @@ func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
 	}
 }
 
+func TestNonZerosCreatesCursorToIterateNonZeroElements(t *testing.T) {
+	m := New(2, 3)(
+		Element{Row: 0, Column: 1, Value: 1},
+		Element{Row: 0, Column: 2, Value: 2},
+		Element{Row: 1, Column: 2, Value: 3},
+	).View(1, 1, 1, 2)
+
+	checkTable := [][]bool{
+		[]bool{true, false},
+	}
+
+	cursor := m.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+
+		if e := m.Get(row, column); element != e {
+			t.Fatalf(
+				"The element at (%d, %d) should be %v, but the cursor returns %v.",
+				row,
+				column,
+				e,
+				element,
+			)
+		}
+
+		if checked := checkTable[row][column]; checked {
+			t.Fatalf("Cursor should visit (%d, %d) more than necessary.", row, column)
+		}
+		checkTable[row][column] = true
+	}
+
+	for row, checkRow := range checkTable {
+		for column, checked := range checkRow {
+			if checked {
+				continue
+			}
+
+			t.Fatalf("Cursor didn't visit (%d, %d).", row, column)
+		}
+	}
+}
+
 func TestGetFailsByAccessingWithTooLargeRow(t *testing.T) {
 	rows, columns := 8, 6
 	viewRows, viewColumns := 4, 3

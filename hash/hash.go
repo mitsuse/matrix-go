@@ -133,8 +133,7 @@ func (m *Matrix) All() types.Cursor {
 }
 
 func (m *Matrix) NonZeros() types.Cursor {
-	// TODO: Implement.
-	return nil
+	return newNonZerosCursor(m)
 }
 
 func (m *Matrix) Diagonal() types.Cursor {
