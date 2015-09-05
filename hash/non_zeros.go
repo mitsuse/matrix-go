@@ -31,15 +31,15 @@ func (c *nonZerosCursor) HasNext() bool {
 		}
 
 		index := c.matrix.base.Columns()*(c.matrix.offset.Row()+c.current.Row()) + c.matrix.offset.Column() + c.current.Column()
+
 		c.next = types.NewIndex(c.current.Row()+1, c.current.Column())
+		if c.next.Row() >= c.matrix.view.Rows() {
+			c.next = types.NewIndex(0, c.current.Column()+1)
+		}
 
 		if element, exist := c.matrix.elements[index]; exist {
 			c.element = element
 			return true
-		}
-
-		if c.next.Row() >= c.matrix.view.Rows() {
-			c.next = types.NewIndex(0, c.current.Column()+1)
 		}
 	}
 
