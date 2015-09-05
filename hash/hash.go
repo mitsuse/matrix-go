@@ -173,33 +173,90 @@ func (m *Matrix) Update(row, column int, element float64) types.Matrix {
 }
 
 func (m *Matrix) Equal(n types.Matrix) bool {
-	// TODO: Implement.
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.All()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		if m.Get(row, column) != element {
+			return false
+		}
+	}
+
 	return true
 }
 
 func (m *Matrix) Add(n types.Matrix) types.Matrix {
-	// TODO: Implement.
-	return nil
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		m.Update(row, column, m.Get(row, column)+element)
+	}
+
+	return m
 }
 
 func (m *Matrix) Subtract(n types.Matrix) types.Matrix {
-	// TODO: Implement.
-	return nil
+	validates.ShapeShouldBeSame(m, n)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, row, column := cursor.Get()
+		m.Update(row, column, m.Get(row, column)-element)
+	}
+
+	return m
 }
 
 func (m *Matrix) Multiply(n types.Matrix) types.Matrix {
-	// TODO: Implement.
-	return nil
+	validates.ShapeShouldBeMultipliable(m, n)
+
+	rows := m.Rows()
+	columns := n.Columns()
+
+	r := Zeros(rows, columns)
+
+	cursor := n.NonZeros()
+
+	for cursor.HasNext() {
+		element, j, k := cursor.Get()
+
+		for i := 0; i < rows; i++ {
+			r.Update(i, k, r.Get(i, k)+m.Get(i, j)*element)
+		}
+	}
+
+	return r
 }
 
 func (m *Matrix) Scalar(s float64) types.Matrix {
-	// TODO: Implement.
-	return nil
+	for index, element := range m.elements {
+		if e := element * s; e == 0 {
+			delete(m.elements, index)
+		} else {
+			m.elements[index] = e
+		}
+	}
+
+	return m
 }
 
 func (m *Matrix) Transpose() types.Matrix {
-	// TODO: Implement.
-	return nil
+	n := &Matrix{
+		initialized: true,
+		base:        m.base,
+		view:        m.view,
+		offset:      m.offset,
+		elements:    m.elements,
+		rewriter:    m.rewriter.Transpose(),
+	}
+
+	return n
 }
 
 func (m *Matrix) View(row, column, rows, columns int) types.Matrix {
