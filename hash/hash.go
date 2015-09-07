@@ -82,15 +82,14 @@ func Zeros(rows, columns int) *Matrix {
 // If the given matrix is already typed as *hash.Matrix, just returns it.
 // In other cases, create a new matrix.
 func Convert(m types.Matrix) *Matrix {
-	// TODO: Implement.
-	// d, isHash := m.(*Matrix)
-	//
-	// if isHash {
-	// 	return d
-	// }
-	//
-	// // TODO: Convert the other type of matrix to *Matrix.
-	//
+	h, isHash := m.(*Matrix)
+
+	if isHash {
+		return h
+	}
+
+	// TODO: Convert the other type of matrix to *Matrix.
+
 	return nil
 }
 
