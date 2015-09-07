@@ -510,10 +510,7 @@ func TestAddCausesPanicForDifferentShapeMatrices(t *testing.T) {
 		Element{Row: 1, Column: 3, Value: 2},
 		Element{Row: 2, Column: 2, Value: 3},
 		Element{Row: 2, Column: 3, Value: 4},
-		Element{Row: 3, Column: 4, Value: 5},
 		Element{Row: 3, Column: 2, Value: 6},
-		Element{Row: 4, Column: 3, Value: 7},
-		Element{Row: 5, Column: 4, Value: 8},
 	).View(1, 1, 3, 3)
 
 	defer func() {
