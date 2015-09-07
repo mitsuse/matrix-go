@@ -50,6 +50,13 @@ func New(rows, columns int) func(elements ...Element) *Matrix {
 		}
 
 		for _, element := range elements {
+			validates.IndexShouldBeInRange(
+				shape.Rows(),
+				shape.Columns(),
+				element.Row,
+				element.Column,
+			)
+
 			key := element.Row*columns + element.Column
 			if _, exist := m.elements[key]; exist {
 				panic(validates.INVALID_ELEMENTS_PANIC)
