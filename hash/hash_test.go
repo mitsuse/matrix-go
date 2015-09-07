@@ -3,6 +3,7 @@ package hash
 import (
 	"testing"
 
+	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
 
@@ -10,6 +11,149 @@ type elementTest struct {
 	row     int
 	column  int
 	element float64
+}
+
+func TestHashMatrixSatisfiesMatrixInterface(t *testing.T) {
+	var _ types.Matrix = &Matrix{}
+}
+
+func TestNewCreateHashMatrix(t *testing.T) {
+	rows := 3
+	columns := 2
+
+	elements := []Element{
+		{Row: 0, Column: 0, Value: 9},
+		{Row: 2, Column: 1, Value: 3},
+		{Row: 1, Column: 0, Value: 1},
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			t.Fatalf("matrix-creation should not cause any panic, but causes %s.", p)
+		}
+	}()
+	New(rows, columns)(elements...)
+}
+
+func TestNewFailsForOutOfShapeElement(t *testing.T) {
+	rows := 3
+	columns := 2
+
+	elements := []Element{
+		{Row: 0, Column: 0, Value: 9},
+		{Row: 2, Column: 1, Value: 3},
+		{Row: 2, Column: 2, Value: 3},
+		{Row: 1, Column: 0, Value: 1},
+	}
+
+	defer func() {
+		if p := recover(); p == validates.OUT_OF_RANGE_PANIC {
+			return
+		}
+
+		t.Fatal("Out-of-shaep elements should be rejected.")
+	}()
+	New(rows, columns)(elements...)
+}
+
+func TestNewFailsForDuplicatedIndexElements(t *testing.T) {
+	rows := 3
+	columns := 2
+
+	elements := []Element{
+		{Row: 0, Column: 0, Value: 9},
+		{Row: 2, Column: 1, Value: 3},
+		{Row: 2, Column: 1, Value: 2},
+		{Row: 1, Column: 0, Value: 1},
+	}
+
+	defer func() {
+		if p := recover(); p == validates.INVALID_ELEMENTS_PANIC {
+			return
+		}
+
+		t.Fatal("Duplicated-index elements should be rejected.")
+	}()
+	New(rows, columns)(elements...)
+}
+
+func TestNewFailsForNonPositiveRows(t *testing.T) {
+	rows := -3
+	columns := 2
+
+	elements := []Element{
+		{Row: 0, Column: 0, Value: 9},
+		{Row: 2, Column: 1, Value: 3},
+		{Row: 1, Column: 0, Value: 1},
+	}
+
+	defer func() {
+		if p := recover(); p == validates.NON_POSITIVE_SIZE_PANIC {
+			return
+		}
+
+		t.Fatalf(
+			"Non-positive rows should cause %s.",
+			validates.NON_POSITIVE_SIZE_PANIC,
+		)
+	}()
+	New(rows, columns)(elements...)
+}
+
+func TestNewFailsForNonPositiveColumns(t *testing.T) {
+	rows := 3
+	columns := -2
+
+	elements := []Element{
+		{Row: 0, Column: 0, Value: 9},
+		{Row: 2, Column: 1, Value: 3},
+		{Row: 1, Column: 0, Value: 1},
+	}
+
+	defer func() {
+		if p := recover(); p == validates.NON_POSITIVE_SIZE_PANIC {
+			return
+		}
+
+		t.Fatalf(
+			"Non-positive columns should cause %s.",
+			validates.NON_POSITIVE_SIZE_PANIC,
+		)
+	}()
+	New(rows, columns)(elements...)
+}
+
+func TestNewFailsForNonPositive(t *testing.T) {
+	rows := -3
+	columns := -2
+
+	elements := []Element{
+		{Row: 0, Column: 0, Value: 9},
+		{Row: 2, Column: 1, Value: 3},
+		{Row: 1, Column: 0, Value: 1},
+	}
+
+	defer func() {
+		if p := recover(); p == validates.NON_POSITIVE_SIZE_PANIC {
+			return
+		}
+
+		t.Fatalf(
+			"Non-positive rows or columns should cause %s.",
+			validates.NON_POSITIVE_SIZE_PANIC,
+		)
+	}()
+	New(rows, columns)(elements...)
+}
+
+func TestZerosCreatesZeroMatrix(t *testing.T) {
+	rows := 3
+	columns := 2
+
+	if len(Zeros(rows, columns).elements) == 0 {
+		return
+	}
+	t.Fatal("The created matrix should be zero matrix.")
 }
 
 func TestAllCreatesCursorToIterateAllElements(t *testing.T) {
