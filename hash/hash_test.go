@@ -1,8 +1,11 @@
 package hash
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 
+	"github.com/mitsuse/matrix-go/internal/rewriters"
 	"github.com/mitsuse/matrix-go/internal/types"
 	"github.com/mitsuse/matrix-go/internal/validates"
 )
@@ -154,6 +157,129 @@ func TestZerosCreatesZeroMatrix(t *testing.T) {
 		return
 	}
 	t.Fatal("The created matrix should be zero matrix.")
+}
+
+func TestSerialize(t *testing.T) {
+	m := New(3, 3)(
+		Element{Row: 0, Column: 0, Value: 1.0},
+		Element{Row: 0, Column: 1, Value: 0.1},
+		Element{Row: 0, Column: 2, Value: 0.9},
+		Element{Row: 1, Column: 0, Value: 0.1},
+		Element{Row: 1, Column: 1, Value: 2.5},
+		Element{Row: 1, Column: 2, Value: 0.2},
+		Element{Row: 2, Column: 0, Value: 0.2},
+		Element{Row: 2, Column: 1, Value: 0.1},
+		Element{Row: 2, Column: 2, Value: 3.1},
+	).View(1, 1, 2, 1).Transpose()
+
+	writer := bytes.NewBuffer([]byte{})
+
+	if err := m.Serialize(writer); err != nil {
+		t.Fatalf("An expected error occured on serialization: %s", err)
+	}
+
+	reader := bytes.NewReader(writer.Bytes())
+
+	n, err := Deserialize(reader)
+
+	if err != nil {
+		t.Fatalf("An expected error occured on deserialization: %s", err)
+	}
+
+	if !m.Base().Equal(n.Base()) || !m.Equal(n) {
+		t.Fatal("Deserialization failed for a serialized matrix.")
+	}
+}
+
+func TestUnmarshalJSONFailsWithAlreadyInitializedMatrix(t *testing.T) {
+	m := New(3, 3)(
+		Element{Row: 0, Column: 0, Value: 1.0},
+		Element{Row: 0, Column: 1, Value: 0.1},
+		Element{Row: 0, Column: 2, Value: 0.9},
+		Element{Row: 1, Column: 0, Value: 0.1},
+		Element{Row: 1, Column: 1, Value: 2.5},
+		Element{Row: 1, Column: 2, Value: 0.2},
+		Element{Row: 2, Column: 0, Value: 0.2},
+		Element{Row: 2, Column: 1, Value: 0.1},
+		Element{Row: 2, Column: 2, Value: 3.1},
+	).View(1, 1, 2, 1).Transpose()
+
+	n := New(3, 3)(
+		Element{Row: 0, Column: 0, Value: 1.0},
+		Element{Row: 0, Column: 1, Value: 0.1},
+		Element{Row: 0, Column: 2, Value: 0.9},
+		Element{Row: 1, Column: 0, Value: 0.1},
+		Element{Row: 1, Column: 1, Value: 2.5},
+		Element{Row: 1, Column: 2, Value: 0.2},
+		Element{Row: 2, Column: 0, Value: 0.2},
+		Element{Row: 2, Column: 1, Value: 0.1},
+		Element{Row: 2, Column: 2, Value: 3.1},
+	).View(1, 1, 2, 1).Transpose()
+
+	b, _ := json.Marshal(m)
+
+	if err := json.Unmarshal(b, n); err == nil || err.Error() != AlreadyInitializedError {
+		t.Fatalf("Unmarshal can be applied to uninitialized matrix.")
+	}
+}
+
+func TestUnmarshalJSONFailsWithIncompatibleVersion(t *testing.T) {
+	m := &matrixJson{
+		Version: 99999,
+		Base:    types.NewShape(3, 3),
+		View:    types.NewShape(2, 1),
+		Offset:  types.NewIndex(1, 1),
+		Elements: []Element{
+			{Row: 0, Column: 0, Value: 1.0},
+			{Row: 0, Column: 1, Value: 0.1},
+			{Row: 0, Column: 2, Value: 0.9},
+			{Row: 1, Column: 0, Value: 0.1},
+			{Row: 1, Column: 1, Value: 2.5},
+			{Row: 1, Column: 2, Value: 0.2},
+			{Row: 2, Column: 0, Value: 0.2},
+			{Row: 2, Column: 1, Value: 0.1},
+			{Row: 2, Column: 2, Value: 3.1},
+		},
+		Rewriter: rewriters.Reverse().Type(),
+	}
+
+	n := &Matrix{}
+
+	b, _ := json.Marshal(m)
+
+	if err := json.Unmarshal(b, n); err == nil || err.Error() != IncompatibleVersionError {
+		t.Fatalf("Unmarshal can be applied to compatible-version matrix.")
+	}
+}
+
+func TestUnmarshalJSONFailsWithUnknownRewriter(t *testing.T) {
+	m := &matrixJson{
+		Version: version,
+		Base:    types.NewShape(3, 3),
+		View:    types.NewShape(2, 1),
+		Offset:  types.NewIndex(1, 1),
+		Elements: []Element{
+			{Row: 0, Column: 0, Value: 1.0},
+			{Row: 0, Column: 1, Value: 0.1},
+			{Row: 0, Column: 2, Value: 0.9},
+			{Row: 1, Column: 0, Value: 0.1},
+			{Row: 1, Column: 1, Value: 2.5},
+			{Row: 1, Column: 2, Value: 0.2},
+			{Row: 2, Column: 0, Value: 0.2},
+			{Row: 2, Column: 1, Value: 0.1},
+			{Row: 2, Column: 2, Value: 3.1},
+		},
+		Rewriter: 255,
+	}
+
+	n := &Matrix{}
+
+	b, _ := json.Marshal(m)
+
+	// TODO: Use an exported error constant.
+	if err := json.Unmarshal(b, n); err == nil || err.Error() != "UNKNOWN_REWRITER_ERROR" {
+		t.Fatalf("Unmarshal can be applied to matrix which has a valid rewriter.")
+	}
 }
 
 func TestAllCreatesCursorToIterateAllElements(t *testing.T) {

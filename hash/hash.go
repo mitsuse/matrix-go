@@ -5,6 +5,7 @@ package hash
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 
 	"github.com/mitsuse/matrix-go/internal/rewriters"
@@ -22,9 +23,9 @@ type Matrix struct {
 }
 
 type Element struct {
-	Row    int
-	Column int
-	Value  float64
+	Row    int     `json:"row"`
+	Column int     `json:"column"`
+	Value  float64 `json:"value"`
 }
 
 // Create a new matrix with given elements.
@@ -101,9 +102,7 @@ func Deserialize(reader io.Reader) (types.Matrix, error) {
 		return nil, err
 	}
 
-	// return m, nil
-	// TODO: Implement.
-	return nil, nil
+	return m, nil
 }
 
 func (m *Matrix) Serialize(writer io.Writer) error {
@@ -111,12 +110,76 @@ func (m *Matrix) Serialize(writer io.Writer) error {
 }
 
 func (m *Matrix) MarshalJSON() ([]byte, error) {
-	// TODO: Implement.
-	return nil, nil
+	elements := make([]Element, 0, len(m.elements))
+
+	c := m.Base().NonZeros()
+	for c.HasNext() {
+		value, row, column := c.Get()
+		row, column = m.rewriter.Rewrite(row, column)
+		elements = append(elements, Element{Row: row, Column: column, Value: value})
+	}
+
+	jsonObject := matrixJson{
+		Version:  version,
+		Base:     m.base,
+		View:     m.view,
+		Offset:   m.offset,
+		Elements: elements,
+		Rewriter: m.rewriter.Type(),
+	}
+
+	return json.Marshal(&jsonObject)
 }
 
-func (m *Matrix) UnmarshalJSON([]byte) error {
-	// TODO: Implement.
+func (m *Matrix) UnmarshalJSON(b []byte) error {
+	if m.initialized {
+		return errors.New(AlreadyInitializedError)
+	}
+
+	jsonObject := &matrixJson{}
+
+	if err := json.Unmarshal(b, jsonObject); err != nil {
+		return err
+	}
+
+	if jsonObject.Version < minVersion || maxVersion < jsonObject.Version {
+		return errors.New(IncompatibleVersionError)
+	}
+
+	m.base = jsonObject.Base
+	m.view = jsonObject.View
+	m.offset = jsonObject.Offset
+
+	m.elements = make(map[int]float64)
+	for _, element := range jsonObject.Elements {
+		key := element.Row*m.base.Columns() + element.Column
+		if _, exist := m.elements[key]; exist {
+			panic(validates.INVALID_ELEMENTS_PANIC)
+		}
+
+		m.elements[key] = element.Value
+	}
+
+	rewriter, err := rewriters.Get(jsonObject.Rewriter)
+	if err != nil {
+		return err
+	}
+	m.rewriter = rewriter
+
+	// TODO: Return error value instead of causing panic.
+	validates.ShapeShouldBePositive(m.base.Rows(), m.base.Columns())
+
+	validates.IndexShouldBeInRange(
+		m.base.Rows(),
+		m.base.Columns(),
+		m.offset.Row(),
+		m.offset.Column(),
+	)
+
+	validates.ViewShouldBeInBase(m.base, m.view, m.offset)
+
+	m.initialized = true
+
 	return nil
 }
 
