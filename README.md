@@ -126,7 +126,7 @@ The type of the result matrix is same as the type of the receiver.
 
 #### Scalar Multiplication
 
-`(Matrix).Scalar` is available for Scalar multiplication (scalar-left multiplication).
+`(Matrix).Scale` is available for Scalar multiplication (scalar-left multiplication).
 
 ```go
 m := dense.New(2, 2)(
@@ -140,10 +140,10 @@ r := dense.New(2, 2)(
 )
 
 // true
-m.Scalar(-1).Equal(r)
+m.Scale(-1).Equal(r)
 ```
 
-For scalar-right multiplication, use `(Scalar).Multiply`.
+For scalar-right multiplication, use `(Scalar).Scale`.
 
 ```go
 m := dense.New(2, 2)(
@@ -157,11 +157,11 @@ r := dense.New(2, 2)(
 )
 
 // true
-Scalar(-1).Multiply(m).Equal(r)
+Scalar(-1).Scale(m).Equal(r)
 ```
 
 When the matrix used for scalar multiplication is mutable,
-`(Matrix).Scalar` and `(Scalar).Multiply` rewrite elements of the matrix.
+`(Matrix).Scale` and `(Scalar).Scale` rewrite elements of the matrix.
 
 
 ### Cursor
