@@ -58,7 +58,7 @@ type Matrix interface {
 	Multiply(n Matrix) Matrix
 
 	// Multiply by scalar value.
-	Scalar(s float64) Matrix
+	Scale(s float64) Matrix
 
 	// Create the transpose matrix.
 	Transpose() Matrix

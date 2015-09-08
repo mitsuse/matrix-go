@@ -89,7 +89,7 @@ func BenchmarkMultiply(b *testing.B) {
 	}
 }
 
-func BenchmarkScalar(b *testing.B) {
+func BenchmarkScale(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 
@@ -103,6 +103,6 @@ func BenchmarkScalar(b *testing.B) {
 
 		b.StartTimer()
 
-		m.Scalar(s)
+		m.Scale(s)
 	}
 }

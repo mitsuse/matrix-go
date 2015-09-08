@@ -303,7 +303,7 @@ func (m *Matrix) Multiply(n types.Matrix) types.Matrix {
 	return r
 }
 
-func (m *Matrix) Scalar(s float64) types.Matrix {
+func (m *Matrix) Scale(s float64) types.Matrix {
 	for index, element := range m.elements {
 		if e := element * s; e == 0 {
 			delete(m.elements, index)
