@@ -964,7 +964,7 @@ func TestMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 	t.Fatal("Mutable matrix should multiply the receiver matrix by the given matrix.")
 }
 
-func TestScalarReturnsTheOriginal(t *testing.T) {
+func TestScaleReturnsTheOriginal(t *testing.T) {
 	m := New(5, 4)(
 		Element{Row: 0, Column: 1, Value: 1},
 		Element{Row: 0, Column: 2, Value: 2},
@@ -980,14 +980,14 @@ func TestScalarReturnsTheOriginal(t *testing.T) {
 
 	s := 3.0
 
-	if m.Scalar(s) == m {
+	if m.Scale(s) == m {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return itself by scalar-multiplication.")
 }
 
-func TestScalarTheResultOfMultiplication(t *testing.T) {
+func TestScaleTheResultOfMultiplication(t *testing.T) {
 	m := New(5, 4)(
 		Element{Row: 0, Column: 1, Value: 1},
 		Element{Row: 0, Column: 2, Value: 2},
@@ -1016,7 +1016,7 @@ func TestScalarTheResultOfMultiplication(t *testing.T) {
 		Element{Row: 4, Column: 3, Value: 3},
 	).View(1, 1, 4, 3)
 
-	if m.Scalar(s).Equal(r) {
+	if m.Scale(s).Equal(r) {
 		return
 	}
 

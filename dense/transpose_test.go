@@ -684,7 +684,7 @@ func TestTransposeMultiplyReturnsTheResultOfMultiplication(t *testing.T) {
 	t.Fatal("Mutable matrix should multiply the receiver matrix by the given matrix.")
 }
 
-func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
+func TestTransposeScaleReturnsTheOriginal(t *testing.T) {
 	m := New(4, 5)(
 		0, 0, 3, 0, 3,
 		0, 1, 2, 1, 2,
@@ -694,14 +694,14 @@ func TestTransposeScalarReturnsTheOriginal(t *testing.T) {
 
 	s := 3.0
 
-	if m.Scalar(s) == m {
+	if m.Scale(s) == m {
 		return
 	}
 
 	t.Fatal("Mutable matrix should return itself by scalar-multiplication.")
 }
 
-func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
+func TestTransposeScaleTheResultOfMultiplication(t *testing.T) {
 	m := New(4, 5)(
 		0, 0, 3, 0, 3,
 		0, 1, 2, 1, 2,
@@ -720,7 +720,7 @@ func TestTransposeScalarTheResultOfMultiplication(t *testing.T) {
 		0, 0, 0, 0, 0,
 	).View(1, 2, 4, 3)
 
-	if m.Scalar(s).Equal(r) {
+	if m.Scale(s).Equal(r) {
 		return
 	}
 

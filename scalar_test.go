@@ -6,7 +6,7 @@ import (
 	"github.com/mitsuse/matrix-go/dense"
 )
 
-func TestScalarMultiplyIsCommutative(t *testing.T) {
+func TestScaleMultiplyIsCommutative(t *testing.T) {
 	m := dense.New(2, 2)(
 		0, 1,
 		2, 3,
@@ -19,7 +19,7 @@ func TestScalarMultiplyIsCommutative(t *testing.T) {
 
 	s := 2.0
 
-	if Scalar(s).Multiply(m).Equal(n.Scalar(s)) {
+	if Scalar(s).Scale(m).Equal(n.Scale(s)) {
 		return
 	}
 
