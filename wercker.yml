@@ -6,6 +6,7 @@ build:
             name: build
             code: |
                 go get -t ./...
+                go test -v ./...
         - mitsuse/gover:
             project: "github.com/mitsuse/matrix-go"
             report: "coverage.txt"
